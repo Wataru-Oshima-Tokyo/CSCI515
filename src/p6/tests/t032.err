@@ -1,0 +1,1 @@
+Semantic error on line 32: Cannot assign to code block 'counterclockwise'. Can only assign to a game_object's animation_block attribute.

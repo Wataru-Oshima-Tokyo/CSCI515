@@ -1,0 +1,100 @@
+int window_height = 300;
+int window_width = 500;
+string window_title = "First game";
+int num_periods = 1;
+int ball_size = 15;
+int counter =0;
+int i;
+int adujusted_window_height = window_height - ball_size*2;
+forward animation text_animate(textbox cur_text);
+forward animation sinewave(circle cur_ball);
+forward animation fadeOut(circle cur_ball);
+textbox showText(x=10, y=10, text="Current period: 1", size=0.1, blue=1, animation_block=text_animate);
+
+//user_int is the x value and user_int2 is the y value for circle 
+circle ball(user_int=1, user_int2=1,radius = ball_size, animation_block = sinewave, red=0/255.0, blue=0/255.0, green=0/255.0);
+circle circles[50];
+
+
+ initialization
+ {
+     for (i = 0; i < 50; i += 1)
+     {
+         circles[i].radius = ball_size;
+         circles[i].red = 0/255.0;
+         circles[i].green = 0/255.0;
+         circles[i].blue = 0/255.0;
+        //  circles[i].animation_block = sinewave;
+     }
+ }
+
+
+
+animation ball_animate(circle cur_ball)
+{
+
+
+   if (cur_ball.x > window_width -ball_size*2 || cur_ball.x < 0)
+        cur_ball.user_int = cur_ball.user_int*-1;
+   if (cur_ball.y > window_height - ball_size*2 || cur_ball.y < 0)
+        cur_ball.user_int2 = cur_ball.user_int2 *-1;
+
+   cur_ball.x += cur_ball.user_int * 2;
+   cur_ball.y += cur_ball.user_int2 * 1;
+
+}
+
+
+animation sinewave(circle cur_ball)
+{
+    
+   if (cur_ball.x > window_width -ball_size*2 || cur_ball.x < 0)
+        cur_ball.user_int = cur_ball.user_int*-1;
+   if (cur_ball.y > window_height - ball_size*2 || cur_ball.y < 0)
+        cur_ball.user_int2 = cur_ball.user_int2 *-1;
+
+   cur_ball.x += cur_ball.user_int * 2;
+   cur_ball.y = cur_ball.user_int2 * floor(adujusted_window_height/2.0+adujusted_window_height/2.0*sin(num_periods*360*cur_ball.x/window_width));
+   circles[counter%50].x = cur_ball.x;
+   circles[counter%50].y = cur_ball.y;
+   circles[counter%50].red = cur_ball.red;
+   circles[counter%50].green = cur_ball.green;
+   circles[counter%50].blue = cur_ball.blue;
+   
+    for (i = 0; i < 50; i += 1)
+    {
+        circles[i].red +=0.02;
+        circles[i].green +=0.02;
+        circles[i].blue +=0.02;
+    }
+    counter++;
+}
+
+animation fadeOut(circle cur_ball){
+     for (i = 0; i < 50; i += 1)
+     {
+         circles[i].red =255;
+         circles[i].green +=255;
+         circles[i].blue +=255;
+        //  circles[i].animation_block = sinewave;
+     }
+}
+
+animation text_animate(textbox cur_text)
+{
+    showText.text = "Current periods: " + num_periods;
+    
+}
+
+on rightarrow
+{ 
+    num_periods++;
+    print(num_periods);
+}
+
+on leftarrow
+{ 
+    if (num_periods >0)
+        num_periods--;
+    print(num_periods);
+}
