@@ -3,7 +3,7 @@ int window_width = 500;
 int window_height = 500;
 int window_x = 300;
 int window_y = 200;
-string window_title = "gpl Invaders";
+string window_title = "gpl Invendors ver Wataru";
 int animation_speed = 80; // 1 is slowest, 100 is fastest
 int x =0;
 // Set up some global variables
