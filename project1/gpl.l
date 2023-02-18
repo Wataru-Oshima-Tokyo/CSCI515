@@ -153,25 +153,17 @@ void illegal_token_error()
   * the project writeup for the requirements
   * of these regular expressions
   */
-  //replace this text with the regular expression and action for integer constants
-[0-9]+      { yylval.union_int = strdup(yytext); return T_INT_CONSTANT; }
-  //replace this text with the regular expression and action for double constants
+[0-9]+     { yylval.union_int = strdup(yytext); return T_INT_CONSTANT; }
 [0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)? { yylval.unipn_double = strdup(yytext); return T_DOUBLE_CONSTANT; }
-
- //replace this text with the regular expression and action for string constants
 \"(\\.|[^"\\])*\"    { yylval.union_string = new string(yytext); return T_STRING_CONSTANT; }
-
- //replace this text with the regular expression and action for identifiers
 [a-zA-Z_][a-zA-Z0-9_]*   { yylval.union_string = strdup(yytext); return IDENTIFIER; }
- // replace this text with the regular expression and action for comments
-
 [\n] { yylval = strdup(yytext); line_count++;}
 
 "print" { yylval.union_int = line_count; return T_PRINT; }
-
 "exit" { yylval.union_int = line_count; return T_EXIT; }
-
 "//.*\n"
+
+
  /* This should be the last pattern. If the lexer reaches this pattern
     there has been an error
   */

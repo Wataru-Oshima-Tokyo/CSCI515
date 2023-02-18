@@ -3,7 +3,7 @@ Terminals unused in grammar
     "error"
 
 
-State 130 conflicts: 2 shift/reduce, 13 reduce/reduce
+State 130 conflicts: 2 shift/reduce
 State 131 conflicts: 15 shift/reduce
 State 185 conflicts: 2 shift/reduce
 State 186 conflicts: 2 shift/reduce
@@ -171,25 +171,24 @@ Grammar
   109           | "!" expression
   110           | expression "near" expression
   111           | expression "touches" expression
-  112           | "-" expression
 
-  113 primary_expression: "sin" "(" expression ")"
-  114                   | "cos" "(" expression ")"
-  115                   | "tan" "(" expression ")"
-  116                   | "asin" "(" expression ")"
-  117                   | "acos" "(" expression ")"
-  118                   | "atan" "(" expression ")"
-  119                   | "sqrt" "(" expression ")"
-  120                   | "abs" "(" expression ")"
-  121                   | "floor" "(" expression ")"
-  122                   | "random" "(" expression ")"
-  123                   | "(" expression ")"
-  124                   | variable
-  125                   | "int constant"
-  126                   | "true"
-  127                   | "false"
-  128                   | "double constant"
-  129                   | "string constant"
+  112 primary_expression: "sin" "(" expression ")"
+  113                   | "cos" "(" expression ")"
+  114                   | "tan" "(" expression ")"
+  115                   | "asin" "(" expression ")"
+  116                   | "acos" "(" expression ")"
+  117                   | "atan" "(" expression ")"
+  118                   | "sqrt" "(" expression ")"
+  119                   | "abs" "(" expression ")"
+  120                   | "floor" "(" expression ")"
+  121                   | "random" "(" expression ")"
+  122                   | "(" expression ")"
+  123                   | variable
+  124                   | "int constant"
+  125                   | "true"
+  126                   | "false"
+  127                   | "double constant"
+  128                   | "string constant"
 
 
 Terminals, with rules where they appear
@@ -214,8 +213,8 @@ Terminals, with rules where they appear
     "else" (273) 77 79
     "exit" < > (274) 82
     "print" < > (275) 81
-    "true" (276) 126
-    "false" (277) 127
+    "true" (276) 125
+    "false" (277) 126
     "space" (278) 41
     "leftarrow" (279) 44
     "rightarrow" (280) 45
@@ -240,8 +239,8 @@ Terminals, with rules where they appear
     "lkey" (299) 61
     "wkey" (300) 62
     "zkey" (301) 63
-    "(" (302) 21 22 35 39 76 77 80 81 82 113 114 115 116 117 118 119 120 121 122 123
-    ")" (303) 21 22 35 39 76 77 80 81 82 113 114 115 116 117 118 119 120 121 122 123
+    "(" (302) 21 22 35 39 76 77 80 81 82 112 113 114 115 116 117 118 119 120 121 122
+    ")" (303) 21 22 35 39 76 77 80 81 82 112 113 114 115 116 117 118 119 120 121 122
     "{" (304) 67 68
     "}" (305) 67 68
     "[" (306) 8 15 91 93
@@ -254,22 +253,22 @@ Terminals, with rules where they appear
     "-=" (313) 87
     "++" (314) 88
     "--" (315) 89
-    "sin" (316) 113
-    "cos" (317) 114
-    "tan" (318) 115
-    "asin" (319) 116
-    "acos" (320) 117
-    "atan" (321) 118
-    "sqrt" (322) 119
-    "abs" (323) 120
-    "floor" (324) 121
-    "random" (325) 122
+    "sin" (316) 112
+    "cos" (317) 113
+    "tan" (318) 114
+    "asin" (319) 115
+    "acos" (320) 116
+    "atan" (321) 117
+    "sqrt" (322) 118
+    "abs" (323) 119
+    "floor" (324) 120
+    "random" (325) 121
     "touches" (326) 111
     "near" (327) 110
     "*" (328) 105
     "/" (329) 106
     "+" (330) 103
-    "-" (331) 104 108 112
+    "-" (331) 104 108
     "%" (332) 107
     "<" (333) 99
     ">" (334) 100
@@ -280,9 +279,9 @@ Terminals, with rules where they appear
     "!" (339) 109
     "&&" (340) 96
     "||" (341) 95
-    "int constant" <union_int> (342) 125
-    "double constant" <union_double> (343) 128
-    "string constant" <union_string> (344) 129
+    "int constant" <union_int> (342) 124
+    "double constant" <union_double> (343) 127
+    "string constant" <union_string> (344) 128
     "identifier" <union_string> (345) 7 8 14 15 26 35 36 39 90 91 92 93
     "error" (346)
     UNARY_OPS (347)
@@ -388,12 +387,12 @@ Nonterminals, with rules where they appear
         on right: 73 83
     variable (126)
         on left: 90 91 92 93
-        on right: 85 86 87 88 89 124
+        on right: 85 86 87 88 89 123
     expression (127)
-        on left: 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112
-        on right: 8 12 15 26 76 77 78 79 80 81 82 85 86 87 91 93 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123
+        on left: 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111
+        on right: 8 12 15 26 76 77 78 79 80 81 82 85 86 87 91 93 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122
     primary_expression (128)
-        on left: 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129
+        on left: 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128
         on right: 94
 
 
@@ -1092,21 +1091,21 @@ State 73
 
 State 74
 
-  126 primary_expression: "true" •
+  125 primary_expression: "true" •
 
-    $default  reduce using rule 126 (primary_expression)
+    $default  reduce using rule 125 (primary_expression)
 
 
 State 75
 
-  127 primary_expression: "false" •
+  126 primary_expression: "false" •
 
-    $default  reduce using rule 127 (primary_expression)
+    $default  reduce using rule 126 (primary_expression)
 
 
 State 76
 
-  123 primary_expression: "(" • expression ")"
+  122 primary_expression: "(" • expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1135,70 +1134,70 @@ State 76
 
 State 77
 
-  113 primary_expression: "sin" • "(" expression ")"
+  112 primary_expression: "sin" • "(" expression ")"
 
     "("  shift, and go to state 120
 
 
 State 78
 
-  114 primary_expression: "cos" • "(" expression ")"
+  113 primary_expression: "cos" • "(" expression ")"
 
     "("  shift, and go to state 121
 
 
 State 79
 
-  115 primary_expression: "tan" • "(" expression ")"
+  114 primary_expression: "tan" • "(" expression ")"
 
     "("  shift, and go to state 122
 
 
 State 80
 
-  116 primary_expression: "asin" • "(" expression ")"
+  115 primary_expression: "asin" • "(" expression ")"
 
     "("  shift, and go to state 123
 
 
 State 81
 
-  117 primary_expression: "acos" • "(" expression ")"
+  116 primary_expression: "acos" • "(" expression ")"
 
     "("  shift, and go to state 124
 
 
 State 82
 
-  118 primary_expression: "atan" • "(" expression ")"
+  117 primary_expression: "atan" • "(" expression ")"
 
     "("  shift, and go to state 125
 
 
 State 83
 
-  119 primary_expression: "sqrt" • "(" expression ")"
+  118 primary_expression: "sqrt" • "(" expression ")"
 
     "("  shift, and go to state 126
 
 
 State 84
 
-  120 primary_expression: "abs" • "(" expression ")"
+  119 primary_expression: "abs" • "(" expression ")"
 
     "("  shift, and go to state 127
 
 
 State 85
 
-  121 primary_expression: "floor" • "(" expression ")"
+  120 primary_expression: "floor" • "(" expression ")"
 
     "("  shift, and go to state 128
 
 
 State 86
 
-  122 primary_expression: "random" • "(" expression ")"
+  121 primary_expression: "random" • "(" expression ")"
 
     "("  shift, and go to state 129
 
@@ -1206,7 +1205,6 @@ State 86
 State 87
 
   108 expression: "-" • expression
-  112           | "-" • expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1264,23 +1262,23 @@ State 88
 
 State 89
 
-  125 primary_expression: "int constant" •
+  124 primary_expression: "int constant" •
 
-    $default  reduce using rule 125 (primary_expression)
+    $default  reduce using rule 124 (primary_expression)
 
 
 State 90
 
-  128 primary_expression: "double constant" •
+  127 primary_expression: "double constant" •
 
-    $default  reduce using rule 128 (primary_expression)
+    $default  reduce using rule 127 (primary_expression)
 
 
 State 91
 
-  129 primary_expression: "string constant" •
+  128 primary_expression: "string constant" •
 
-    $default  reduce using rule 129 (primary_expression)
+    $default  reduce using rule 128 (primary_expression)
 
 
 State 92
@@ -1298,9 +1296,9 @@ State 92
 
 State 93
 
-  124 primary_expression: variable •
+  123 primary_expression: variable •
 
-    $default  reduce using rule 124 (primary_expression)
+    $default  reduce using rule 123 (primary_expression)
 
 
 State 94
@@ -1644,7 +1642,7 @@ State 119
   107           | expression • "%" expression
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  123 primary_expression: "(" expression • ")"
+  122 primary_expression: "(" expression • ")"
 
     ")"        shift, and go to state 172
     "touches"  shift, and go to state 135
@@ -1666,7 +1664,7 @@ State 119
 
 State 120
 
-  113 primary_expression: "sin" "(" • expression ")"
+  112 primary_expression: "sin" "(" • expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1695,7 +1693,7 @@ State 120
 
 State 121
 
-  114 primary_expression: "cos" "(" • expression ")"
+  113 primary_expression: "cos" "(" • expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1724,7 +1722,7 @@ State 121
 
 State 122
 
-  115 primary_expression: "tan" "(" • expression ")"
+  114 primary_expression: "tan" "(" • expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1753,7 +1751,7 @@ State 122
 
 State 123
 
-  116 primary_expression: "asin" "(" • expression ")"
+  115 primary_expression: "asin" "(" • expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1782,7 +1780,7 @@ State 123
 
 State 124
 
-  117 primary_expression: "acos" "(" • expression ")"
+  116 primary_expression: "acos" "(" • expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1811,7 +1809,7 @@ State 124
 
 State 125
 
-  118 primary_expression: "atan" "(" • expression ")"
+  117 primary_expression: "atan" "(" • expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1840,7 +1838,7 @@ State 125
 
 State 126
 
-  119 primary_expression: "sqrt" "(" • expression ")"
+  118 primary_expression: "sqrt" "(" • expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1869,7 +1867,7 @@ State 126
 
 State 127
 
-  120 primary_expression: "abs" "(" • expression ")"
+  119 primary_expression: "abs" "(" • expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1898,7 +1896,7 @@ State 127
 
 State 128
 
-  121 primary_expression: "floor" "(" • expression ")"
+  120 primary_expression: "floor" "(" • expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1927,7 +1925,7 @@ State 128
 
 State 129
 
-  122 primary_expression: "random" "(" • expression ")"
+  121 primary_expression: "random" "(" • expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1972,7 +1970,6 @@ State 130
   108           | "-" expression •
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  112           | "-" expression •
 
     "&&"  shift, and go to state 148
     "||"  shift, and go to state 149
@@ -1980,42 +1977,9 @@ State 130
     "touches"  error (nonassociative)
     "near"     error (nonassociative)
 
-    "if"          reduce using rule 108 (expression)
-    "if"          [reduce using rule 112 (expression)]
-    "for"         reduce using rule 108 (expression)
-    "for"         [reduce using rule 112 (expression)]
-    "exit"        reduce using rule 108 (expression)
-    "exit"        [reduce using rule 112 (expression)]
-    "print"       reduce using rule 108 (expression)
-    "print"       [reduce using rule 112 (expression)]
-    ")"           reduce using rule 108 (expression)
-    ")"           [reduce using rule 112 (expression)]
-    "]"           reduce using rule 108 (expression)
-    "]"           [reduce using rule 112 (expression)]
-    ";"           reduce using rule 108 (expression)
-    ";"           [reduce using rule 112 (expression)]
-    ","           reduce using rule 108 (expression)
-    ","           [reduce using rule 112 (expression)]
-    "*"           reduce using rule 112 (expression)
-    "/"           reduce using rule 112 (expression)
-    "+"           reduce using rule 108 (expression)
-    "+"           [reduce using rule 112 (expression)]
-    "-"           reduce using rule 108 (expression)
-    "-"           [reduce using rule 112 (expression)]
-    "%"           reduce using rule 112 (expression)
-    "<"           reduce using rule 112 (expression)
-    ">"           reduce using rule 112 (expression)
-    "<="          reduce using rule 112 (expression)
-    ">="          reduce using rule 112 (expression)
-    "=="          reduce using rule 112 (expression)
-    "!="          reduce using rule 112 (expression)
-    "&&"          [reduce using rule 108 (expression)]
-    "&&"          [reduce using rule 112 (expression)]
-    "||"          [reduce using rule 108 (expression)]
-    "||"          [reduce using rule 112 (expression)]
-    "identifier"  reduce using rule 108 (expression)
-    "identifier"  [reduce using rule 112 (expression)]
-    $default      reduce using rule 108 (expression)
+    "&&"      [reduce using rule 108 (expression)]
+    "||"      [reduce using rule 108 (expression)]
+    $default  reduce using rule 108 (expression)
 
 
 State 131
@@ -2606,7 +2570,7 @@ State 154
 
    76 if_statement: "if" "(" • expression ")" statement_or_block_of_statements
    77             | "if" "(" • expression ")" statement_or_block_of_statements "else" statement_or_block_of_statements
-  123 primary_expression: "(" • expression ")"
+  122 primary_expression: "(" • expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2913,9 +2877,9 @@ State 171
 
 State 172
 
-  123 primary_expression: "(" expression ")" •
+  122 primary_expression: "(" expression ")" •
 
-    $default  reduce using rule 123 (primary_expression)
+    $default  reduce using rule 122 (primary_expression)
 
 
 State 173
@@ -2935,7 +2899,7 @@ State 173
   107           | expression • "%" expression
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  113 primary_expression: "sin" "(" expression • ")"
+  112 primary_expression: "sin" "(" expression • ")"
 
     ")"        shift, and go to state 212
     "touches"  shift, and go to state 135
@@ -2972,7 +2936,7 @@ State 174
   107           | expression • "%" expression
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  114 primary_expression: "cos" "(" expression • ")"
+  113 primary_expression: "cos" "(" expression • ")"
 
     ")"        shift, and go to state 213
     "touches"  shift, and go to state 135
@@ -3009,7 +2973,7 @@ State 175
   107           | expression • "%" expression
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  115 primary_expression: "tan" "(" expression • ")"
+  114 primary_expression: "tan" "(" expression • ")"
 
     ")"        shift, and go to state 214
     "touches"  shift, and go to state 135
@@ -3046,7 +3010,7 @@ State 176
   107           | expression • "%" expression
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  116 primary_expression: "asin" "(" expression • ")"
+  115 primary_expression: "asin" "(" expression • ")"
 
     ")"        shift, and go to state 215
     "touches"  shift, and go to state 135
@@ -3083,7 +3047,7 @@ State 177
   107           | expression • "%" expression
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  117 primary_expression: "acos" "(" expression • ")"
+  116 primary_expression: "acos" "(" expression • ")"
 
     ")"        shift, and go to state 216
     "touches"  shift, and go to state 135
@@ -3120,7 +3084,7 @@ State 178
   107           | expression • "%" expression
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  118 primary_expression: "atan" "(" expression • ")"
+  117 primary_expression: "atan" "(" expression • ")"
 
     ")"        shift, and go to state 217
     "touches"  shift, and go to state 135
@@ -3157,7 +3121,7 @@ State 179
   107           | expression • "%" expression
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  119 primary_expression: "sqrt" "(" expression • ")"
+  118 primary_expression: "sqrt" "(" expression • ")"
 
     ")"        shift, and go to state 218
     "touches"  shift, and go to state 135
@@ -3194,7 +3158,7 @@ State 180
   107           | expression • "%" expression
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  120 primary_expression: "abs" "(" expression • ")"
+  119 primary_expression: "abs" "(" expression • ")"
 
     ")"        shift, and go to state 219
     "touches"  shift, and go to state 135
@@ -3231,7 +3195,7 @@ State 181
   107           | expression • "%" expression
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  121 primary_expression: "floor" "(" expression • ")"
+  120 primary_expression: "floor" "(" expression • ")"
 
     ")"        shift, and go to state 220
     "touches"  shift, and go to state 135
@@ -3268,7 +3232,7 @@ State 182
   107           | expression • "%" expression
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  122 primary_expression: "random" "(" expression • ")"
+  121 primary_expression: "random" "(" expression • ")"
 
     ")"        shift, and go to state 221
     "touches"  shift, and go to state 135
@@ -3926,7 +3890,7 @@ State 202
   107           | expression • "%" expression
   110           | expression • "near" expression
   111           | expression • "touches" expression
-  123 primary_expression: "(" expression • ")"
+  122 primary_expression: "(" expression • ")"
 
     ")"        shift, and go to state 223
     "touches"  shift, and go to state 135
@@ -4166,72 +4130,72 @@ State 211
 
 State 212
 
-  113 primary_expression: "sin" "(" expression ")" •
+  112 primary_expression: "sin" "(" expression ")" •
 
-    $default  reduce using rule 113 (primary_expression)
+    $default  reduce using rule 112 (primary_expression)
 
 
 State 213
 
-  114 primary_expression: "cos" "(" expression ")" •
+  113 primary_expression: "cos" "(" expression ")" •
 
-    $default  reduce using rule 114 (primary_expression)
+    $default  reduce using rule 113 (primary_expression)
 
 
 State 214
 
-  115 primary_expression: "tan" "(" expression ")" •
+  114 primary_expression: "tan" "(" expression ")" •
 
-    $default  reduce using rule 115 (primary_expression)
+    $default  reduce using rule 114 (primary_expression)
 
 
 State 215
 
-  116 primary_expression: "asin" "(" expression ")" •
+  115 primary_expression: "asin" "(" expression ")" •
 
-    $default  reduce using rule 116 (primary_expression)
+    $default  reduce using rule 115 (primary_expression)
 
 
 State 216
 
-  117 primary_expression: "acos" "(" expression ")" •
+  116 primary_expression: "acos" "(" expression ")" •
 
-    $default  reduce using rule 117 (primary_expression)
+    $default  reduce using rule 116 (primary_expression)
 
 
 State 217
 
-  118 primary_expression: "atan" "(" expression ")" •
+  117 primary_expression: "atan" "(" expression ")" •
 
-    $default  reduce using rule 118 (primary_expression)
+    $default  reduce using rule 117 (primary_expression)
 
 
 State 218
 
-  119 primary_expression: "sqrt" "(" expression ")" •
+  118 primary_expression: "sqrt" "(" expression ")" •
 
-    $default  reduce using rule 119 (primary_expression)
+    $default  reduce using rule 118 (primary_expression)
 
 
 State 219
 
-  120 primary_expression: "abs" "(" expression ")" •
+  119 primary_expression: "abs" "(" expression ")" •
 
-    $default  reduce using rule 120 (primary_expression)
+    $default  reduce using rule 119 (primary_expression)
 
 
 State 220
 
-  121 primary_expression: "floor" "(" expression ")" •
+  120 primary_expression: "floor" "(" expression ")" •
 
-    $default  reduce using rule 121 (primary_expression)
+    $default  reduce using rule 120 (primary_expression)
 
 
 State 221
 
-  122 primary_expression: "random" "(" expression ")" •
+  121 primary_expression: "random" "(" expression ")" •
 
-    $default  reduce using rule 122 (primary_expression)
+    $default  reduce using rule 121 (primary_expression)
 
 
 State 222
@@ -4248,7 +4212,7 @@ State 223
 
    76 if_statement: "if" "(" expression ")" • statement_or_block_of_statements
    77             | "if" "(" expression ")" • statement_or_block_of_statements "else" statement_or_block_of_statements
-  123 primary_expression: "(" expression ")" •
+  122 primary_expression: "(" expression ")" •
 
     "if"          shift, and go to state 102
     "for"         shift, and go to state 103
@@ -4257,12 +4221,12 @@ State 223
     "{"           shift, and go to state 43
     "identifier"  shift, and go to state 92
 
-    "if"          [reduce using rule 123 (primary_expression)]
-    "for"         [reduce using rule 123 (primary_expression)]
-    "exit"        [reduce using rule 123 (primary_expression)]
-    "print"       [reduce using rule 123 (primary_expression)]
-    "identifier"  [reduce using rule 123 (primary_expression)]
-    $default      reduce using rule 123 (primary_expression)
+    "if"          [reduce using rule 122 (primary_expression)]
+    "for"         [reduce using rule 122 (primary_expression)]
+    "exit"        [reduce using rule 122 (primary_expression)]
+    "print"       [reduce using rule 122 (primary_expression)]
+    "identifier"  [reduce using rule 122 (primary_expression)]
+    $default      reduce using rule 122 (primary_expression)
 
     statement_or_block_of_statements  go to state 231
     statement_block                   go to state 232

@@ -353,6 +353,7 @@ if_statement:
     | T_IF expression statement  IF_NO_ELSE %prec IF_NO_ELSE
     | T_IF expression statement T_ELSE statement
 
+
 //---------------------------------------------------------------------
 for_statement:
     T_FOR T_LPAREN assign_statement_or_empty T_SEMIC expression T_SEMIC assign_statement_or_empty T_RPAREN statement_or_block_of_statements
@@ -408,11 +409,10 @@ expression:
     | expression T_MULTIPLY expression
     | expression T_DIVIDE expression
     | expression T_MOD expression
-    | T_MINUS  expression
+    | T_MINUS  expression %prec UNARY_OPS
     | T_NOT  expression
     | expression T_NEAR expression
     | expression T_TOUCHES expression
-    | T_MINUS expression %prec UNARY_OPS
 
 primary_expression:
     T_SIN T_LPAREN expression T_RPAREN
