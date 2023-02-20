@@ -162,7 +162,7 @@ extern int line_count;            // current line in the input; from record.l
 %left T_LESS T_GREATER T_LESS_EQUAL T_GREATER_EQUAL;
 %left T_EQUAL T_NOT_EQUAL;
 
-%nonassoc T_NEAR  T_TOUCHES  UNARY_OPS IF_NO_ELSE T_ELSE;
+%nonassoc T_NEAR T_TOUCHES UNARY_OPS IF_NO_ELSE T_ELSE;
 
 
 // Grammer rules

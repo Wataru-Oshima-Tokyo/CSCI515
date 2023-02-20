@@ -1,5 +1,6 @@
-double x;
 
+double x;
+string a;
 on leftarrow
 {
 
