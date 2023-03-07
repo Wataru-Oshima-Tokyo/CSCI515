@@ -26,6 +26,10 @@ std::string Symbol::get_name() const {
     return name_;
 }
 
+symboltype Symbol::get_value() const {
+    return value_;
+}
+
 int Symbol::get_count() const{
     return count_;
 }
@@ -42,6 +46,7 @@ Symbol::~Symbol() {
             break;
         case GPL::Type::INT:
             if (count_ == 0) {
+                
                 delete value_.int_pointer;
             }
             else {
@@ -57,7 +62,6 @@ Symbol::~Symbol() {
             }
             break;
         default:
-         assert(false);
             break;
     }
 }
@@ -125,6 +129,7 @@ std::ostream& operator<<(std::ostream& os, const Symbol& sym) {
     default:
         assert(false);
         break;
+
     }
     
     os << std::endl;

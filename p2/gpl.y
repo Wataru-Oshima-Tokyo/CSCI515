@@ -38,7 +38,7 @@ extern int line_count;            // current line in the input; from record.l
  double         union_double;
  GPL::Type      union_gpl_type;
 };
-
+%destructor { delete $$; } <union_string>
 
 // tokens declared here
 
@@ -196,6 +196,12 @@ declaration:
 variable_declaration:
     simple_type T_ID optional_initializer{
         Scope_manager& symtab = Scope_manager::instance();
+        if(symtab.defined_in_current_scope(*$2))
+        {
+            Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE,*$2);
+            delete $2;
+        break;
+        }
         switch($1){
             case GPL::INT :
                 {
@@ -205,13 +211,13 @@ variable_declaration:
                 break;
             case GPL::DOUBLE :
                 {
-                    double *dvalue = new double(3.14);  
+                    double *dvalue = new double(3.14159);  
                     symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue));
                 }
                 break;
             case GPL::STRING :
                 {
-                    std::string *svalue = new std::string("hello");  
+                    std::string *svalue = new std::string("Hello world");  
                     symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue));
                 }
                 break;
@@ -219,12 +225,27 @@ variable_declaration:
                 break;
 
         }
+        delete $2;
     }
     | simple_type T_ID T_LBRACKET T_INT_CONSTANT T_RBRACKET {
         Scope_manager& symtab = Scope_manager::instance();
+        if(symtab.defined_in_current_scope(*$2))
+        {
+            Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE,*$2);
+            delete $2;
+            break;
+        }
+        if($4 == 0)
+        {
+            Error::error(Error::INVALID_ARRAY_SIZE,*$2,std::to_string($4));
+            delete $2;
+            break;
+        }
+        
         switch($1){
             case GPL::INT :
                 {
+
                     int *ivalue = new int[$4];
                     for (int i=0; i< $4;i++){
                         ivalue[i] = 42;
@@ -236,7 +257,7 @@ variable_declaration:
                 {
                     double *dvalue = new double[$4];
                     for (int i=0; i< $4;i++){
-                        dvalue[i] = 3.14;
+                        dvalue[i] = 3.14159;
                     }
                     symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue,$4));
                 }
@@ -245,7 +266,7 @@ variable_declaration:
                 {
                     std::string *svalue = new std::string[$4];
                     for (int i=0; i< $4;i++){
-                        svalue[i] = "hello";
+                        svalue[i] = "Hello world";
                     }
                     symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue, $4));
                 }
@@ -254,6 +275,7 @@ variable_declaration:
                 break;
 
         }
+        delete $2;
     }
 
 
@@ -499,7 +521,7 @@ primary_expression:
     | T_TRUE
     | T_FALSE
     | T_DOUBLE_CONSTANT
-    | T_STRING_CONSTANT
+    | T_STRING_CONSTANT { delete $1; /*CHANGE*/}
     ;
 
 

@@ -33,10 +33,11 @@ using namespace std;
 
 int main()
 {
-  double* oneofem=new double(3.141592);
-  double* bunchofem=new double[4] {1.123, 2.234, 3.456, 7.899};
-  Symbol one("pi", oneofem);
-  Symbol two("racetimes", bunchofem, 4);
-  cout << two << endl;
-  cout << one << endl;
+  // double* oneofem=new double(3.141592);
+  // double* bunchofem=new double[4] {1.123, 2.234, 3.456, 7.899};
+  int *sample= new int(1);
+  Symbol one("pi", sample);
+  // Symbol two("racetimes", bunchofem, 4);
+  // cout << two << endl;
+  // cout << one << endl;
 }

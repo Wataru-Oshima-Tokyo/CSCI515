@@ -158,7 +158,7 @@ void illegal_token_error()
 [0-9]*\.[0-9]+([eE][-+]?[0-9]+)? {yylval.union_double = std::stof(yytext); return T_DOUBLE_CONSTANT; }
 \"([^\\\"\n]|\\.)*\"    {yytext[yyleng-1] = '\0';yylval.union_string = new std::string(yytext+1); return T_STRING_CONSTANT; }
 [a-zA-Z_][a-zA-Z0-9_]*   { yylval.union_string = new std::string(yytext); return T_ID; }
-[\n] { yylval.union_string = new std::string(yytext); line_count++;}
+[\n] { line_count++;}
 "print" { yylval.union_int = line_count; return T_PRINT; }
 "exit" { yylval.union_int = line_count; return T_EXIT; }
 \/\/.*

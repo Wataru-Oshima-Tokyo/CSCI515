@@ -37,6 +37,7 @@ class Symbol {
         friend std::ostream& operator<<(std::ostream& os, const Symbol& sym);
         Symbol(const Symbol&) = delete;
         Symbol& operator=(const Symbol&) = delete;
+        symboltype get_value() const;
         int get_count() const;
     private:
         GPL::Type type_;

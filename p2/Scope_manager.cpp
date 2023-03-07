@@ -2,7 +2,7 @@
 #include <stdexcept>
 
 // Static member variable definition
-Scope_manager* Scope_manager::instance_ = nullptr;
+// Scope_manager* Scope_manager::instance_ = nullptr;
 
 // Constructor
 Scope_manager::Scope_manager() {
@@ -12,10 +12,8 @@ Scope_manager::Scope_manager() {
 
 // Static member function for getting the singleton instance
 Scope_manager& Scope_manager::instance() {
-    if (instance_ == nullptr) {
-        instance_ = new Scope_manager;
-    }
-    return *instance_;
+    static Scope_manager instance_;
+    return instance_;
 }
 
 // Public member function for creating a new symbol table
@@ -56,8 +54,7 @@ bool Scope_manager::defined_in_current_scope(const std::string& name) {
 // Friend function for printing the scope manager
 std::ostream& operator<<(std::ostream& os, const Scope_manager& sh) {
     for (auto it = sh.tables_.rbegin(); it != sh.tables_.rend(); ++it) {
-        // os << "Symbol table: " << std::distance(it, sh.tables_.rend()) << std::endl;
-        // os << **it << std::endl;
+        os << **it;
     }
     return os;
 }
