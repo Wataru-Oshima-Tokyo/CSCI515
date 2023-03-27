@@ -47,10 +47,9 @@ extern int yydebug;
 /* "%code requires" blocks.  */
 #line 3 "gpl.y"
 
+  #include "Constant.h"
   #include <string>
   #include "Scope_manager.h"
-  #include "Constant.h"
-  #include "Expression.h"
   class Expression;
   class Variable;
   struct Parameter;
@@ -62,7 +61,7 @@ extern int yydebug;
     #include "Window.h"
   #endif
 
-#line 66 "gpl.tab.h"
+#line 65 "gpl.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -172,7 +171,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 37 "gpl.y"
+#line 36 "gpl.y"
 
  int            union_int;
  std::string*   union_string;  // MUST be a pointer to a string
@@ -180,7 +179,7 @@ union YYSTYPE
  GPL::Type      union_gpl_type;
  const Expression* union_expression_ptr;
 
-#line 184 "gpl.tab.h"
+#line 183 "gpl.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

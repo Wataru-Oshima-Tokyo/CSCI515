@@ -8,16 +8,3 @@ gpl.cpp::main()
 
 gpl.cpp::main() Calling yyparse()
 
-
-gpl.cpp::main() after call to yyparse().
-
-No errors found (parser probably worked correctly).
-
-
-Printing the symbol table from main()
-string a = "Hello world"
-string b = "Hello world"
-string c = "Hello world"
-Graphics is turned off by the Makefile.  Program exiting.
-
-gpl.cpp::main() done.

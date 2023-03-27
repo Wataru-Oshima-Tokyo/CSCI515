@@ -15,19 +15,19 @@ No errors found (parser probably worked correctly).
 
 
 Printing the symbol table from main()
-string aa = "Hello world"
-string ab = "Hello world"
-string ac = "Hello world"
-string ad = "Hello world"
-string ae = "Hello world"
-string af = "Hello world"
-string ag = "Hello world"
-string ah = "Hello world"
-string ai = "Hello world"
-string empty_string = "Hello world"
-string hello = "Hello world"
-string space_string = "Hello world"
-string world = "Hello world"
+string aa = "hello"
+string ab = "hello"
+string ac = ""
+string ad = ""
+string ae = ""
+string af = ""
+string ag = ""
+string ah = ""
+string ai = ""
+string empty_string = ""
+string hello = "hello"
+string space_string = " "
+string world = "world"
 Graphics is turned off by the Makefile.  Program exiting.
 
 gpl.cpp::main() done.

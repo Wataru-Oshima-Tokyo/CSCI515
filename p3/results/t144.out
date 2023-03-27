@@ -8,3 +8,114 @@ gpl.cpp::main()
 
 gpl.cpp::main() Calling yyparse()
 
+
+gpl.cpp::main() after call to yyparse().
+
+No errors found (parser probably worked correctly).
+
+
+Printing the symbol table from main()
+int i = 0
+int nums[0] = 42
+int nums[1] = 42
+int nums[2] = 42
+int nums[3] = 42
+int nums[4] = 42
+int nums[5] = 42
+int nums[6] = 42
+int nums[7] = 42
+int nums[8] = 42
+int nums[9] = 42
+int nums[10] = 42
+int nums[11] = 42
+int nums[12] = 42
+int nums[13] = 42
+int nums[14] = 42
+int nums[15] = 42
+int nums[16] = 42
+int nums[17] = 42
+int nums[18] = 42
+int nums[19] = 42
+int nums[20] = 42
+int nums[21] = 42
+int nums[22] = 42
+int nums[23] = 42
+int nums[24] = 42
+int nums[25] = 42
+int nums[26] = 42
+int nums[27] = 42
+int nums[28] = 42
+int nums[29] = 42
+int nums[30] = 42
+int nums[31] = 42
+int nums[32] = 42
+int nums[33] = 42
+int nums[34] = 42
+int nums[35] = 42
+int nums[36] = 42
+int nums[37] = 42
+int nums[38] = 42
+int nums[39] = 42
+int nums[40] = 42
+int nums[41] = 42
+int nums[42] = 42
+int nums[43] = 42
+int nums[44] = 42
+int nums[45] = 42
+int nums[46] = 42
+int nums[47] = 42
+int nums[48] = 42
+int nums[49] = 42
+int nums[50] = 42
+int nums[51] = 42
+int nums[52] = 42
+int nums[53] = 42
+int nums[54] = 42
+int nums[55] = 42
+int nums[56] = 42
+int nums[57] = 42
+int nums[58] = 42
+int nums[59] = 42
+int nums[60] = 42
+int nums[61] = 42
+int nums[62] = 42
+int nums[63] = 42
+int nums[64] = 42
+int nums[65] = 42
+int nums[66] = 42
+int nums[67] = 42
+int nums[68] = 42
+int nums[69] = 42
+int nums[70] = 42
+int nums[71] = 42
+int nums[72] = 42
+int nums[73] = 42
+int nums[74] = 42
+int nums[75] = 42
+int nums[76] = 42
+int nums[77] = 42
+int nums[78] = 42
+int nums[79] = 42
+int nums[80] = 42
+int nums[81] = 42
+int nums[82] = 42
+int nums[83] = 42
+int nums[84] = 42
+int nums[85] = 42
+int nums[86] = 42
+int nums[87] = 42
+int nums[88] = 42
+int nums[89] = 42
+int nums[90] = 42
+int nums[91] = 42
+int nums[92] = 42
+int nums[93] = 42
+int nums[94] = 42
+int nums[95] = 42
+int nums[96] = 42
+int nums[97] = 42
+int nums[98] = 42
+int nums[99] = 42
+Graphics is turned off by the Makefile.  Program exiting.
+
+gpl.cpp::main() done.

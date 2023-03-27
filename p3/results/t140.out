@@ -21,8 +21,8 @@ double double_array[2] = 3.14159
 int int_array[0] = 42
 int int_array[1] = 42
 int int_array[2] = 42
-string s_double = "Hello world"
-string s_int = "Hello world"
+string s_double = ""
+string s_int = ""
 Graphics is turned off by the Makefile.  Program exiting.
 
 gpl.cpp::main() done.

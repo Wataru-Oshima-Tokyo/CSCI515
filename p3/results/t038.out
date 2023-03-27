@@ -15,11 +15,11 @@ No errors found (parser probably worked correctly).
 
 
 Printing the symbol table from main()
-string c = "Hello world"
-string f = "Hello world"
-string g = "Hello world"
-string h = "Hello world"
-string i = "Hello world"
+string c = "7"
+string f = "12.500000"
+string g = "bobbing"
+string h = "bobbing"
+string i = "bobbing"
 Graphics is turned off by the Makefile.  Program exiting.
 
 gpl.cpp::main() done.

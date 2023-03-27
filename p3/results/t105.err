@@ -1,0 +1,3 @@
+Semantic error on line 5: Incorrect type (double) for initial value of variable 'e' of type (int).
+Semantic error on line 6: Incorrect type (double) for initial value of variable 'f' of type (int).
+Semantic error on line 8: Incorrect type (double) for initial value of variable 'h' of type (int).

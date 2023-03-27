@@ -8,3 +8,24 @@ gpl.cpp::main()
 
 gpl.cpp::main() Calling yyparse()
 
+
+gpl.cpp::main() after call to yyparse().
+
+No errors found (parser probably worked correctly).
+
+
+Printing the symbol table from main()
+int steps[0] = 42
+int steps[1] = 42
+int steps[2] = 42
+int steps[3] = 42
+int steps[4] = 42
+int steps[5] = 42
+int steps[6] = 42
+int steps[7] = 42
+int steps[8] = 42
+int steps[9] = 42
+int x = 0
+Graphics is turned off by the Makefile.  Program exiting.
+
+gpl.cpp::main() done.

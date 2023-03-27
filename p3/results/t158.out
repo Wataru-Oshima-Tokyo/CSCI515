@@ -15,11 +15,11 @@ No errors found (parser probably worked correctly).
 
 
 Printing the symbol table from main()
-string s = "Hello world"
-string str = "Hello world"
-double x = 3.14159
-double y = 3.14159
-double z = 3.14159
+string s = ""
+string str = "-- a string --"
+double x = 1.2
+double y = 1.3
+double z = 0
 Graphics is turned off by the Makefile.  Program exiting.
 
 gpl.cpp::main() done.

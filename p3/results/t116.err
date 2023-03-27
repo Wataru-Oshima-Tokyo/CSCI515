@@ -1,0 +1,1 @@
+Semantic error on line 3: Incorrect type (string) for initial value of variable 'result_should_be_0' of type (int).

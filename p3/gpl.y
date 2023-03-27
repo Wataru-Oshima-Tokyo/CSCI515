@@ -1,10 +1,9 @@
 // Mon Apr 27 16:03:16 PDT 2020
 // bison syntax indicating C++ declarations required by both the parser and scanner
 %code requires {
+  #include "Constant.h"
   #include <string>
   #include "Scope_manager.h"
-  #include "Constant.h"
-  #include "Expression.h"
   class Expression;
   class Variable;
   struct Parameter;
@@ -208,42 +207,58 @@ variable_declaration:
             delete $2;
         break;
         }
-        switch($1){
-            case GPL::INT :
-                {
-                    if ($3 != nullptr) {
-                        const Constant* const_value = $3->evaluate();
-                        // Integer_constant ivalue(const_value->as_int());
-                        // const_value->as_int();
-                        // std::cout << a << std::endl;
-
-                        // int* ivalue = new int(0);
-                        // int* ivalue = new int(0);
-                        // symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue));
-                    } else {
-                        int *ivalue = new int(0);  
-                        symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue));
+        try{
+            switch($1){
+                case GPL::INT :
+                    {
+                        if ($3 != nullptr) {
+                            const Constant* const_value = $3->evaluate();// This causes the error (seg fault error)
+                            int* ivalue = new int(const_value->as_int());
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue));
+                        } else {
+                            int *ivalue = new int(0);  
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue));
+                        }
+                        
                     }
-   
-                }
-                break;
-            case GPL::DOUBLE :
-                {
-                    double *dvalue = new double(3.14159);  
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue));
-                }
-                break;
-            case GPL::STRING :
-                {
-                    std::string *svalue = new std::string("Hello world");  
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue));
-                }
-                break;
-            default:
-                break;
+                    break;
+                case GPL::DOUBLE :
+                    {
+                        if ($3 != nullptr) {
+                            const Constant* const_value = $3->evaluate();
+                            double* dvalue = new double(const_value->as_double());
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue));
+                        }else{
+                            double *dvalue = new double(0.0); 
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue));
+                        }
+                        
+                    }
+                    break;
+                case GPL::STRING :
+                    {
+                        if ($3 != nullptr) {
+                            const Constant* const_value = $3->evaluate();
+                            std::string* svalue = new std::string(const_value->as_string());
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue));
+                        }else{
+                            std::string *svalue = new std::string("");
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue)); 
+                        }
+                        
+                    }
+                    break;
+                default:
+                    break;
 
+            }
+            
+        }catch(GPL::Type errorneous_type){
+            Error::error(Error::INVALID_TYPE_FOR_INITIAL_VALUE, GPL::to_string(errorneous_type), *$2, GPL::to_string($1));
         }
         delete $2;
+        delete $3;
+
     }
     | simple_type T_ID T_LBRACKET T_INT_CONSTANT T_RBRACKET {
         Scope_manager& symtab = Scope_manager::instance();
@@ -307,9 +322,9 @@ simple_type:
 
 //---------------------------------------------------------------------
 optional_initializer:
-    T_ASSIGN expression 
-    | %empty  {$$=nullptr;}         
-
+    T_ASSIGN expression  {$$=$2;}
+    | %empty  {$$=nullptr;}   
+  
 
 //---------------------------------------------------------------------
 object_declaration:
@@ -501,7 +516,7 @@ expression:
     primary_expression {$$=$1;}
 
 expression:
-    expression T_OR expression
+    expression T_OR expression 
     | expression T_AND expression
     | expression T_LESS_EQUAL expression
     | expression T_GREATER_EQUAL  expression
@@ -537,13 +552,10 @@ primary_expression:
     T_LPAREN  expression T_RPAREN {$$=nullptr; /*CHANGE*/}
     | variable {$$=nullptr; /*CHANGE*/}
     | T_INT_CONSTANT { $$=new Integer_constant($1);}
-    | T_TRUE
+    | T_TRUE 
     | T_FALSE
-    | T_DOUBLE_CONSTANT
-    | T_STRING_CONSTANT { delete $1; /*CHANGE*/}
+    | T_DOUBLE_CONSTANT { $$=new Double_constant($1);}
+    | T_STRING_CONSTANT { $$=new String_constant(*$1); delete $1;}
     ;
-
-
-
 
 %%
