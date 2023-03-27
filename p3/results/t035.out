@@ -16,9 +16,9 @@ No errors found (parser probably worked correctly).
 
 Printing the symbol table from main()
 double a = 3
-double b = 1.7
-double d = 6.3
-double e = 3
+double b = 1.66667
+double d = 6.25
+double e = 2.97619
 Graphics is turned off by the Makefile.  Program exiting.
 
 gpl.cpp::main() done.

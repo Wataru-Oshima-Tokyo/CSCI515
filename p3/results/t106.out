@@ -11,5 +11,13 @@ gpl.cpp::main() Calling yyparse()
 
 gpl.cpp::main() after call to yyparse().
 
-1 error found.
-gpl giving up.
+No errors found (parser probably worked correctly).
+
+
+Printing the symbol table from main()
+int a = 1
+double b = 1
+string c = "1"
+Graphics is turned off by the Makefile.  Program exiting.
+
+gpl.cpp::main() done.

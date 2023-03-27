@@ -65,4 +65,77 @@ class Modulus : public Binary_operator {
     virtual GPL::Type type() const;
 };
 
+class OR : public Binary_operator {
+  public:
+    OR(const Expression* lhs, const Expression* rhs) : Binary_operator(lhs, rhs){};
+    virtual const Constant* evaluate() const;
+    virtual GPL::Type type() const;
+};
+
+class AND : public Binary_operator {
+  public:
+    AND(const Expression* lhs, const Expression* rhs) : Binary_operator(lhs, rhs){};
+    virtual const Constant* evaluate() const;
+    virtual GPL::Type type() const;
+};
+
+
+
+class LESS : public Binary_operator {
+  public:
+    LESS(const Expression* lhs, const Expression* rhs) : Binary_operator(lhs, rhs){};
+    virtual const Constant* evaluate() const;
+    virtual GPL::Type type() const;
+};
+
+
+class LESS_EQUAL : public Binary_operator {
+  public:
+    LESS_EQUAL(const Expression* lhs, const Expression* rhs) : Binary_operator(lhs, rhs){};
+    virtual const Constant* evaluate() const;
+    virtual GPL::Type type() const;
+};
+
+class GREATER : public Binary_operator {
+  public:
+    GREATER(const Expression* lhs, const Expression* rhs) : Binary_operator(lhs, rhs){};
+    virtual const Constant* evaluate() const;
+    virtual GPL::Type type() const;
+};
+
+class GREATER_EQUAL : public Binary_operator {
+  public:
+    GREATER_EQUAL(const Expression* lhs, const Expression* rhs) : Binary_operator(lhs, rhs){};
+    virtual const Constant* evaluate() const;
+    virtual GPL::Type type() const;
+};
+
+
+
+
+class EQUAL : public Binary_operator {
+  public:
+    EQUAL(const Expression* lhs, const Expression* rhs) : Binary_operator(lhs, rhs){};
+    virtual const Constant* evaluate() const;
+    virtual GPL::Type type() const;
+};
+
+class NOT_EQUAL : public Binary_operator {
+  public:
+    NOT_EQUAL(const Expression* lhs, const Expression* rhs) : Binary_operator(lhs, rhs){};
+    virtual const Constant* evaluate() const;
+    virtual GPL::Type type() const;
+};
+
+
+class NEGATIVE : public Binary_operator {
+  public:
+    NEGATIVE(const Expression* lhs, const Expression* rhs) : Binary_operator(lhs, rhs){};
+    virtual const Constant* evaluate() const;
+    virtual GPL::Type type() const;
+};
+
+
+
+
 #endif

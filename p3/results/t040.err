@@ -1,4 +1,6 @@
-Semantic error on line 2: Incorrect type (double) for initial value of variable 'f' of type (int).
-Semantic error on line 3: Incorrect type (string) for initial value of variable 'g' of type (int).
-Semantic error on line 4: Incorrect type (string) for initial value of variable 'h' of type (int).
-Semantic error on line 5: Incorrect type (string) for initial value of variable 'i' of type (int).
+Semantic error on line 1: Invalid right operand for operator '||'.
+Semantic error on line 2: Invalid right operand for operator '||'.
+Semantic error on line 3: Invalid left operand for operator '||'.
+Semantic error on line 4: Invalid left operand for operator '||'.
+Semantic error on line 5: Invalid left operand for operator '||'.
+Semantic error on line 5: Invalid right operand for operator '||'.

@@ -516,20 +516,20 @@ expression:
     primary_expression {$$=$1;}
 
 expression:
-    expression T_OR expression 
-    | expression T_AND expression
-    | expression T_LESS_EQUAL expression
-    | expression T_GREATER_EQUAL  expression
-    | expression T_LESS expression
-    | expression T_GREATER  expression
-    | expression T_EQUAL expression
-    | expression T_NOT_EQUAL expression
+    expression T_OR expression { $$=new OR($1, $3); }
+    | expression T_AND expression { $$=new AND($1, $3); }
+    | expression T_LESS_EQUAL expression { $$=new LESS_EQUAL($1, $3); }
+    | expression T_GREATER_EQUAL  expression { $$=new GREATER_EQUAL($1, $3); }
+    | expression T_LESS expression { $$=new LESS($1, $3); }
+    | expression T_GREATER  expression { $$=new GREATER($1, $3); }
+    | expression T_EQUAL expression  { $$=new EQUAL($1, $3); }
+    | expression T_NOT_EQUAL expression { $$=new NOT_EQUAL($1, $3); }
     | expression T_PLUS expression { $$=new Plus($1, $3); }
     | expression T_MINUS expression { $$=new Minus($1, $3); }
     | expression T_MULTIPLY expression { $$=new Multiply($1, $3); }
     | expression T_DIVIDE expression { $$=new Divide($1, $3); }
     | expression T_MOD expression { $$=new Modulus($1, $3); }
-    | T_MINUS  expression %prec UNARY_OPS
+    | T_MINUS  expression %prec UNARY_OPS { $$=new NEGATIVE(-1, $2); }
     | T_NOT  expression
     | expression T_NEAR expression
     | expression T_TOUCHES expression
