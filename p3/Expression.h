@@ -43,4 +43,26 @@ class Multiply : public Binary_operator {
     virtual const Constant* evaluate() const;
     virtual GPL::Type type() const;
 };
+
+class Minus : public Binary_operator {
+  public:
+    Minus(const Expression* lhs, const Expression* rhs) : Binary_operator(lhs, rhs){};
+    virtual const Constant* evaluate() const;
+    virtual GPL::Type type() const;
+};
+
+class Divide : public Binary_operator {
+  public:
+    Divide(const Expression* lhs, const Expression* rhs) : Binary_operator(lhs, rhs){};
+    virtual const Constant* evaluate() const;
+    virtual GPL::Type type() const;
+};
+
+class Modulus : public Binary_operator {
+  public:
+    Modulus(const Expression* lhs, const Expression* rhs) : Binary_operator(lhs, rhs){};
+    virtual const Constant* evaluate() const;
+    virtual GPL::Type type() const;
+};
+
 #endif

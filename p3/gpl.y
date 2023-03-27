@@ -524,11 +524,11 @@ expression:
     | expression T_GREATER  expression
     | expression T_EQUAL expression
     | expression T_NOT_EQUAL expression
-    | expression T_PLUS expression
-    | expression T_MINUS expression
-    | expression T_MULTIPLY expression
-    | expression T_DIVIDE expression
-    | expression T_MOD expression
+    | expression T_PLUS expression { $$=new Plus($1, $3); }
+    | expression T_MINUS expression { $$=new Minus($1, $3); }
+    | expression T_MULTIPLY expression { $$=new Multiply($1, $3); }
+    | expression T_DIVIDE expression { $$=new Divide($1, $3); }
+    | expression T_MOD expression { $$=new Modulus($1, $3); }
     | T_MINUS  expression %prec UNARY_OPS
     | T_NOT  expression
     | expression T_NEAR expression

@@ -1894,38 +1894,68 @@ yyreduce:
 #line 1895 "gpl.tab.c"
     break;
 
+  case 104: /* expression: expression "+" expression  */
+#line 527 "gpl.y"
+                                   { (yyval.union_expression_ptr)=new Plus((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr)); }
+#line 1901 "gpl.tab.c"
+    break;
+
+  case 105: /* expression: expression "-" expression  */
+#line 528 "gpl.y"
+                                    { (yyval.union_expression_ptr)=new Minus((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr)); }
+#line 1907 "gpl.tab.c"
+    break;
+
+  case 106: /* expression: expression "*" expression  */
+#line 529 "gpl.y"
+                                       { (yyval.union_expression_ptr)=new Multiply((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr)); }
+#line 1913 "gpl.tab.c"
+    break;
+
+  case 107: /* expression: expression "/" expression  */
+#line 530 "gpl.y"
+                                     { (yyval.union_expression_ptr)=new Divide((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr)); }
+#line 1919 "gpl.tab.c"
+    break;
+
+  case 108: /* expression: expression "%" expression  */
+#line 531 "gpl.y"
+                                  { (yyval.union_expression_ptr)=new Modulus((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr)); }
+#line 1925 "gpl.tab.c"
+    break;
+
   case 123: /* primary_expression: "(" expression ")"  */
 #line 552 "gpl.y"
                                   {(yyval.union_expression_ptr)=nullptr; /*CHANGE*/}
-#line 1901 "gpl.tab.c"
+#line 1931 "gpl.tab.c"
     break;
 
   case 124: /* primary_expression: variable  */
 #line 553 "gpl.y"
                {(yyval.union_expression_ptr)=nullptr; /*CHANGE*/}
-#line 1907 "gpl.tab.c"
+#line 1937 "gpl.tab.c"
     break;
 
   case 125: /* primary_expression: "int constant"  */
 #line 554 "gpl.y"
                      { (yyval.union_expression_ptr)=new Integer_constant((yyvsp[0].union_int));}
-#line 1913 "gpl.tab.c"
+#line 1943 "gpl.tab.c"
     break;
 
   case 128: /* primary_expression: "double constant"  */
 #line 557 "gpl.y"
                         { (yyval.union_expression_ptr)=new Double_constant((yyvsp[0].union_double));}
-#line 1919 "gpl.tab.c"
+#line 1949 "gpl.tab.c"
     break;
 
   case 129: /* primary_expression: "string constant"  */
 #line 558 "gpl.y"
                         { (yyval.union_expression_ptr)=new String_constant(*(yyvsp[0].union_string)); delete (yyvsp[0].union_string);}
-#line 1925 "gpl.tab.c"
+#line 1955 "gpl.tab.c"
     break;
 
 
-#line 1929 "gpl.tab.c"
+#line 1959 "gpl.tab.c"
 
       default: break;
     }

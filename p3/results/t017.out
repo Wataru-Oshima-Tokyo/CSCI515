@@ -15,10 +15,10 @@ No errors found (parser probably worked correctly).
 
 
 Printing the symbol table from main()
-double a = 7
-double b = 7
-double d = 12.5
-double e = 12.5
+double a = 14
+double b = 29.4
+double d = 25
+double e = 52.5
 Graphics is turned off by the Makefile.  Program exiting.
 
 gpl.cpp::main() done.
