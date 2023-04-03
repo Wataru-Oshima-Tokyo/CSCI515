@@ -8,3 +8,17 @@ gpl.cpp::main()
 
 gpl.cpp::main() Calling yyparse()
 
+
+gpl.cpp::main() after call to yyparse().
+
+No errors found (parser probably worked correctly).
+
+
+Printing the symbol table from main()
+double d = 0.122785
+double e = 0.221695
+string g = "0.122785"
+string h = "0.221695"
+Graphics is turned off by the Makefile.  Program exiting.
+
+gpl.cpp::main() done.

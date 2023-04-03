@@ -8,6 +8,13 @@ gpl.cpp::main()
 
 gpl.cpp::main() Calling yyparse()
 
+lhs:2 rhs: 0.25
+lhs:2 rhs: 0.5
+lhs:2 rhs: 0.5
+lhs:2 rhs: 0.25
+lhs:2 rhs: 1
+lhs:0.25 rhs: 1
+lhs:0.25 rhs: 1
 
 gpl.cpp::main() after call to yyparse().
 

@@ -1,1 +1,1 @@
-Parse error on line 3 reported by parser: syntax error, unexpected +, expecting ].
+Semantic error on line 3: The given expression is not a legal type for the size of array <my_values>.  The size must be an integer.  Given expression is of type string.

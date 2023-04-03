@@ -39,6 +39,7 @@ extern int line_count;            // current line in the input; from record.l
  double         union_double;
  GPL::Type      union_gpl_type;
  const Expression* union_expression_ptr;
+ const Variable* union_variable_ptr;
 };
 %destructor { delete $$; } <union_string>
 
@@ -163,6 +164,7 @@ extern int line_count;            // current line in the input; from record.l
 %type <union_expression_ptr> primary_expression;
 %type <union_expression_ptr> expression;
 %type <union_expression_ptr> optional_initializer;
+%type <union_variable_ptr> variable;
 // Add the %nonassoc directive for the non-associative operators
 
   
@@ -205,15 +207,18 @@ variable_declaration:
         {
             Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE,*$2);
             delete $2;
-        break;
+            break;
         }
         try{
             switch($1){
                 case GPL::INT :
                     {
                         if ($3 != nullptr) {
-                            const Constant* const_value = $3->evaluate();// This causes the error (seg fault error)
-                            int* ivalue = new int(const_value->as_int());
+                            const Constant* const_value = $3->evaluate();
+                            // int* ivalue = new int(static_cast<int>(const_value->as_double()));
+                            
+                            int* ivalue =  new int(const_value->as_int());
+                            
                             symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue));
                         } else {
                             int *ivalue = new int(0);  
@@ -227,6 +232,8 @@ variable_declaration:
                         if ($3 != nullptr) {
                             const Constant* const_value = $3->evaluate();
                             double* dvalue = new double(const_value->as_double());
+                            
+                            // double* dvalue = new double(const_value->as_double());
                             symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue));
                         }else{
                             double *dvalue = new double(0.0); 
@@ -254,13 +261,14 @@ variable_declaration:
             }
             
         }catch(GPL::Type errorneous_type){
+            
             Error::error(Error::INVALID_TYPE_FOR_INITIAL_VALUE, GPL::to_string(errorneous_type), *$2, GPL::to_string($1));
         }
         delete $2;
         delete $3;
 
     }
-    | simple_type T_ID T_LBRACKET T_INT_CONSTANT T_RBRACKET {
+    | simple_type T_ID T_LBRACKET expression T_RBRACKET {
         Scope_manager& symtab = Scope_manager::instance();
         if(symtab.defined_in_current_scope(*$2))
         {
@@ -268,47 +276,57 @@ variable_declaration:
             delete $2;
             break;
         }
-        if($4 == 0)
-        {
-            Error::error(Error::INVALID_ARRAY_SIZE,*$2,std::to_string($4));
-            delete $2;
-            break;
-        }
-        
+
+        try{
+            int* array_size = new int($4->evaluate()->as_int());
+            if(*array_size <= 0)
+            {
+                Error::error(Error::INVALID_ARRAY_SIZE, *$2,std::to_string(*array_size));
+                delete $2;
+                break;
+            }    
         switch($1){
             case GPL::INT :
                 {
 
-                    int *ivalue = new int[$4];
-                    for (int i=0; i< $4;i++){
-                        ivalue[i] = 42;
+                    int *ivalue = new int[*array_size];
+                    for (int i=0; i<*array_size;i++){
+                        ivalue[i] = 0;
                     }
-                     symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue, $4));
+                     symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue, *array_size));
                 }
                 break;
             case GPL::DOUBLE :
                 {
-                    double *dvalue = new double[$4];
-                    for (int i=0; i< $4;i++){
-                        dvalue[i] = 3.14159;
+                    double *dvalue = new double[*array_size];
+                    for (int i=0; i< *array_size;i++){
+                        dvalue[i] = 0.0;
                     }
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue,$4));
+                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue,*array_size));
                 }
                 break;
             case GPL::STRING :
                 {
-                    std::string *svalue = new std::string[$4];
-                    for (int i=0; i< $4;i++){
-                        svalue[i] = "Hello world";
+                    std::string *svalue = new std::string[*array_size];
+                    for (int i=0; i< *array_size;i++){
+                        svalue[i] = "";
                     }
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue, $4));
+                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue, *array_size));
                 }
                 break;
             default:
                 break;
 
         }
+        }catch(GPL::Type errorneous_type){
+            Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, GPL::to_string(errorneous_type), *$2, "a");
+
+            // Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, *$2, "111");           
+            delete $2;
+            break;
+        }
         delete $2;
+        
     }
 
 
@@ -505,8 +523,25 @@ assign_statement:
 
 //---------------------------------------------------------------------
 variable:
-    T_ID
-    | T_ID T_LBRACKET expression T_RBRACKET
+    T_ID {
+        auto symbol_ptr = Scope_manager::instance().lookup(*$1);
+        if (symbol_ptr == nullptr) {
+            $$ = new Variable("");
+        } else {
+            $$ = new Variable(*$1);
+        }
+        
+    }
+    | T_ID T_LBRACKET expression T_RBRACKET { //array
+        auto symbol_ptr = Scope_manager::instance().lookup(*$1);
+        if (symbol_ptr == nullptr) {
+            std::cerr << "Error: undefined symbol " << *$1 << std::endl;
+            $$ = new Variable("");
+        } else {
+            
+            $$ = new Variable(*$1, $3);
+        }
+    }
     | T_ID T_PERIOD T_ID
     | T_ID T_LBRACKET expression T_RBRACKET T_PERIOD T_ID
 
@@ -529,31 +564,31 @@ expression:
     | expression T_MULTIPLY expression { $$=new Multiply($1, $3); }
     | expression T_DIVIDE expression { $$=new Divide($1, $3); }
     | expression T_MOD expression { $$=new Modulus($1, $3); }
-    | T_MINUS  expression %prec UNARY_OPS { $$=new NEGATIVE(-1, $2); }
-    | T_NOT  expression
+    | T_MINUS  expression %prec UNARY_OPS { $$=new NEGATIVE($2); }
+    | T_NOT  expression { $$=new NOT($2); }
     | expression T_NEAR expression
     | expression T_TOUCHES expression
 
 primary_expression:
-    T_SIN T_LPAREN expression T_RPAREN
-    | T_COS T_LPAREN expression T_RPAREN
-    | T_TAN T_LPAREN expression T_RPAREN
-    | T_ASIN T_LPAREN expression T_RPAREN
-    | T_ACOS T_LPAREN expression T_RPAREN
-    | T_ATAN T_LPAREN expression T_RPAREN
-    | T_SQRT T_LPAREN expression T_RPAREN
-    | T_ABS T_LPAREN expression T_RPAREN
-    | T_FLOOR T_LPAREN expression T_RPAREN
-    | T_RANDOM T_LPAREN expression T_RPAREN
+    T_SIN T_LPAREN expression T_RPAREN { $$=new SIN($3); }
+    | T_COS T_LPAREN expression T_RPAREN { $$=new COS($3); }
+    | T_TAN T_LPAREN expression T_RPAREN { $$=new TAN($3); }
+    | T_ASIN T_LPAREN expression T_RPAREN { $$=new ASIN($3); }
+    | T_ACOS T_LPAREN expression T_RPAREN { $$=new ACOS($3); }
+    | T_ATAN T_LPAREN expression T_RPAREN { $$=new ATAN($3); }
+    | T_SQRT T_LPAREN expression T_RPAREN { $$=new SQRT($3); }
+    | T_ABS T_LPAREN expression T_RPAREN { $$=new ABS($3); }
+    | T_FLOOR T_LPAREN expression T_RPAREN { $$=new FLOOR($3); }
+    | T_RANDOM T_LPAREN expression T_RPAREN { $$=new RANDOM($3); }
 
 
 //---------------------------------------------------------------------
 primary_expression:
-    T_LPAREN  expression T_RPAREN {$$=nullptr; /*CHANGE*/}
-    | variable {$$=nullptr; /*CHANGE*/}
+    T_LPAREN  expression T_RPAREN {$$=$2; /*CHANGE*/}
+    | variable {$$=$1;}
     | T_INT_CONSTANT { $$=new Integer_constant($1);}
-    | T_TRUE 
-    | T_FALSE
+    | T_TRUE {$$=nullptr; /*CHANGE*/}
+    | T_FALSE {$$=nullptr; /*CHANGE*/}
     | T_DOUBLE_CONSTANT { $$=new Double_constant($1);}
     | T_STRING_CONSTANT { $$=new String_constant(*$1); delete $1;}
     ;

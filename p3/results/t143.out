@@ -8,6 +8,9 @@ gpl.cpp::main()
 
 gpl.cpp::main() Calling yyparse()
 
+Int: 10
+Int: 20
+Int: 30
 
 gpl.cpp::main() after call to yyparse().
 
@@ -17,17 +20,17 @@ No errors found (parser probably worked correctly).
 Printing the symbol table from main()
 double d = 0
 int i = 0
-int nums[0] = 42
-int nums[1] = 42
-int nums[2] = 42
-int nums[3] = 42
-int nums[4] = 42
-int nums[5] = 42
-int nums[6] = 42
-int nums[7] = 42
-int nums[8] = 42
-int nums[9] = 42
-string s = ""
+int nums[0] = 0
+int nums[1] = 0
+int nums[2] = 0
+int nums[3] = 0
+int nums[4] = 0
+int nums[5] = 0
+int nums[6] = 0
+int nums[7] = 0
+int nums[8] = 0
+int nums[9] = 0
+string s = "0"
 Graphics is turned off by the Makefile.  Program exiting.
 
 gpl.cpp::main() done.

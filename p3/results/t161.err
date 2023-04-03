@@ -1,1 +1,2 @@
 Semantic error on line 8: Incorrect type (double) for initial value of variable 'some_number' of type (int).
+Error: undefined symbol some_number

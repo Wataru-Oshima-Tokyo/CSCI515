@@ -178,8 +178,9 @@ union YYSTYPE
  double         union_double;
  GPL::Type      union_gpl_type;
  const Expression* union_expression_ptr;
+ const Variable* union_variable_ptr;
 
-#line 183 "gpl.tab.h"
+#line 184 "gpl.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -1,1 +1,2 @@
 Semantic error on line 8: Incorrect type (string) for initial value of variable 'some_measurement' of type (double).
+Error: undefined symbol some_measurement

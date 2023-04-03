@@ -15,6 +15,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Symbol_table& symtab);
     Symbol_table(const Symbol_table&) = delete;
     Symbol_table& operator=(const Symbol_table&) = delete;
+    
 
 private:
     std::unordered_map<std::string, std::shared_ptr<Symbol>> symbols;

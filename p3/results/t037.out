@@ -18,7 +18,7 @@ Printing the symbol table from main()
 string a = "3"
 string b = "1.666667"
 string d = "6.250000"
-string e = "2.976191"
+string e = "2.976190"
 Graphics is turned off by the Makefile.  Program exiting.
 
 gpl.cpp::main() done.

@@ -1,5 +1,6 @@
 #include "Symbol.h"
-   
+#include "Constant.h"
+
 Symbol::Symbol(const std::string& name, double* value) : 
     type_{ GPL::Type::DOUBLE }, name_{ name }, value_{ symboltype(value) }, count_{ 0 } {}
 
@@ -130,3 +131,33 @@ std::ostream& operator<<(std::ostream& os, const Symbol& sym) {
     os << std::endl;
     return os;
 }
+const Constant* Symbol::as_constant() const {
+    switch (type_) {
+        case GPL::Type::INT:
+            return new Integer_constant(*value_.int_pointer);
+        case GPL::Type::DOUBLE:
+            return new Double_constant(*value_.double_pointer);
+        case GPL::Type::STRING:
+            return new String_constant(*value_.string_pointer);
+        default:
+            throw type_;
+    }
+}
+
+const Constant* Symbol::as_constant(int index) const {
+    if (index < 0 || index >= count_) {
+        return nullptr;
+    }
+    //ToDo: I need to change for array
+    switch (type_) {
+        case GPL::Type::INT:
+            return new Integer_constant(*value_.int_pointer);
+        case GPL::Type::DOUBLE:
+            return new Double_constant(*value_.double_pointer);
+        case GPL::Type::STRING:
+            return new String_constant(*value_.string_pointer);
+        default:
+            throw type_;
+    }
+}
+

@@ -23,6 +23,7 @@ public:
     // Prevent compiler-generated functions
     Scope_manager(const Scope_manager&) = delete;
     Scope_manager& operator=(const Scope_manager&) = delete;
+    
 
 private:
     // Private constructor for creating the singleton

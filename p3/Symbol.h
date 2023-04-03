@@ -7,7 +7,7 @@
 #include "types_and_ops.h"
 #include <assert.h>
 
-
+class Constant;
 union symboltype{
         double *double_pointer;
         int *int_pointer;
@@ -29,6 +29,7 @@ class Symbol {
         Symbol(const std::string& name, int* value, int count);
         Symbol(const std::string& name, std::string* value);
         Symbol(const std::string& name, std::string* value, int count);
+        // here??
 
         
         GPL::Type get_type() const;
@@ -38,6 +39,9 @@ class Symbol {
         Symbol(const Symbol&) = delete;
         Symbol& operator=(const Symbol&) = delete;
         int get_count() const;
+        //↓here?
+        const Constant* as_constant() const;          //Symbol value is not an array
+        const Constant* as_constant(int index) const; //Symbol value is an array
     private:
         GPL::Type type_;
         std::string name_;

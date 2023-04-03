@@ -15,14 +15,14 @@ No errors found (parser probably worked correctly).
 
 
 Printing the symbol table from main()
-double double_array[0] = 3.14159
-double double_array[1] = 3.14159
-double double_array[2] = 3.14159
-int int_array[0] = 42
-int int_array[1] = 42
-int int_array[2] = 42
-string s_double = ""
-string s_int = ""
+double double_array[0] = 0
+double double_array[1] = 0
+double double_array[2] = 0
+int int_array[0] = 0
+int int_array[1] = 0
+int int_array[2] = 0
+string s_double = "0.000000"
+string s_int = "0"
 Graphics is turned off by the Makefile.  Program exiting.
 
 gpl.cpp::main() done.

@@ -1,1 +1,2 @@
-Parse error on line 6 reported by parser: syntax error, unexpected string constant, expecting int constant.
+Semantic error on line 6: The given expression is not a legal type for the size of array <some_array>.  The size must be an integer.  Given expression is of type string.
+Error: undefined symbol some_array

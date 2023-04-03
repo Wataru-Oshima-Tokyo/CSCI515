@@ -1,1 +1,1 @@
-Parse error on line 1 reported by parser: syntax error, unexpected string constant, expecting int constant.
+Semantic error on line 1: The given expression is not a legal type for the size of array <havenots>.  The size must be an integer.  Given expression is of type string.

@@ -8,3 +8,18 @@ gpl.cpp::main()
 
 gpl.cpp::main() Calling yyparse()
 
+
+gpl.cpp::main() after call to yyparse().
+
+No errors found (parser probably worked correctly).
+
+
+Printing the symbol table from main()
+double four_point_two = 4.2
+double negative_zero = -0
+int not_four_point_two = 0
+int not_zero = 1
+double zero = 0
+Graphics is turned off by the Makefile.  Program exiting.
+
+gpl.cpp::main() done.
