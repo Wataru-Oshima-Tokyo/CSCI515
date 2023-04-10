@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# $1 is the first argument passed to the script
+filename=$(printf "results/t%03d.gpl" $1)
+
+cat $filename
