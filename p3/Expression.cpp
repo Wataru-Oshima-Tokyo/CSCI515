@@ -493,4 +493,3 @@ GPL::Type RANDOM::type() const
   return GPL::INT;
 }
 
-

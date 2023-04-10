@@ -15,7 +15,7 @@ Grammar
     1 program: declaration_list block_list
 
     2 declaration_list: declaration_list declaration
-    3                 | ε
+    3                 | %empty
 
     4 declaration: variable_declaration ";"
     5            | object_declaration ";"
@@ -29,7 +29,7 @@ Grammar
    11            | "string"
 
    12 optional_initializer: "=" expression
-   13                     | ε
+   13                     | %empty
 
    14 object_declaration: object_type "identifier" parameter_list_or_empty
    15                   | object_type "identifier" "[" expression "]"
@@ -42,7 +42,7 @@ Grammar
 
    21 parameter_list_or_empty: "(" parameter_list ")"
    22                        | "(" ")"
-   23                        | ε
+   23                        | %empty
 
    24 parameter_list: parameter_list "," parameter
    25               | parameter
@@ -50,7 +50,7 @@ Grammar
    26 parameter: "identifier" "=" expression
 
    27 block_list: block_list block
-   28           | ε
+   28           | %empty
 
    29 block: initialization_block
    30      | termination_block
@@ -124,7 +124,7 @@ Grammar
    82 exit_statement: "exit" "(" expression ")"
 
    83 assign_statement_or_empty: assign_statement
-   84                          | ε
+   84                          | %empty
 
    85 assign_statement: variable "=" expression
    86                 | variable "+=" expression
@@ -383,7 +383,7 @@ Nonterminals, with rules where they appear
 
 State 0
 
-    0 $accept: • program $end
+    0 $accept: . program $end
 
     $default  reduce using rule 3 (declaration_list)
 
@@ -393,15 +393,15 @@ State 0
 
 State 1
 
-    0 $accept: program • $end
+    0 $accept: program . $end
 
     $end  shift, and go to state 3
 
 
 State 2
 
-    1 program: declaration_list • block_list
-    2 declaration_list: declaration_list • declaration
+    1 program: declaration_list . block_list
+    2 declaration_list: declaration_list . declaration
 
     "int"        shift, and go to state 4
     "double"     shift, and go to state 5
@@ -426,115 +426,115 @@ State 2
 
 State 3
 
-    0 $accept: program $end •
+    0 $accept: program $end .
 
     $default  accept
 
 
 State 4
 
-    9 simple_type: "int" •
+    9 simple_type: "int" .
 
     $default  reduce using rule 9 (simple_type)
 
 
 State 5
 
-   10 simple_type: "double" •
+   10 simple_type: "double" .
 
     $default  reduce using rule 10 (simple_type)
 
 
 State 6
 
-   11 simple_type: "string" •
+   11 simple_type: "string" .
 
     $default  reduce using rule 11 (simple_type)
 
 
 State 7
 
-   16 object_type: "triangle" •
+   16 object_type: "triangle" .
 
     $default  reduce using rule 16 (object_type)
 
 
 State 8
 
-   17 object_type: "pixmap" •
+   17 object_type: "pixmap" .
 
     $default  reduce using rule 17 (object_type)
 
 
 State 9
 
-   18 object_type: "circle" •
+   18 object_type: "circle" .
 
     $default  reduce using rule 18 (object_type)
 
 
 State 10
 
-   19 object_type: "rectangle" •
+   19 object_type: "rectangle" .
 
     $default  reduce using rule 19 (object_type)
 
 
 State 11
 
-   20 object_type: "textbox" •
+   20 object_type: "textbox" .
 
     $default  reduce using rule 20 (object_type)
 
 
 State 12
 
-   35 forward_declaration: "forward" • "animation" "identifier" "(" animation_parameter ")"
+   35 forward_declaration: "forward" . "animation" "identifier" "(" animation_parameter ")"
 
     "animation"  shift, and go to state 20
 
 
 State 13
 
-    2 declaration_list: declaration_list declaration •
+    2 declaration_list: declaration_list declaration .
 
     $default  reduce using rule 2 (declaration_list)
 
 
 State 14
 
-    4 declaration: variable_declaration • ";"
+    4 declaration: variable_declaration . ";"
 
     ";"  shift, and go to state 21
 
 
 State 15
 
-    7 variable_declaration: simple_type • "identifier" optional_initializer
-    8                     | simple_type • "identifier" "[" expression "]"
+    7 variable_declaration: simple_type . "identifier" optional_initializer
+    8                     | simple_type . "identifier" "[" expression "]"
 
     "identifier"  shift, and go to state 22
 
 
 State 16
 
-    5 declaration: object_declaration • ";"
+    5 declaration: object_declaration . ";"
 
     ";"  shift, and go to state 23
 
 
 State 17
 
-   14 object_declaration: object_type • "identifier" parameter_list_or_empty
-   15                   | object_type • "identifier" "[" expression "]"
+   14 object_declaration: object_type . "identifier" parameter_list_or_empty
+   15                   | object_type . "identifier" "[" expression "]"
 
     "identifier"  shift, and go to state 24
 
 
 State 18
 
-    1 program: declaration_list block_list •
-   27 block_list: block_list • block
+    1 program: declaration_list block_list .
+   27 block_list: block_list . block
 
     "initialization"  shift, and go to state 25
     "termination"     shift, and go to state 26
@@ -553,29 +553,29 @@ State 18
 
 State 19
 
-    6 declaration: forward_declaration • ";"
+    6 declaration: forward_declaration . ";"
 
     ";"  shift, and go to state 35
 
 
 State 20
 
-   35 forward_declaration: "forward" "animation" • "identifier" "(" animation_parameter ")"
+   35 forward_declaration: "forward" "animation" . "identifier" "(" animation_parameter ")"
 
     "identifier"  shift, and go to state 36
 
 
 State 21
 
-    4 declaration: variable_declaration ";" •
+    4 declaration: variable_declaration ";" .
 
     $default  reduce using rule 4 (declaration)
 
 
 State 22
 
-    7 variable_declaration: simple_type "identifier" • optional_initializer
-    8                     | simple_type "identifier" • "[" expression "]"
+    7 variable_declaration: simple_type "identifier" . optional_initializer
+    8                     | simple_type "identifier" . "[" expression "]"
 
     "["  shift, and go to state 37
     "="  shift, and go to state 38
@@ -587,15 +587,15 @@ State 22
 
 State 23
 
-    5 declaration: object_declaration ";" •
+    5 declaration: object_declaration ";" .
 
     $default  reduce using rule 5 (declaration)
 
 
 State 24
 
-   14 object_declaration: object_type "identifier" • parameter_list_or_empty
-   15                   | object_type "identifier" • "[" expression "]"
+   14 object_declaration: object_type "identifier" . parameter_list_or_empty
+   15                   | object_type "identifier" . "[" expression "]"
 
     "("  shift, and go to state 40
     "["  shift, and go to state 41
@@ -607,7 +607,7 @@ State 24
 
 State 25
 
-   33 initialization_block: "initialization" • statement_block
+   33 initialization_block: "initialization" . statement_block
 
     "{"  shift, and go to state 43
 
@@ -616,7 +616,7 @@ State 25
 
 State 26
 
-   34 termination_block: "termination" • statement_block
+   34 termination_block: "termination" . statement_block
 
     "{"  shift, and go to state 43
 
@@ -625,7 +625,7 @@ State 26
 
 State 27
 
-   40 on_block: "on" • keystroke statement_block
+   40 on_block: "on" . keystroke statement_block
 
     "space"             shift, and go to state 46
     "leftarrow"         shift, and go to state 47
@@ -657,42 +657,42 @@ State 27
 
 State 28
 
-   39 animation_declaration: "animation" • "identifier" "(" object_type "identifier" ")"
+   39 animation_declaration: "animation" . "identifier" "(" object_type "identifier" ")"
 
     "identifier"  shift, and go to state 71
 
 
 State 29
 
-   27 block_list: block_list block •
+   27 block_list: block_list block .
 
     $default  reduce using rule 27 (block_list)
 
 
 State 30
 
-   29 block: initialization_block •
+   29 block: initialization_block .
 
     $default  reduce using rule 29 (block)
 
 
 State 31
 
-   30 block: termination_block •
+   30 block: termination_block .
 
     $default  reduce using rule 30 (block)
 
 
 State 32
 
-   31 block: animation_block •
+   31 block: animation_block .
 
     $default  reduce using rule 31 (block)
 
 
 State 33
 
-   38 animation_block: animation_declaration • statement_block
+   38 animation_block: animation_declaration . statement_block
 
     "{"  shift, and go to state 43
 
@@ -701,28 +701,28 @@ State 33
 
 State 34
 
-   32 block: on_block •
+   32 block: on_block .
 
     $default  reduce using rule 32 (block)
 
 
 State 35
 
-    6 declaration: forward_declaration ";" •
+    6 declaration: forward_declaration ";" .
 
     $default  reduce using rule 6 (declaration)
 
 
 State 36
 
-   35 forward_declaration: "forward" "animation" "identifier" • "(" animation_parameter ")"
+   35 forward_declaration: "forward" "animation" "identifier" . "(" animation_parameter ")"
 
     "("  shift, and go to state 73
 
 
 State 37
 
-    8 variable_declaration: simple_type "identifier" "[" • expression "]"
+    8 variable_declaration: simple_type "identifier" "[" . expression "]"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -751,7 +751,7 @@ State 37
 
 State 38
 
-   12 optional_initializer: "=" • expression
+   12 optional_initializer: "=" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -780,15 +780,15 @@ State 38
 
 State 39
 
-    7 variable_declaration: simple_type "identifier" optional_initializer •
+    7 variable_declaration: simple_type "identifier" optional_initializer .
 
     $default  reduce using rule 7 (variable_declaration)
 
 
 State 40
 
-   21 parameter_list_or_empty: "(" • parameter_list ")"
-   22                        | "(" • ")"
+   21 parameter_list_or_empty: "(" . parameter_list ")"
+   22                        | "(" . ")"
 
     ")"           shift, and go to state 97
     "identifier"  shift, and go to state 98
@@ -799,7 +799,7 @@ State 40
 
 State 41
 
-   15 object_declaration: object_type "identifier" "[" • expression "]"
+   15 object_declaration: object_type "identifier" "[" . expression "]"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -828,15 +828,15 @@ State 41
 
 State 42
 
-   14 object_declaration: object_type "identifier" parameter_list_or_empty •
+   14 object_declaration: object_type "identifier" parameter_list_or_empty .
 
     $default  reduce using rule 14 (object_declaration)
 
 
 State 43
 
-   67 statement_block: "{" • statement_list "}"
-   68                | "{" • "}"
+   67 statement_block: "{" . statement_list "}"
+   68                | "{" . "}"
 
     "if"          shift, and go to state 102
     "for"         shift, and go to state 103
@@ -857,189 +857,189 @@ State 43
 
 State 44
 
-   33 initialization_block: "initialization" statement_block •
+   33 initialization_block: "initialization" statement_block .
 
     $default  reduce using rule 33 (initialization_block)
 
 
 State 45
 
-   34 termination_block: "termination" statement_block •
+   34 termination_block: "termination" statement_block .
 
     $default  reduce using rule 34 (termination_block)
 
 
 State 46
 
-   41 keystroke: "space" •
+   41 keystroke: "space" .
 
     $default  reduce using rule 41 (keystroke)
 
 
 State 47
 
-   44 keystroke: "leftarrow" •
+   44 keystroke: "leftarrow" .
 
     $default  reduce using rule 44 (keystroke)
 
 
 State 48
 
-   45 keystroke: "rightarrow" •
+   45 keystroke: "rightarrow" .
 
     $default  reduce using rule 45 (keystroke)
 
 
 State 49
 
-   42 keystroke: "uparrow" •
+   42 keystroke: "uparrow" .
 
     $default  reduce using rule 42 (keystroke)
 
 
 State 50
 
-   43 keystroke: "downarrow" •
+   43 keystroke: "downarrow" .
 
     $default  reduce using rule 43 (keystroke)
 
 
 State 51
 
-   46 keystroke: "leftmouse_down" •
+   46 keystroke: "leftmouse_down" .
 
     $default  reduce using rule 46 (keystroke)
 
 
 State 52
 
-   47 keystroke: "middlemouse_down" •
+   47 keystroke: "middlemouse_down" .
 
     $default  reduce using rule 47 (keystroke)
 
 
 State 53
 
-   48 keystroke: "rightmouse_down" •
+   48 keystroke: "rightmouse_down" .
 
     $default  reduce using rule 48 (keystroke)
 
 
 State 54
 
-   49 keystroke: "leftmouse_up" •
+   49 keystroke: "leftmouse_up" .
 
     $default  reduce using rule 49 (keystroke)
 
 
 State 55
 
-   50 keystroke: "middlemouse_up" •
+   50 keystroke: "middlemouse_up" .
 
     $default  reduce using rule 50 (keystroke)
 
 
 State 56
 
-   51 keystroke: "rightmouse_up" •
+   51 keystroke: "rightmouse_up" .
 
     $default  reduce using rule 51 (keystroke)
 
 
 State 57
 
-   52 keystroke: "mouse_move" •
+   52 keystroke: "mouse_move" .
 
     $default  reduce using rule 52 (keystroke)
 
 
 State 58
 
-   53 keystroke: "mouse_drag" •
+   53 keystroke: "mouse_drag" .
 
     $default  reduce using rule 53 (keystroke)
 
 
 State 59
 
-   64 keystroke: "f1" •
+   64 keystroke: "f1" .
 
     $default  reduce using rule 64 (keystroke)
 
 
 State 60
 
-   54 keystroke: "akey" •
+   54 keystroke: "akey" .
 
     $default  reduce using rule 54 (keystroke)
 
 
 State 61
 
-   55 keystroke: "skey" •
+   55 keystroke: "skey" .
 
     $default  reduce using rule 55 (keystroke)
 
 
 State 62
 
-   56 keystroke: "dkey" •
+   56 keystroke: "dkey" .
 
     $default  reduce using rule 56 (keystroke)
 
 
 State 63
 
-   57 keystroke: "fkey" •
+   57 keystroke: "fkey" .
 
     $default  reduce using rule 57 (keystroke)
 
 
 State 64
 
-   58 keystroke: "hkey" •
+   58 keystroke: "hkey" .
 
     $default  reduce using rule 58 (keystroke)
 
 
 State 65
 
-   59 keystroke: "jkey" •
+   59 keystroke: "jkey" .
 
     $default  reduce using rule 59 (keystroke)
 
 
 State 66
 
-   60 keystroke: "kkey" •
+   60 keystroke: "kkey" .
 
     $default  reduce using rule 60 (keystroke)
 
 
 State 67
 
-   61 keystroke: "lkey" •
+   61 keystroke: "lkey" .
 
     $default  reduce using rule 61 (keystroke)
 
 
 State 68
 
-   62 keystroke: "wkey" •
+   62 keystroke: "wkey" .
 
     $default  reduce using rule 62 (keystroke)
 
 
 State 69
 
-   63 keystroke: "zkey" •
+   63 keystroke: "zkey" .
 
     $default  reduce using rule 63 (keystroke)
 
 
 State 70
 
-   40 on_block: "on" keystroke • statement_block
+   40 on_block: "on" keystroke . statement_block
 
     "{"  shift, and go to state 43
 
@@ -1048,21 +1048,21 @@ State 70
 
 State 71
 
-   39 animation_declaration: "animation" "identifier" • "(" object_type "identifier" ")"
+   39 animation_declaration: "animation" "identifier" . "(" object_type "identifier" ")"
 
     "("  shift, and go to state 116
 
 
 State 72
 
-   38 animation_block: animation_declaration statement_block •
+   38 animation_block: animation_declaration statement_block .
 
     $default  reduce using rule 38 (animation_block)
 
 
 State 73
 
-   35 forward_declaration: "forward" "animation" "identifier" "(" • animation_parameter ")"
+   35 forward_declaration: "forward" "animation" "identifier" "(" . animation_parameter ")"
 
     "triangle"   shift, and go to state 7
     "pixmap"     shift, and go to state 8
@@ -1076,21 +1076,21 @@ State 73
 
 State 74
 
-  125 primary_expression: "true" •
+  125 primary_expression: "true" .
 
     $default  reduce using rule 125 (primary_expression)
 
 
 State 75
 
-  126 primary_expression: "false" •
+  126 primary_expression: "false" .
 
     $default  reduce using rule 126 (primary_expression)
 
 
 State 76
 
-  122 primary_expression: "(" • expression ")"
+  122 primary_expression: "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1119,77 +1119,77 @@ State 76
 
 State 77
 
-  112 primary_expression: "sin" • "(" expression ")"
+  112 primary_expression: "sin" . "(" expression ")"
 
     "("  shift, and go to state 120
 
 
 State 78
 
-  113 primary_expression: "cos" • "(" expression ")"
+  113 primary_expression: "cos" . "(" expression ")"
 
     "("  shift, and go to state 121
 
 
 State 79
 
-  114 primary_expression: "tan" • "(" expression ")"
+  114 primary_expression: "tan" . "(" expression ")"
 
     "("  shift, and go to state 122
 
 
 State 80
 
-  115 primary_expression: "asin" • "(" expression ")"
+  115 primary_expression: "asin" . "(" expression ")"
 
     "("  shift, and go to state 123
 
 
 State 81
 
-  116 primary_expression: "acos" • "(" expression ")"
+  116 primary_expression: "acos" . "(" expression ")"
 
     "("  shift, and go to state 124
 
 
 State 82
 
-  117 primary_expression: "atan" • "(" expression ")"
+  117 primary_expression: "atan" . "(" expression ")"
 
     "("  shift, and go to state 125
 
 
 State 83
 
-  118 primary_expression: "sqrt" • "(" expression ")"
+  118 primary_expression: "sqrt" . "(" expression ")"
 
     "("  shift, and go to state 126
 
 
 State 84
 
-  119 primary_expression: "abs" • "(" expression ")"
+  119 primary_expression: "abs" . "(" expression ")"
 
     "("  shift, and go to state 127
 
 
 State 85
 
-  120 primary_expression: "floor" • "(" expression ")"
+  120 primary_expression: "floor" . "(" expression ")"
 
     "("  shift, and go to state 128
 
 
 State 86
 
-  121 primary_expression: "random" • "(" expression ")"
+  121 primary_expression: "random" . "(" expression ")"
 
     "("  shift, and go to state 129
 
 
 State 87
 
-  108 expression: "-" • expression
+  108 expression: "-" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1218,7 +1218,7 @@ State 87
 
 State 88
 
-  109 expression: "!" • expression
+  109 expression: "!" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1247,31 +1247,31 @@ State 88
 
 State 89
 
-  124 primary_expression: "int constant" •
+  124 primary_expression: "int constant" .
 
     $default  reduce using rule 124 (primary_expression)
 
 
 State 90
 
-  127 primary_expression: "double constant" •
+  127 primary_expression: "double constant" .
 
     $default  reduce using rule 127 (primary_expression)
 
 
 State 91
 
-  128 primary_expression: "string constant" •
+  128 primary_expression: "string constant" .
 
     $default  reduce using rule 128 (primary_expression)
 
 
 State 92
 
-   90 variable: "identifier" •
-   91         | "identifier" • "[" expression "]"
-   92         | "identifier" • "." "identifier"
-   93         | "identifier" • "[" expression "]" "." "identifier"
+   90 variable: "identifier" .
+   91         | "identifier" . "[" expression "]"
+   92         | "identifier" . "." "identifier"
+   93         | "identifier" . "[" expression "]" "." "identifier"
 
     "["  shift, and go to state 132
     "."  shift, and go to state 133
@@ -1281,29 +1281,29 @@ State 92
 
 State 93
 
-  123 primary_expression: variable •
+  123 primary_expression: variable .
 
     $default  reduce using rule 123 (primary_expression)
 
 
 State 94
 
-    8 variable_declaration: simple_type "identifier" "[" expression • "]"
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+    8 variable_declaration: simple_type "identifier" "[" expression . "]"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "]"        shift, and go to state 134
     "touches"  shift, and go to state 135
@@ -1325,29 +1325,29 @@ State 94
 
 State 95
 
-   94 expression: primary_expression •
+   94 expression: primary_expression .
 
     $default  reduce using rule 94 (expression)
 
 
 State 96
 
-   12 optional_initializer: "=" expression •
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   12 optional_initializer: "=" expression .
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -1370,22 +1370,22 @@ State 96
 
 State 97
 
-   22 parameter_list_or_empty: "(" ")" •
+   22 parameter_list_or_empty: "(" ")" .
 
     $default  reduce using rule 22 (parameter_list_or_empty)
 
 
 State 98
 
-   26 parameter: "identifier" • "=" expression
+   26 parameter: "identifier" . "=" expression
 
     "="  shift, and go to state 150
 
 
 State 99
 
-   21 parameter_list_or_empty: "(" parameter_list • ")"
-   24 parameter_list: parameter_list • "," parameter
+   21 parameter_list_or_empty: "(" parameter_list . ")"
+   24 parameter_list: parameter_list . "," parameter
 
     ")"  shift, and go to state 151
     ","  shift, and go to state 152
@@ -1393,29 +1393,29 @@ State 99
 
 State 100
 
-   25 parameter_list: parameter •
+   25 parameter_list: parameter .
 
     $default  reduce using rule 25 (parameter_list)
 
 
 State 101
 
-   15 object_declaration: object_type "identifier" "[" expression • "]"
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   15 object_declaration: object_type "identifier" "[" expression . "]"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "]"        shift, and go to state 153
     "touches"  shift, and go to state 135
@@ -1437,10 +1437,10 @@ State 101
 
 State 102
 
-   76 if_statement: "if" • "(" expression ")" statement_or_block_of_statements
-   77             | "if" • "(" expression ")" statement_or_block_of_statements "else" statement_or_block_of_statements
-   78             | "if" • expression statement IF_NO_ELSE
-   79             | "if" • expression statement "else" statement
+   76 if_statement: "if" . "(" expression ")" statement_or_block_of_statements
+   77             | "if" . "(" expression ")" statement_or_block_of_statements "else" statement_or_block_of_statements
+   78             | "if" . expression statement IF_NO_ELSE
+   79             | "if" . expression statement "else" statement
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1469,36 +1469,36 @@ State 102
 
 State 103
 
-   80 for_statement: "for" • "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty ")" statement_or_block_of_statements
+   80 for_statement: "for" . "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty ")" statement_or_block_of_statements
 
     "("  shift, and go to state 156
 
 
 State 104
 
-   82 exit_statement: "exit" • "(" expression ")"
+   82 exit_statement: "exit" . "(" expression ")"
 
     "("  shift, and go to state 157
 
 
 State 105
 
-   81 print_statement: "print" • "(" expression ")"
+   81 print_statement: "print" . "(" expression ")"
 
     "("  shift, and go to state 158
 
 
 State 106
 
-   68 statement_block: "{" "}" •
+   68 statement_block: "{" "}" .
 
     $default  reduce using rule 68 (statement_block)
 
 
 State 107
 
-   67 statement_block: "{" statement_list • "}"
-   69 statement_list: statement_list • statement
+   67 statement_block: "{" statement_list . "}"
+   69 statement_list: statement_list . statement
 
     "if"          shift, and go to state 102
     "for"         shift, and go to state 103
@@ -1518,53 +1518,53 @@ State 107
 
 State 108
 
-   70 statement_list: statement •
+   70 statement_list: statement .
 
     $default  reduce using rule 70 (statement_list)
 
 
 State 109
 
-   71 statement: if_statement •
+   71 statement: if_statement .
 
     $default  reduce using rule 71 (statement)
 
 
 State 110
 
-   72 statement: for_statement •
+   72 statement: for_statement .
 
     $default  reduce using rule 72 (statement)
 
 
 State 111
 
-   74 statement: print_statement • ";"
+   74 statement: print_statement . ";"
 
     ";"  shift, and go to state 161
 
 
 State 112
 
-   75 statement: exit_statement • ";"
+   75 statement: exit_statement . ";"
 
     ";"  shift, and go to state 162
 
 
 State 113
 
-   73 statement: assign_statement • ";"
+   73 statement: assign_statement . ";"
 
     ";"  shift, and go to state 163
 
 
 State 114
 
-   85 assign_statement: variable • "=" expression
-   86                 | variable • "+=" expression
-   87                 | variable • "-=" expression
-   88                 | variable • "++"
-   89                 | variable • "--"
+   85 assign_statement: variable . "=" expression
+   86                 | variable . "+=" expression
+   87                 | variable . "-=" expression
+   88                 | variable . "++"
+   89                 | variable . "--"
 
     "="   shift, and go to state 164
     "+="  shift, and go to state 165
@@ -1575,14 +1575,14 @@ State 114
 
 State 115
 
-   40 on_block: "on" keystroke statement_block •
+   40 on_block: "on" keystroke statement_block .
 
     $default  reduce using rule 40 (on_block)
 
 
 State 116
 
-   39 animation_declaration: "animation" "identifier" "(" • object_type "identifier" ")"
+   39 animation_declaration: "animation" "identifier" "(" . object_type "identifier" ")"
 
     "triangle"   shift, and go to state 7
     "pixmap"     shift, and go to state 8
@@ -1595,8 +1595,8 @@ State 116
 
 State 117
 
-   36 animation_parameter: object_type • "identifier"
-   37                    | object_type •
+   36 animation_parameter: object_type . "identifier"
+   37                    | object_type .
 
     "identifier"  shift, and go to state 170
 
@@ -1605,29 +1605,29 @@ State 117
 
 State 118
 
-   35 forward_declaration: "forward" "animation" "identifier" "(" animation_parameter • ")"
+   35 forward_declaration: "forward" "animation" "identifier" "(" animation_parameter . ")"
 
     ")"  shift, and go to state 171
 
 
 State 119
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  122 primary_expression: "(" expression • ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  122 primary_expression: "(" expression . ")"
 
     ")"        shift, and go to state 172
     "touches"  shift, and go to state 135
@@ -1649,7 +1649,7 @@ State 119
 
 State 120
 
-  112 primary_expression: "sin" "(" • expression ")"
+  112 primary_expression: "sin" "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1678,7 +1678,7 @@ State 120
 
 State 121
 
-  113 primary_expression: "cos" "(" • expression ")"
+  113 primary_expression: "cos" "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1707,7 +1707,7 @@ State 121
 
 State 122
 
-  114 primary_expression: "tan" "(" • expression ")"
+  114 primary_expression: "tan" "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1736,7 +1736,7 @@ State 122
 
 State 123
 
-  115 primary_expression: "asin" "(" • expression ")"
+  115 primary_expression: "asin" "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1765,7 +1765,7 @@ State 123
 
 State 124
 
-  116 primary_expression: "acos" "(" • expression ")"
+  116 primary_expression: "acos" "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1794,7 +1794,7 @@ State 124
 
 State 125
 
-  117 primary_expression: "atan" "(" • expression ")"
+  117 primary_expression: "atan" "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1823,7 +1823,7 @@ State 125
 
 State 126
 
-  118 primary_expression: "sqrt" "(" • expression ")"
+  118 primary_expression: "sqrt" "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1852,7 +1852,7 @@ State 126
 
 State 127
 
-  119 primary_expression: "abs" "(" • expression ")"
+  119 primary_expression: "abs" "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1881,7 +1881,7 @@ State 127
 
 State 128
 
-  120 primary_expression: "floor" "(" • expression ")"
+  120 primary_expression: "floor" "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1910,7 +1910,7 @@ State 128
 
 State 129
 
-  121 primary_expression: "random" "(" • expression ")"
+  121 primary_expression: "random" "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -1939,52 +1939,52 @@ State 129
 
 State 130
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  108           | "-" expression •
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  108           | "-" expression .
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     $default  reduce using rule 108 (expression)
 
 
 State 131
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  109           | "!" expression •
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  109           | "!" expression .
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     $default  reduce using rule 109 (expression)
 
 
 State 132
 
-   91 variable: "identifier" "[" • expression "]"
-   93         | "identifier" "[" • expression "]" "." "identifier"
+   91 variable: "identifier" "[" . expression "]"
+   93         | "identifier" "[" . expression "]" "." "identifier"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2013,21 +2013,21 @@ State 132
 
 State 133
 
-   92 variable: "identifier" "." • "identifier"
+   92 variable: "identifier" "." . "identifier"
 
     "identifier"  shift, and go to state 184
 
 
 State 134
 
-    8 variable_declaration: simple_type "identifier" "[" expression "]" •
+    8 variable_declaration: simple_type "identifier" "[" expression "]" .
 
     $default  reduce using rule 8 (variable_declaration)
 
 
 State 135
 
-  111 expression: expression "touches" • expression
+  111 expression: expression "touches" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2056,7 +2056,7 @@ State 135
 
 State 136
 
-  110 expression: expression "near" • expression
+  110 expression: expression "near" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2085,7 +2085,7 @@ State 136
 
 State 137
 
-  105 expression: expression "*" • expression
+  105 expression: expression "*" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2114,7 +2114,7 @@ State 137
 
 State 138
 
-  106 expression: expression "/" • expression
+  106 expression: expression "/" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2143,7 +2143,7 @@ State 138
 
 State 139
 
-  103 expression: expression "+" • expression
+  103 expression: expression "+" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2172,7 +2172,7 @@ State 139
 
 State 140
 
-  104 expression: expression "-" • expression
+  104 expression: expression "-" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2201,7 +2201,7 @@ State 140
 
 State 141
 
-  107 expression: expression "%" • expression
+  107 expression: expression "%" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2230,7 +2230,7 @@ State 141
 
 State 142
 
-   99 expression: expression "<" • expression
+   99 expression: expression "<" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2259,7 +2259,7 @@ State 142
 
 State 143
 
-  100 expression: expression ">" • expression
+  100 expression: expression ">" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2288,7 +2288,7 @@ State 143
 
 State 144
 
-   97 expression: expression "<=" • expression
+   97 expression: expression "<=" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2317,7 +2317,7 @@ State 144
 
 State 145
 
-   98 expression: expression ">=" • expression
+   98 expression: expression ">=" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2346,7 +2346,7 @@ State 145
 
 State 146
 
-  101 expression: expression "==" • expression
+  101 expression: expression "==" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2375,7 +2375,7 @@ State 146
 
 State 147
 
-  102 expression: expression "!=" • expression
+  102 expression: expression "!=" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2404,7 +2404,7 @@ State 147
 
 State 148
 
-   96 expression: expression "&&" • expression
+   96 expression: expression "&&" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2433,7 +2433,7 @@ State 148
 
 State 149
 
-   95 expression: expression "||" • expression
+   95 expression: expression "||" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2462,7 +2462,7 @@ State 149
 
 State 150
 
-   26 parameter: "identifier" "=" • expression
+   26 parameter: "identifier" "=" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2491,14 +2491,14 @@ State 150
 
 State 151
 
-   21 parameter_list_or_empty: "(" parameter_list ")" •
+   21 parameter_list_or_empty: "(" parameter_list ")" .
 
     $default  reduce using rule 21 (parameter_list_or_empty)
 
 
 State 152
 
-   24 parameter_list: parameter_list "," • parameter
+   24 parameter_list: parameter_list "," . parameter
 
     "identifier"  shift, and go to state 98
 
@@ -2507,16 +2507,16 @@ State 152
 
 State 153
 
-   15 object_declaration: object_type "identifier" "[" expression "]" •
+   15 object_declaration: object_type "identifier" "[" expression "]" .
 
     $default  reduce using rule 15 (object_declaration)
 
 
 State 154
 
-   76 if_statement: "if" "(" • expression ")" statement_or_block_of_statements
-   77             | "if" "(" • expression ")" statement_or_block_of_statements "else" statement_or_block_of_statements
-  122 primary_expression: "(" • expression ")"
+   76 if_statement: "if" "(" . expression ")" statement_or_block_of_statements
+   77             | "if" "(" . expression ")" statement_or_block_of_statements "else" statement_or_block_of_statements
+  122 primary_expression: "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2545,23 +2545,23 @@ State 154
 
 State 155
 
-   78 if_statement: "if" expression • statement IF_NO_ELSE
-   79             | "if" expression • statement "else" statement
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   78 if_statement: "if" expression . statement IF_NO_ELSE
+   79             | "if" expression . statement "else" statement
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "if"          shift, and go to state 102
     "for"         shift, and go to state 103
@@ -2595,7 +2595,7 @@ State 155
 
 State 156
 
-   80 for_statement: "for" "(" • assign_statement_or_empty ";" expression ";" assign_statement_or_empty ")" statement_or_block_of_statements
+   80 for_statement: "for" "(" . assign_statement_or_empty ";" expression ";" assign_statement_or_empty ")" statement_or_block_of_statements
 
     "identifier"  shift, and go to state 92
 
@@ -2608,7 +2608,7 @@ State 156
 
 State 157
 
-   82 exit_statement: "exit" "(" • expression ")"
+   82 exit_statement: "exit" "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2637,7 +2637,7 @@ State 157
 
 State 158
 
-   81 print_statement: "print" "(" • expression ")"
+   81 print_statement: "print" "(" . expression ")"
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2666,42 +2666,42 @@ State 158
 
 State 159
 
-   67 statement_block: "{" statement_list "}" •
+   67 statement_block: "{" statement_list "}" .
 
     $default  reduce using rule 67 (statement_block)
 
 
 State 160
 
-   69 statement_list: statement_list statement •
+   69 statement_list: statement_list statement .
 
     $default  reduce using rule 69 (statement_list)
 
 
 State 161
 
-   74 statement: print_statement ";" •
+   74 statement: print_statement ";" .
 
     $default  reduce using rule 74 (statement)
 
 
 State 162
 
-   75 statement: exit_statement ";" •
+   75 statement: exit_statement ";" .
 
     $default  reduce using rule 75 (statement)
 
 
 State 163
 
-   73 statement: assign_statement ";" •
+   73 statement: assign_statement ";" .
 
     $default  reduce using rule 73 (statement)
 
 
 State 164
 
-   85 assign_statement: variable "=" • expression
+   85 assign_statement: variable "=" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2730,7 +2730,7 @@ State 164
 
 State 165
 
-   86 assign_statement: variable "+=" • expression
+   86 assign_statement: variable "+=" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2759,7 +2759,7 @@ State 165
 
 State 166
 
-   87 assign_statement: variable "-=" • expression
+   87 assign_statement: variable "-=" . expression
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -2788,64 +2788,64 @@ State 166
 
 State 167
 
-   88 assign_statement: variable "++" •
+   88 assign_statement: variable "++" .
 
     $default  reduce using rule 88 (assign_statement)
 
 
 State 168
 
-   89 assign_statement: variable "--" •
+   89 assign_statement: variable "--" .
 
     $default  reduce using rule 89 (assign_statement)
 
 
 State 169
 
-   39 animation_declaration: "animation" "identifier" "(" object_type • "identifier" ")"
+   39 animation_declaration: "animation" "identifier" "(" object_type . "identifier" ")"
 
     "identifier"  shift, and go to state 211
 
 
 State 170
 
-   36 animation_parameter: object_type "identifier" •
+   36 animation_parameter: object_type "identifier" .
 
     $default  reduce using rule 36 (animation_parameter)
 
 
 State 171
 
-   35 forward_declaration: "forward" "animation" "identifier" "(" animation_parameter ")" •
+   35 forward_declaration: "forward" "animation" "identifier" "(" animation_parameter ")" .
 
     $default  reduce using rule 35 (forward_declaration)
 
 
 State 172
 
-  122 primary_expression: "(" expression ")" •
+  122 primary_expression: "(" expression ")" .
 
     $default  reduce using rule 122 (primary_expression)
 
 
 State 173
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  112 primary_expression: "sin" "(" expression • ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  112 primary_expression: "sin" "(" expression . ")"
 
     ")"        shift, and go to state 212
     "touches"  shift, and go to state 135
@@ -2867,22 +2867,22 @@ State 173
 
 State 174
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  113 primary_expression: "cos" "(" expression • ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  113 primary_expression: "cos" "(" expression . ")"
 
     ")"        shift, and go to state 213
     "touches"  shift, and go to state 135
@@ -2904,22 +2904,22 @@ State 174
 
 State 175
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  114 primary_expression: "tan" "(" expression • ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  114 primary_expression: "tan" "(" expression . ")"
 
     ")"        shift, and go to state 214
     "touches"  shift, and go to state 135
@@ -2941,22 +2941,22 @@ State 175
 
 State 176
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  115 primary_expression: "asin" "(" expression • ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  115 primary_expression: "asin" "(" expression . ")"
 
     ")"        shift, and go to state 215
     "touches"  shift, and go to state 135
@@ -2978,22 +2978,22 @@ State 176
 
 State 177
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  116 primary_expression: "acos" "(" expression • ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  116 primary_expression: "acos" "(" expression . ")"
 
     ")"        shift, and go to state 216
     "touches"  shift, and go to state 135
@@ -3015,22 +3015,22 @@ State 177
 
 State 178
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  117 primary_expression: "atan" "(" expression • ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  117 primary_expression: "atan" "(" expression . ")"
 
     ")"        shift, and go to state 217
     "touches"  shift, and go to state 135
@@ -3052,22 +3052,22 @@ State 178
 
 State 179
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  118 primary_expression: "sqrt" "(" expression • ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  118 primary_expression: "sqrt" "(" expression . ")"
 
     ")"        shift, and go to state 218
     "touches"  shift, and go to state 135
@@ -3089,22 +3089,22 @@ State 179
 
 State 180
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  119 primary_expression: "abs" "(" expression • ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  119 primary_expression: "abs" "(" expression . ")"
 
     ")"        shift, and go to state 219
     "touches"  shift, and go to state 135
@@ -3126,22 +3126,22 @@ State 180
 
 State 181
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  120 primary_expression: "floor" "(" expression • ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  120 primary_expression: "floor" "(" expression . ")"
 
     ")"        shift, and go to state 220
     "touches"  shift, and go to state 135
@@ -3163,22 +3163,22 @@ State 181
 
 State 182
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  121 primary_expression: "random" "(" expression • ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  121 primary_expression: "random" "(" expression . ")"
 
     ")"        shift, and go to state 221
     "touches"  shift, and go to state 135
@@ -3200,23 +3200,23 @@ State 182
 
 State 183
 
-   91 variable: "identifier" "[" expression • "]"
-   93         | "identifier" "[" expression • "]" "." "identifier"
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   91 variable: "identifier" "[" expression . "]"
+   93         | "identifier" "[" expression . "]" "." "identifier"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "]"        shift, and go to state 222
     "touches"  shift, and go to state 135
@@ -3238,29 +3238,29 @@ State 183
 
 State 184
 
-   92 variable: "identifier" "." "identifier" •
+   92 variable: "identifier" "." "identifier" .
 
     $default  reduce using rule 92 (variable)
 
 
 State 185
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  111           | expression "touches" expression •
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  111           | expression "touches" expression .
 
     "touches"  error (nonassociative)
     "near"     error (nonassociative)
@@ -3270,22 +3270,22 @@ State 185
 
 State 186
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  110           | expression "near" expression •
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  110           | expression "near" expression .
+  111           | expression . "touches" expression
 
     "touches"  error (nonassociative)
     "near"     error (nonassociative)
@@ -3295,22 +3295,22 @@ State 186
 
 State 187
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  105           | expression "*" expression •
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  105           | expression "*" expression .
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3320,22 +3320,22 @@ State 187
 
 State 188
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  106           | expression "/" expression •
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  106           | expression "/" expression .
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3345,22 +3345,22 @@ State 188
 
 State 189
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  103           | expression "+" expression •
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  103           | expression "+" expression .
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3373,22 +3373,22 @@ State 189
 
 State 190
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  104           | expression "-" expression •
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  104           | expression "-" expression .
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3401,22 +3401,22 @@ State 190
 
 State 191
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  107           | expression "%" expression •
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  107           | expression "%" expression .
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3426,22 +3426,22 @@ State 191
 
 State 192
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-   99           | expression "<" expression •
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+   99           | expression "<" expression .
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3456,22 +3456,22 @@ State 192
 
 State 193
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  100           | expression ">" expression •
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  100           | expression ">" expression .
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3486,22 +3486,22 @@ State 193
 
 State 194
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   97           | expression "<=" expression •
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   97           | expression "<=" expression .
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3516,22 +3516,22 @@ State 194
 
 State 195
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   98           | expression ">=" expression •
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   98           | expression ">=" expression .
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3546,22 +3546,22 @@ State 195
 
 State 196
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  101           | expression "==" expression •
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  101           | expression "==" expression .
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3580,22 +3580,22 @@ State 196
 
 State 197
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  102           | expression "!=" expression •
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  102           | expression "!=" expression .
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3614,22 +3614,22 @@ State 197
 
 State 198
 
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   96           | expression "&&" expression •
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   96           | expression "&&" expression .
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3650,22 +3650,22 @@ State 198
 
 State 199
 
-   95 expression: expression • "||" expression
-   95           | expression "||" expression •
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   95 expression: expression . "||" expression
+   95           | expression "||" expression .
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3687,22 +3687,22 @@ State 199
 
 State 200
 
-   26 parameter: "identifier" "=" expression •
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   26 parameter: "identifier" "=" expression .
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3725,31 +3725,31 @@ State 200
 
 State 201
 
-   24 parameter_list: parameter_list "," parameter •
+   24 parameter_list: parameter_list "," parameter .
 
     $default  reduce using rule 24 (parameter_list)
 
 
 State 202
 
-   76 if_statement: "if" "(" expression • ")" statement_or_block_of_statements
-   77             | "if" "(" expression • ")" statement_or_block_of_statements "else" statement_or_block_of_statements
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
-  122 primary_expression: "(" expression • ")"
+   76 if_statement: "if" "(" expression . ")" statement_or_block_of_statements
+   77             | "if" "(" expression . ")" statement_or_block_of_statements "else" statement_or_block_of_statements
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
+  122 primary_expression: "(" expression . ")"
 
     ")"        shift, and go to state 223
     "touches"  shift, and go to state 135
@@ -3771,8 +3771,8 @@ State 202
 
 State 203
 
-   78 if_statement: "if" expression statement • IF_NO_ELSE
-   79             | "if" expression statement • "else" statement
+   78 if_statement: "if" expression statement . IF_NO_ELSE
+   79             | "if" expression statement . "else" statement
 
     "else"      shift, and go to state 224
     IF_NO_ELSE  shift, and go to state 225
@@ -3780,36 +3780,36 @@ State 203
 
 State 204
 
-   80 for_statement: "for" "(" assign_statement_or_empty • ";" expression ";" assign_statement_or_empty ")" statement_or_block_of_statements
+   80 for_statement: "for" "(" assign_statement_or_empty . ";" expression ";" assign_statement_or_empty ")" statement_or_block_of_statements
 
     ";"  shift, and go to state 226
 
 
 State 205
 
-   83 assign_statement_or_empty: assign_statement •
+   83 assign_statement_or_empty: assign_statement .
 
     $default  reduce using rule 83 (assign_statement_or_empty)
 
 
 State 206
 
-   82 exit_statement: "exit" "(" expression • ")"
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   82 exit_statement: "exit" "(" expression . ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     ")"        shift, and go to state 227
     "touches"  shift, and go to state 135
@@ -3831,22 +3831,22 @@ State 206
 
 State 207
 
-   81 print_statement: "print" "(" expression • ")"
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   81 print_statement: "print" "(" expression . ")"
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     ")"        shift, and go to state 228
     "touches"  shift, and go to state 135
@@ -3868,22 +3868,22 @@ State 207
 
 State 208
 
-   85 assign_statement: variable "=" expression •
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   85 assign_statement: variable "=" expression .
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3906,22 +3906,22 @@ State 208
 
 State 209
 
-   86 assign_statement: variable "+=" expression •
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   86 assign_statement: variable "+=" expression .
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3944,22 +3944,22 @@ State 209
 
 State 210
 
-   87 assign_statement: variable "-=" expression •
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   87 assign_statement: variable "-=" expression .
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     "touches"  shift, and go to state 135
     "near"     shift, and go to state 136
@@ -3982,85 +3982,85 @@ State 210
 
 State 211
 
-   39 animation_declaration: "animation" "identifier" "(" object_type "identifier" • ")"
+   39 animation_declaration: "animation" "identifier" "(" object_type "identifier" . ")"
 
     ")"  shift, and go to state 229
 
 
 State 212
 
-  112 primary_expression: "sin" "(" expression ")" •
+  112 primary_expression: "sin" "(" expression ")" .
 
     $default  reduce using rule 112 (primary_expression)
 
 
 State 213
 
-  113 primary_expression: "cos" "(" expression ")" •
+  113 primary_expression: "cos" "(" expression ")" .
 
     $default  reduce using rule 113 (primary_expression)
 
 
 State 214
 
-  114 primary_expression: "tan" "(" expression ")" •
+  114 primary_expression: "tan" "(" expression ")" .
 
     $default  reduce using rule 114 (primary_expression)
 
 
 State 215
 
-  115 primary_expression: "asin" "(" expression ")" •
+  115 primary_expression: "asin" "(" expression ")" .
 
     $default  reduce using rule 115 (primary_expression)
 
 
 State 216
 
-  116 primary_expression: "acos" "(" expression ")" •
+  116 primary_expression: "acos" "(" expression ")" .
 
     $default  reduce using rule 116 (primary_expression)
 
 
 State 217
 
-  117 primary_expression: "atan" "(" expression ")" •
+  117 primary_expression: "atan" "(" expression ")" .
 
     $default  reduce using rule 117 (primary_expression)
 
 
 State 218
 
-  118 primary_expression: "sqrt" "(" expression ")" •
+  118 primary_expression: "sqrt" "(" expression ")" .
 
     $default  reduce using rule 118 (primary_expression)
 
 
 State 219
 
-  119 primary_expression: "abs" "(" expression ")" •
+  119 primary_expression: "abs" "(" expression ")" .
 
     $default  reduce using rule 119 (primary_expression)
 
 
 State 220
 
-  120 primary_expression: "floor" "(" expression ")" •
+  120 primary_expression: "floor" "(" expression ")" .
 
     $default  reduce using rule 120 (primary_expression)
 
 
 State 221
 
-  121 primary_expression: "random" "(" expression ")" •
+  121 primary_expression: "random" "(" expression ")" .
 
     $default  reduce using rule 121 (primary_expression)
 
 
 State 222
 
-   91 variable: "identifier" "[" expression "]" •
-   93         | "identifier" "[" expression "]" • "." "identifier"
+   91 variable: "identifier" "[" expression "]" .
+   93         | "identifier" "[" expression "]" . "." "identifier"
 
     "."  shift, and go to state 230
 
@@ -4069,9 +4069,9 @@ State 222
 
 State 223
 
-   76 if_statement: "if" "(" expression ")" • statement_or_block_of_statements
-   77             | "if" "(" expression ")" • statement_or_block_of_statements "else" statement_or_block_of_statements
-  122 primary_expression: "(" expression ")" •
+   76 if_statement: "if" "(" expression ")" . statement_or_block_of_statements
+   77             | "if" "(" expression ")" . statement_or_block_of_statements "else" statement_or_block_of_statements
+  122 primary_expression: "(" expression ")" .
 
     "if"          shift, and go to state 102
     "for"         shift, and go to state 103
@@ -4100,7 +4100,7 @@ State 223
 
 State 224
 
-   79 if_statement: "if" expression statement "else" • statement
+   79 if_statement: "if" expression statement "else" . statement
 
     "if"          shift, and go to state 102
     "for"         shift, and go to state 103
@@ -4119,14 +4119,14 @@ State 224
 
 State 225
 
-   78 if_statement: "if" expression statement IF_NO_ELSE •
+   78 if_statement: "if" expression statement IF_NO_ELSE .
 
     $default  reduce using rule 78 (if_statement)
 
 
 State 226
 
-   80 for_statement: "for" "(" assign_statement_or_empty ";" • expression ";" assign_statement_or_empty ")" statement_or_block_of_statements
+   80 for_statement: "for" "(" assign_statement_or_empty ";" . expression ";" assign_statement_or_empty ")" statement_or_block_of_statements
 
     "true"             shift, and go to state 74
     "false"            shift, and go to state 75
@@ -4155,36 +4155,36 @@ State 226
 
 State 227
 
-   82 exit_statement: "exit" "(" expression ")" •
+   82 exit_statement: "exit" "(" expression ")" .
 
     $default  reduce using rule 82 (exit_statement)
 
 
 State 228
 
-   81 print_statement: "print" "(" expression ")" •
+   81 print_statement: "print" "(" expression ")" .
 
     $default  reduce using rule 81 (print_statement)
 
 
 State 229
 
-   39 animation_declaration: "animation" "identifier" "(" object_type "identifier" ")" •
+   39 animation_declaration: "animation" "identifier" "(" object_type "identifier" ")" .
 
     $default  reduce using rule 39 (animation_declaration)
 
 
 State 230
 
-   93 variable: "identifier" "[" expression "]" "." • "identifier"
+   93 variable: "identifier" "[" expression "]" "." . "identifier"
 
     "identifier"  shift, and go to state 236
 
 
 State 231
 
-   76 if_statement: "if" "(" expression ")" statement_or_block_of_statements •
-   77             | "if" "(" expression ")" statement_or_block_of_statements • "else" statement_or_block_of_statements
+   76 if_statement: "if" "(" expression ")" statement_or_block_of_statements .
+   77             | "if" "(" expression ")" statement_or_block_of_statements . "else" statement_or_block_of_statements
 
     "else"  shift, and go to state 237
 
@@ -4194,43 +4194,43 @@ State 231
 
 State 232
 
-   65 statement_or_block_of_statements: statement_block •
+   65 statement_or_block_of_statements: statement_block .
 
     $default  reduce using rule 65 (statement_or_block_of_statements)
 
 
 State 233
 
-   66 statement_or_block_of_statements: statement •
+   66 statement_or_block_of_statements: statement .
 
     $default  reduce using rule 66 (statement_or_block_of_statements)
 
 
 State 234
 
-   79 if_statement: "if" expression statement "else" statement •
+   79 if_statement: "if" expression statement "else" statement .
 
     $default  reduce using rule 79 (if_statement)
 
 
 State 235
 
-   80 for_statement: "for" "(" assign_statement_or_empty ";" expression • ";" assign_statement_or_empty ")" statement_or_block_of_statements
-   95 expression: expression • "||" expression
-   96           | expression • "&&" expression
-   97           | expression • "<=" expression
-   98           | expression • ">=" expression
-   99           | expression • "<" expression
-  100           | expression • ">" expression
-  101           | expression • "==" expression
-  102           | expression • "!=" expression
-  103           | expression • "+" expression
-  104           | expression • "-" expression
-  105           | expression • "*" expression
-  106           | expression • "/" expression
-  107           | expression • "%" expression
-  110           | expression • "near" expression
-  111           | expression • "touches" expression
+   80 for_statement: "for" "(" assign_statement_or_empty ";" expression . ";" assign_statement_or_empty ")" statement_or_block_of_statements
+   95 expression: expression . "||" expression
+   96           | expression . "&&" expression
+   97           | expression . "<=" expression
+   98           | expression . ">=" expression
+   99           | expression . "<" expression
+  100           | expression . ">" expression
+  101           | expression . "==" expression
+  102           | expression . "!=" expression
+  103           | expression . "+" expression
+  104           | expression . "-" expression
+  105           | expression . "*" expression
+  106           | expression . "/" expression
+  107           | expression . "%" expression
+  110           | expression . "near" expression
+  111           | expression . "touches" expression
 
     ";"        shift, and go to state 238
     "touches"  shift, and go to state 135
@@ -4252,14 +4252,14 @@ State 235
 
 State 236
 
-   93 variable: "identifier" "[" expression "]" "." "identifier" •
+   93 variable: "identifier" "[" expression "]" "." "identifier" .
 
     $default  reduce using rule 93 (variable)
 
 
 State 237
 
-   77 if_statement: "if" "(" expression ")" statement_or_block_of_statements "else" • statement_or_block_of_statements
+   77 if_statement: "if" "(" expression ")" statement_or_block_of_statements "else" . statement_or_block_of_statements
 
     "if"          shift, and go to state 102
     "for"         shift, and go to state 103
@@ -4281,7 +4281,7 @@ State 237
 
 State 238
 
-   80 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" • assign_statement_or_empty ")" statement_or_block_of_statements
+   80 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" . assign_statement_or_empty ")" statement_or_block_of_statements
 
     "identifier"  shift, and go to state 92
 
@@ -4294,21 +4294,21 @@ State 238
 
 State 239
 
-   77 if_statement: "if" "(" expression ")" statement_or_block_of_statements "else" statement_or_block_of_statements •
+   77 if_statement: "if" "(" expression ")" statement_or_block_of_statements "else" statement_or_block_of_statements .
 
     $default  reduce using rule 77 (if_statement)
 
 
 State 240
 
-   80 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty • ")" statement_or_block_of_statements
+   80 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty . ")" statement_or_block_of_statements
 
     ")"  shift, and go to state 241
 
 
 State 241
 
-   80 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty ")" • statement_or_block_of_statements
+   80 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty ")" . statement_or_block_of_statements
 
     "if"          shift, and go to state 102
     "for"         shift, and go to state 103
@@ -4330,6 +4330,6 @@ State 241
 
 State 242
 
-   80 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty ")" statement_or_block_of_statements •
+   80 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty ")" statement_or_block_of_statements .
 
     $default  reduce using rule 80 (for_statement)

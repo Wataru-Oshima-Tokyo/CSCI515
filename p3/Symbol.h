@@ -29,7 +29,6 @@ class Symbol {
         Symbol(const std::string& name, int* value, int count);
         Symbol(const std::string& name, std::string* value);
         Symbol(const std::string& name, std::string* value, int count);
-        // here??
 
         
         GPL::Type get_type() const;

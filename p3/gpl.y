@@ -193,8 +193,8 @@ const Expression* bin_op_check(const Expression* one, const Expression* three, u
             Error::error(Error::INVALID_LEFT_OPERAND_TYPE, to_string(op_type));
         if (!rhs_valid)
             Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, to_string(op_type));
-        delete one;
-        delete three;
+        std::unique_ptr<const Expression> one_ptr(one);
+        std::unique_ptr<const Expression> three_ptr(three);
         return new Integer_constant(0);
     }
 
@@ -207,6 +207,7 @@ const Expression* unary_op_check(const Expression* two, unsigned int valid_types
         if (!rhs_valid)
             Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, to_string(op_type));
         delete two;
+        std::unique_ptr<const Expression> one_ptr(two);
         return new Integer_constant(0);
     }
 %}
@@ -333,8 +334,9 @@ variable_declaration:
     }
     | simple_type T_ID T_LBRACKET expression T_RBRACKET {
         Scope_manager& symtab = Scope_manager::instance();
+        int* array_size = nullptr; // Move the declaration here
         try{
-            int* array_size = new int($4->evaluate()->as_int());
+            array_size = new int($4->evaluate()->as_int());
             if(*array_size <= 0)
             {
                 Error::error(Error::INVALID_ARRAY_SIZE, *$2,std::to_string(*array_size));
@@ -373,40 +375,42 @@ variable_declaration:
                 delete $2;
                 break;
             }    
-        switch($1){
-            case GPL::INT :
-                {
+            switch($1){
+                case GPL::INT :
+                    {
 
-                    int *ivalue = new int[*array_size];
-                    for (int i=0; i<*array_size;i++){
-                        ivalue[i] = 0;
+                        int *ivalue = new int[*array_size];
+                        for (int i=0; i<*array_size;i++){
+                            ivalue[i] = 0;
+                        }
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue, *array_size));
                     }
-                     symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue, *array_size));
-                }
-                break;
-            case GPL::DOUBLE :
-                {
-                    double *dvalue = new double[*array_size];
-                    for (int i=0; i< *array_size;i++){
-                        dvalue[i] = 0.0;
+                    break;
+                case GPL::DOUBLE :
+                    {
+                        double *dvalue = new double[*array_size];
+                        for (int i=0; i< *array_size;i++){
+                            dvalue[i] = 0.0;
+                        }
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue,*array_size));
                     }
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue,*array_size));
-                }
-                break;
-            case GPL::STRING :
-                {
-                    std::string *svalue = new std::string[*array_size];
-                    for (int i=0; i< *array_size;i++){
-                        svalue[i] = "";
+                    break;
+                case GPL::STRING :
+                    {
+                        std::string *svalue = new std::string[*array_size];
+                        for (int i=0; i< *array_size;i++){
+                            svalue[i] = "";
+                        }
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue, *array_size));
                     }
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue, *array_size));
-                }
-                break;
-            default:
-                assert(false);
-        }
+                    break;
+                default:
+                    assert(false);
+            }
+            delete array_size;
         }catch(GPL::Type errorneous_type){
             
+            delete array_size;
             Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, GPL::to_string(errorneous_type), *$2, "a");                
             switch($1) {
                 case GPL::INT:
@@ -653,6 +657,7 @@ variable:
             break;
         }
         $$ = new Variable(*$1);
+        delete $1;
     }
     | T_ID T_LBRACKET expression T_RBRACKET {
         Scope_manager& scopemgr = Scope_manager::instance();
@@ -661,18 +666,21 @@ variable:
             Error::error(Error::UNDECLARED_VARIABLE, *$1 + "[]");
             $$ = new Variable("");
             delete $1;
+            delete $3;
             break;
         }
         if (symbol->get_count() <=0) {
             Error::error(Error::VARIABLE_NOT_AN_ARRAY, *$1);
             $$ = new Variable("");
             delete $1;
+            delete $3;
             break;
         }
         if ($3->type() != GPL::INT) {
             Error::error(Error::ARRAY_INDEX_MUST_BE_AN_INTEGER, *$1, GPL::to_string($3->type()));
             $$ = new Variable("");
             delete $1;
+            delete $3;
             break;
         }
         $$ = new Variable(*$1, $3);
@@ -686,9 +694,15 @@ expression:
     primary_expression {$$=$1;}
 
 expression:
-    expression T_OR expression { $$= bin_op_check<OR, GPL::OR>($1, $3, GPL::INT|GPL::DOUBLE);}
-    | expression T_AND expression {$$= bin_op_check<AND, GPL::AND>($1, $3, GPL::INT|GPL::DOUBLE);}
-    | expression T_LESS_EQUAL expression {$$= bin_op_check<LESS_EQUAL, GPL::LESS_EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING);}
+    expression T_OR expression { 
+        $$= bin_op_check<OR, GPL::OR>($1, $3, GPL::INT|GPL::DOUBLE);
+        }
+    | expression T_AND expression {
+        $$= bin_op_check<AND, GPL::AND>($1, $3, GPL::INT|GPL::DOUBLE);
+        }
+    | expression T_LESS_EQUAL expression {
+        $$= bin_op_check<LESS_EQUAL, GPL::LESS_EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING);
+        }
     | expression T_GREATER_EQUAL  expression {
          $$= bin_op_check<GREATER_EQUAL, GPL::GREATER_EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
          }
