@@ -4,6 +4,7 @@
   #include "Constant.h"
   #include <string>
   #include "Scope_manager.h"
+  #include "Variable.h"
   class Expression;
   class Variable;
   struct Parameter;
@@ -38,14 +39,14 @@ extern int line_count;            // current line in the input; from record.l
  std::string*   union_string;  // MUST be a pointer to a string
  double         union_double;
  GPL::Type      union_gpl_type;
- const Expression* union_expression_ptr;
  const Variable* union_variable_ptr;
+ const Expression* union_expression_ptr;
 };
 %destructor { delete $$; } <union_string>
 
 // tokens declared here
 
-%%
+
 
   /* updated January 2019 
     * Copy the following token declarations into your .y file. */
@@ -74,8 +75,8 @@ extern int line_count;            // current line in the input; from record.l
 %token T_IF                  "if";
 %token T_FOR                 "for";
 %token T_ELSE                "else";
-%token < > T_EXIT            "exit"; /* value is line number */
-%token < > T_PRINT           "print"; /* value is line number */
+%token <union_int> T_EXIT            "exit"; /* value is line number */
+%token <union_int> T_PRINT           "print"; /* value is line number */
 %token T_TRUE                "true";
 %token T_FALSE               "false";
 
@@ -167,13 +168,51 @@ extern int line_count;            // current line in the input; from record.l
 %type <union_variable_ptr> variable;
 // Add the %nonassoc directive for the non-associative operators
 
-  
+%left T_OR;
+%left T_AND; 
+%left T_EQUAL T_NOT_EQUAL;
+%left T_LESS T_GREATER T_LESS_EQUAL T_GREATER_EQUAL;
 %left T_PLUS T_MINUS;
 %left T_MULTIPLY T_DIVIDE T_MOD;
-%left T_LESS T_GREATER T_LESS_EQUAL T_GREATER_EQUAL;
-%left T_EQUAL T_NOT_EQUAL;
 
-%nonassoc T_NEAR T_TOUCHES UNARY_OPS IF_NO_ELSE T_ELSE;
+%nonassoc T_NEAR T_TOUCHES;
+%nonassoc T_NOT;
+%nonassoc UNARY_OPS;
+%nonassoc T_IF_NO_ELSE;
+%nonassoc T_ELSE;
+
+%{
+template<typename OP, GPL::Operator op_type>
+const Expression* bin_op_check(const Expression* one, const Expression* three, unsigned int valid_types)
+    {
+        bool lhs_valid = one->type() & valid_types;
+        bool rhs_valid = three->type() & valid_types;
+        if (lhs_valid && rhs_valid)
+            return new OP(one, three);
+        if (!lhs_valid)
+            Error::error(Error::INVALID_LEFT_OPERAND_TYPE, to_string(op_type));
+        if (!rhs_valid)
+            Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, to_string(op_type));
+        delete one;
+        delete three;
+        return new Integer_constant(0);
+    }
+
+template<typename OP, GPL::Operator op_type>
+const Expression* unary_op_check(const Expression* two, unsigned int valid_types)
+    {
+        bool rhs_valid = two->type() & valid_types;
+        if (rhs_valid)
+            return new OP(two);
+        if (!rhs_valid)
+            Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, to_string(op_type));
+        delete two;
+        return new Integer_constant(0);
+    }
+%}
+
+
+%%
 
 
 // Grammer rules
@@ -263,6 +302,30 @@ variable_declaration:
         }catch(GPL::Type errorneous_type){
             
             Error::error(Error::INVALID_TYPE_FOR_INITIAL_VALUE, GPL::to_string(errorneous_type), *$2, GPL::to_string($1));
+            switch($1) {
+                case GPL::INT:
+                {
+                    int* ivalue = new int(0);
+                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue));
+                    break;
+                }
+                case GPL::DOUBLE:
+                {
+                    double* dvalue = new double(0.0);
+                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue));
+                    break;
+                }
+                case GPL::STRING:
+                {
+                    std::string* svalue = new std::string("");
+                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue));
+                    break;
+                }
+                default:
+                    assert(false);
+            }
+        
+        
         }
         delete $2;
         delete $3;
@@ -270,18 +333,43 @@ variable_declaration:
     }
     | simple_type T_ID T_LBRACKET expression T_RBRACKET {
         Scope_manager& symtab = Scope_manager::instance();
-        if(symtab.defined_in_current_scope(*$2))
-        {
-            Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE,*$2);
-            delete $2;
-            break;
-        }
-
         try{
             int* array_size = new int($4->evaluate()->as_int());
             if(*array_size <= 0)
             {
                 Error::error(Error::INVALID_ARRAY_SIZE, *$2,std::to_string(*array_size));
+                if(symtab.defined_in_current_scope(*$2))
+                {
+                    Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE,*$2);
+                    delete $2;
+                    break;
+                }
+                switch($1) {
+                case GPL::INT:
+                {
+                    int* ivalue = new int[1];
+                    ivalue[0] = 0;
+                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue, 1));
+                    break;
+                }
+                case GPL::DOUBLE:
+                {
+                    double* dvalue = new double[1];
+                    dvalue[0] = 0.0;
+                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue, 1));
+                    break;
+                }
+                case GPL::STRING:
+                {
+                    std::string* svalue = new std::string[1];
+                    svalue[0] = "";
+                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue, 1));
+                    break;
+                }
+                default:
+                    assert(false);
+                }
+
                 delete $2;
                 break;
             }    
@@ -315,19 +403,44 @@ variable_declaration:
                 }
                 break;
             default:
-                break;
-
+                assert(false);
         }
         }catch(GPL::Type errorneous_type){
-            Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, GPL::to_string(errorneous_type), *$2, "a");
-
-            // Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, *$2, "111");           
-            delete $2;
+            
+            Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, GPL::to_string(errorneous_type), *$2, "a");                
+            switch($1) {
+                case GPL::INT:
+                {
+                    int* ivalue = new int[1];
+                    ivalue[0] = 0;
+                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue, 1));
+                    break;
+                }
+                case GPL::DOUBLE:
+                {
+                    double* dvalue = new double[1];
+                    dvalue[0] = 0.0;
+                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue, 1));
+                    break;
+                }
+                case GPL::STRING:
+                {
+                    std::string* svalue = new std::string[1];
+                    svalue[0] = "";
+                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue, 1));
+                    break;
+                }
+                default:
+                    assert(false);
+            }
             break;
         }
+            
+
         delete $2;
-        
+
     }
+
 
 
 //---------------------------------------------------------------------
@@ -524,23 +637,45 @@ assign_statement:
 //---------------------------------------------------------------------
 variable:
     T_ID {
-        auto symbol_ptr = Scope_manager::instance().lookup(*$1);
-        if (symbol_ptr == nullptr) {
+        Scope_manager& scopemgr = Scope_manager::instance();
+        // Lookup symbol
+        auto symbol=scopemgr.lookup(*$1);
+        if (symbol == nullptr) {
+            Error::error(Error::UNDECLARED_VARIABLE, *$1);
             $$ = new Variable("");
-        } else {
-            $$ = new Variable(*$1);
+            delete $1;
+            break;
         }
-        
+        if (symbol->get_count() >0) {
+            Error::error(Error::VARIABLE_IS_AN_ARRAY, *$1);
+            $$ = new Variable("");
+            delete $1;
+            break;
+        }
+        $$ = new Variable(*$1);
     }
-    | T_ID T_LBRACKET expression T_RBRACKET { //array
-        auto symbol_ptr = Scope_manager::instance().lookup(*$1);
-        if (symbol_ptr == nullptr) {
-            std::cerr << "Error: undefined symbol " << *$1 << std::endl;
+    | T_ID T_LBRACKET expression T_RBRACKET {
+        Scope_manager& scopemgr = Scope_manager::instance();
+        auto symbol=scopemgr.lookup(*$1);
+        if (symbol == nullptr) {
+            Error::error(Error::UNDECLARED_VARIABLE, *$1 + "[]");
             $$ = new Variable("");
-        } else {
-            
-            $$ = new Variable(*$1, $3);
+            delete $1;
+            break;
         }
+        if (symbol->get_count() <=0) {
+            Error::error(Error::VARIABLE_NOT_AN_ARRAY, *$1);
+            $$ = new Variable("");
+            delete $1;
+            break;
+        }
+        if ($3->type() != GPL::INT) {
+            Error::error(Error::ARRAY_INDEX_MUST_BE_AN_INTEGER, *$1, GPL::to_string($3->type()));
+            $$ = new Variable("");
+            delete $1;
+            break;
+        }
+        $$ = new Variable(*$1, $3);
     }
     | T_ID T_PERIOD T_ID
     | T_ID T_LBRACKET expression T_RBRACKET T_PERIOD T_ID
@@ -551,44 +686,88 @@ expression:
     primary_expression {$$=$1;}
 
 expression:
-    expression T_OR expression { $$=new OR($1, $3); }
-    | expression T_AND expression { $$=new AND($1, $3); }
-    | expression T_LESS_EQUAL expression { $$=new LESS_EQUAL($1, $3); }
-    | expression T_GREATER_EQUAL  expression { $$=new GREATER_EQUAL($1, $3); }
-    | expression T_LESS expression { $$=new LESS($1, $3); }
-    | expression T_GREATER  expression { $$=new GREATER($1, $3); }
-    | expression T_EQUAL expression  { $$=new EQUAL($1, $3); }
-    | expression T_NOT_EQUAL expression { $$=new NOT_EQUAL($1, $3); }
-    | expression T_PLUS expression { $$=new Plus($1, $3); }
-    | expression T_MINUS expression { $$=new Minus($1, $3); }
-    | expression T_MULTIPLY expression { $$=new Multiply($1, $3); }
-    | expression T_DIVIDE expression { $$=new Divide($1, $3); }
-    | expression T_MOD expression { $$=new Modulus($1, $3); }
-    | T_MINUS  expression %prec UNARY_OPS { $$=new NEGATIVE($2); }
-    | T_NOT  expression { $$=new NOT($2); }
+    expression T_OR expression { $$= bin_op_check<OR, GPL::OR>($1, $3, GPL::INT|GPL::DOUBLE);}
+    | expression T_AND expression {$$= bin_op_check<AND, GPL::AND>($1, $3, GPL::INT|GPL::DOUBLE);}
+    | expression T_LESS_EQUAL expression {$$= bin_op_check<LESS_EQUAL, GPL::LESS_EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING);}
+    | expression T_GREATER_EQUAL  expression {
+         $$= bin_op_check<GREATER_EQUAL, GPL::GREATER_EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
+         }
+    | expression T_LESS expression {
+         $$= bin_op_check<LESS, GPL::LESS_THAN>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
+         }
+    | expression T_GREATER  expression {
+         $$= bin_op_check<GREATER, GPL::GREATER_THAN>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
+         }
+    | expression T_EQUAL expression  {
+         $$= bin_op_check<EQUAL, GPL::EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
+         }
+    | expression T_NOT_EQUAL expression {
+         $$= bin_op_check<NOT_EQUAL, GPL::NOT_EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
+         }
+    | expression T_PLUS expression {
+         $$= bin_op_check<Plus, GPL::PLUS>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
+         }
+    | expression T_MINUS expression {
+         $$= bin_op_check<Minus, GPL::MINUS>($1, $3, GPL::INT|GPL::DOUBLE); 
+         }
+    | expression T_MULTIPLY expression {
+         $$= bin_op_check<Multiply, GPL::MULTIPLY>($1, $3, GPL::INT|GPL::DOUBLE); 
+         }
+    | expression T_DIVIDE expression {
+         $$= bin_op_check<Divide, GPL::DIVIDE>($1, $3, GPL::INT|GPL::DOUBLE); 
+         }
+    | expression T_MOD expression {
+         $$= bin_op_check<Modulus, GPL::MOD>($1, $3, GPL::INT); 
+         }
+    | T_MINUS  expression %prec UNARY_OPS {
+         $$= unary_op_check<NEGATIVE, GPL::UNARY_MINUS>($2, GPL::INT|GPL::DOUBLE); 
+         }
+    | T_NOT  expression {
+         $$= unary_op_check<NOT, GPL::NOT>($2, GPL::INT|GPL::DOUBLE); 
+         }
     | expression T_NEAR expression
     | expression T_TOUCHES expression
 
 primary_expression:
-    T_SIN T_LPAREN expression T_RPAREN { $$=new SIN($3); }
-    | T_COS T_LPAREN expression T_RPAREN { $$=new COS($3); }
-    | T_TAN T_LPAREN expression T_RPAREN { $$=new TAN($3); }
-    | T_ASIN T_LPAREN expression T_RPAREN { $$=new ASIN($3); }
-    | T_ACOS T_LPAREN expression T_RPAREN { $$=new ACOS($3); }
-    | T_ATAN T_LPAREN expression T_RPAREN { $$=new ATAN($3); }
-    | T_SQRT T_LPAREN expression T_RPAREN { $$=new SQRT($3); }
-    | T_ABS T_LPAREN expression T_RPAREN { $$=new ABS($3); }
-    | T_FLOOR T_LPAREN expression T_RPAREN { $$=new FLOOR($3); }
-    | T_RANDOM T_LPAREN expression T_RPAREN { $$=new RANDOM($3); }
+    T_SIN T_LPAREN expression T_RPAREN {
+        $$ = unary_op_check<SIN, GPL::SIN>($3, GPL::INT|GPL::DOUBLE);
+    }
+    | T_COS T_LPAREN expression T_RPAREN {
+        $$ = unary_op_check<COS, GPL::COS>($3, GPL::INT|GPL::DOUBLE);
+    }
+    | T_TAN T_LPAREN expression T_RPAREN {
+        $$ = unary_op_check<TAN, GPL::TAN>($3, GPL::INT|GPL::DOUBLE);
+    }
+    | T_ASIN T_LPAREN expression T_RPAREN {
+        $$ = unary_op_check<ASIN, GPL::ASIN>($3, GPL::INT|GPL::DOUBLE);
+    }
+    | T_ACOS T_LPAREN expression T_RPAREN {
+        $$ = unary_op_check<ACOS, GPL::ACOS>($3, GPL::INT|GPL::DOUBLE);
+    }
+    | T_ATAN T_LPAREN expression T_RPAREN {
+        $$ = unary_op_check<ATAN, GPL::ATAN>($3, GPL::INT|GPL::DOUBLE);
+    }
+    | T_SQRT T_LPAREN expression T_RPAREN {
+        $$ = unary_op_check<SQRT, GPL::SQRT>($3, GPL::INT|GPL::DOUBLE);
+    }
+    | T_ABS T_LPAREN expression T_RPAREN {
+        $$ = unary_op_check<ABS, GPL::ABS>($3, GPL::INT|GPL::DOUBLE);
+    }
+    | T_FLOOR T_LPAREN expression T_RPAREN {
+        $$ = unary_op_check<FLOOR, GPL::FLOOR>($3, GPL::INT|GPL::DOUBLE);
+    }
+    | T_RANDOM T_LPAREN expression T_RPAREN {
+        $$ = unary_op_check<RANDOM, GPL::RANDOM>($3, GPL::INT|GPL::DOUBLE);
+    }
 
 
 //---------------------------------------------------------------------
 primary_expression:
-    T_LPAREN  expression T_RPAREN {$$=$2; /*CHANGE*/}
+    T_LPAREN  expression T_RPAREN {$$=$2;}
     | variable {$$=$1;}
     | T_INT_CONSTANT { $$=new Integer_constant($1);}
-    | T_TRUE {$$=nullptr; /*CHANGE*/}
-    | T_FALSE {$$=nullptr; /*CHANGE*/}
+    | T_TRUE { $$=new Integer_constant(1); }
+    | T_FALSE { $$=new Integer_constant(0); }
     | T_DOUBLE_CONSTANT { $$=new Double_constant($1);}
     | T_STRING_CONSTANT { $$=new String_constant(*$1); delete $1;}
     ;

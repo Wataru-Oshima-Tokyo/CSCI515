@@ -54,24 +54,10 @@ const Constant* Multiply::evaluate() const
 {
   const Constant* lhs_constant=lhs->evaluate();
   const Constant* rhs_constant=rhs->evaluate();
-  if (lhs->type()==GPL::STRING){
-    Error::error(Error::INVALID_LEFT_OPERAND_TYPE, "*");
-  }
-  if (rhs->type()==GPL::STRING){
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE,  "*");
-  }
-
-  if (lhs->type()==GPL::STRING || rhs->type()==GPL::STRING)
-    return ret(new Integer_constant(0 * 0));
-
-  if(lhs->type()==GPL::DOUBLE && rhs->type()==GPL::DOUBLE)
-    return ret(new Double_constant(std::ceil(lhs_constant->as_double() * //<--multiply
-                                   rhs_constant->as_double()*100000)/100000));
-
 
   if(lhs->type()==GPL::DOUBLE || rhs->type()==GPL::DOUBLE)
-    return ret(new Double_constant(std::round(lhs_constant->as_double() * //<--multiply
-                                   rhs_constant->as_double()*10)/10));
+    return ret(new Double_constant(lhs_constant->as_double() * //<--multiply
+                                   rhs_constant->as_double()));
   return ret(new Integer_constant(lhs_constant->as_int() *     //<--multiply
                                   rhs_constant->as_int()));
 }
@@ -89,15 +75,6 @@ const Constant* Minus::evaluate() const
 {
   const Constant* lhs_constant=lhs->evaluate();
   const Constant* rhs_constant=rhs->evaluate();
-  if (lhs->type()==GPL::STRING){
-    Error::error(Error::INVALID_LEFT_OPERAND_TYPE, "-");
-  }
-  if (rhs->type()==GPL::STRING){
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE,  "-");
-  }
-
-  if (lhs->type()==GPL::STRING || rhs->type()==GPL::STRING)
-    return ret(new Integer_constant(0 * 0));
 
   if(lhs->type()==GPL::DOUBLE || rhs->type()==GPL::DOUBLE)
     return ret(new Double_constant(lhs_constant->as_double() - //<--minus
@@ -119,20 +96,11 @@ const Constant* Divide::evaluate() const
 {
   const Constant* lhs_constant=lhs->evaluate();
   const Constant* rhs_constant=rhs->evaluate();
-  if (lhs->type()==GPL::STRING){
-    Error::error(Error::INVALID_LEFT_OPERAND_TYPE, "/");
+
+  if (!Error::runtime() && rhs_constant->as_double() == 0.0) {
+    Error::error(Error::DIVIDE_BY_ZERO_AT_PARSE_TIME);
+    return ret(new Integer_constant(0));
   }
-  if (rhs->type()==GPL::STRING){
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE,  "/");
-  }
-
-  if (lhs->type()==GPL::STRING || rhs->type()==GPL::STRING)
-    return ret(new Integer_constant(0 * 0));
-
-
-  if(lhs->type()==GPL::DOUBLE && rhs->type()==GPL::DOUBLE)
-    return ret(new Double_constant(std::floor(lhs_constant->as_double() / //<--divide
-                                   rhs_constant->as_double()*1000000)/1000000));
 
   if(lhs->type()==GPL::DOUBLE || rhs->type()==GPL::DOUBLE)
     return ret(new Double_constant(lhs_constant->as_double() / //<--divide
@@ -155,25 +123,19 @@ const Constant* Modulus::evaluate() const
 {
   const Constant* lhs_constant = lhs->evaluate();
   const Constant* rhs_constant = rhs->evaluate();
-  if (lhs->type() == GPL::STRING || lhs->type() == GPL::DOUBLE) {
-    Error::error(Error::INVALID_LEFT_OPERAND_TYPE, "%");
-  }
-  if (rhs->type() == GPL::STRING || rhs->type() == GPL::DOUBLE) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "%");
+
+  if (!Error::runtime() && rhs_constant->as_int() == 0) {
+    Error::error(Error::MOD_BY_ZERO_AT_PARSE_TIME);
+    return ret(new Integer_constant(0));
   }
 
-  if (lhs->type() == GPL::STRING || rhs->type() == GPL::STRING || lhs->type() == GPL::DOUBLE || rhs->type() == GPL::DOUBLE )
-    return ret(new Integer_constant(0 * 0));
 
   return ret(new Integer_constant(lhs_constant->as_int() % rhs_constant->as_int()));
 }
 
 GPL::Type Modulus::type() const
 {
-  GPL::Type lht = lhs->type();
-  GPL::Type rht = rhs->type();
-  if (lht == GPL::DOUBLE || rht == GPL::DOUBLE)
-    return GPL::DOUBLE;
+
   return GPL::INT;
 }
 
@@ -182,33 +144,15 @@ const Constant* OR::evaluate() const
 {
   const Constant* lhs_constant = lhs->evaluate();
   const Constant* rhs_constant = rhs->evaluate();
-  if (lhs->type() == GPL::STRING) {
-    Error::error(Error::INVALID_LEFT_OPERAND_TYPE, "||");
-  }
-  if (rhs->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "||");
-  }
 
-  if (lhs->type() == GPL::STRING || rhs->type() == GPL::STRING){
-    return ret(new Integer_constant(0 * 0));
-  }
-    
-
-  if(lhs->type()==GPL::DOUBLE || rhs->type()==GPL::DOUBLE) {
-        return ret(new Integer_constant(lhs_constant->as_double() || //<--or
+  return ret(new Integer_constant(lhs_constant->as_double() || //<--or
                                    rhs_constant->as_double()));
-  }
 
-  return ret(new Integer_constant(lhs_constant->as_int() ||     //<--or
-                                  rhs_constant->as_int()));
 }
 
 GPL::Type OR::type() const
 {
-  GPL::Type lht = lhs->type();
-  GPL::Type rht = rhs->type();
-  if (lht == GPL::DOUBLE || rht == GPL::DOUBLE)
-    return GPL::DOUBLE;
+
   return GPL::INT;
 }
 
@@ -216,34 +160,13 @@ const Constant* AND::evaluate() const
 {
   const Constant* lhs_constant = lhs->evaluate();
   const Constant* rhs_constant = rhs->evaluate();
-  // if (lhs->type() == GPL::STRING) {
-  //   Error::error(Error::INVALID_LEFT_OPERAND_TYPE, "&&");
-  // }
-  // if (rhs->type() == GPL::STRING) {
-  //   Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "&&");
-  // }
 
-  if (lhs->type() == GPL::STRING || rhs->type() == GPL::STRING){
-            return ret(new Integer_constant(lhs_constant->as_double() &&
-                                   rhs_constant->as_double()));
-  }
-    
-
-  if(lhs->type()==GPL::DOUBLE || rhs->type()==GPL::DOUBLE) {
-        return ret(new Integer_constant(lhs_constant->as_double() &&
-                                   rhs_constant->as_double()));
-  }
-
-  return ret(new Integer_constant(lhs_constant->as_double() &&     
+  return ret(new Integer_constant(lhs_constant->as_double() &&  //<--AND
                                   rhs_constant->as_double()));
 }
 
 GPL::Type AND::type() const
 {
-  GPL::Type lht = lhs->type();
-  GPL::Type rht = rhs->type();
-  if (lht == GPL::DOUBLE || rht == GPL::DOUBLE)
-    return GPL::DOUBLE;
   return GPL::INT;
 }
 
@@ -270,10 +193,7 @@ const Constant* LESS::evaluate() const
 
 GPL::Type LESS::type() const
 {
-  GPL::Type lht = lhs->type();
-  GPL::Type rht = rhs->type();
-  if (lht == GPL::DOUBLE || rht == GPL::DOUBLE)
-    return GPL::DOUBLE;
+
   return GPL::INT;
 }
 
@@ -299,10 +219,6 @@ const Constant* LESS_EQUAL::evaluate() const
 
 GPL::Type LESS_EQUAL::type() const
 {
-  GPL::Type lht = lhs->type();
-  GPL::Type rht = rhs->type();
-  if (lht == GPL::DOUBLE || rht == GPL::DOUBLE)
-    return GPL::DOUBLE;
   return GPL::INT;
 }
 
@@ -329,10 +245,6 @@ const Constant* GREATER::evaluate() const
 
 GPL::Type GREATER::type() const
 {
-  GPL::Type lht = lhs->type();
-  GPL::Type rht = rhs->type();
-  if (lht == GPL::DOUBLE || rht == GPL::DOUBLE)
-    return GPL::DOUBLE;
   return GPL::INT;
 }
 
@@ -357,10 +269,6 @@ const Constant* GREATER_EQUAL::evaluate() const
 
 GPL::Type GREATER_EQUAL::type() const
 {
-  GPL::Type lht = lhs->type();
-  GPL::Type rht = rhs->type();
-  if (lht == GPL::DOUBLE || rht == GPL::DOUBLE)
-    return GPL::DOUBLE;
   return GPL::INT;
 }
 
@@ -370,34 +278,15 @@ const Constant* EQUAL::evaluate() const
   const Constant* lhs_constant = lhs->evaluate();
   const Constant* rhs_constant = rhs->evaluate();
 
-    
   if(lhs->type()==GPL::STRING || rhs->type()==GPL::STRING) {
         return ret(new Integer_constant(lhs_constant->as_string() == //equal
                                    rhs_constant->as_string()));
   }
-  if(lhs->type()==GPL::DOUBLE && rhs->type()==GPL::DOUBLE) {
-        std::cout << "lhs:" << lhs_constant->as_double()
-        << " rhs: " << rhs_constant->as_double()
-        <<std::endl;
-        return ret(new Integer_constant(lhs_constant->as_double() == 
-                                   rhs_constant->as_double()));
-  }
-  if(lhs->type()==GPL::INT && rhs->type()==GPL::INT) {
-        std::cout << "lhs:" << lhs_constant->as_double()
-        << " rhs: " << rhs_constant->as_double()
-        <<std::endl;
-    return ret(new Integer_constant(lhs_constant->as_int() ==    
-                                  rhs_constant->as_int()));
-  }
-  return ret(new Integer_constant(0));
+  return ret(new Integer_constant(lhs_constant->as_double()==rhs_constant->as_double()));
 }
 
 GPL::Type EQUAL::type() const
 {
-  GPL::Type lht = lhs->type();
-  GPL::Type rht = rhs->type();
-  if (lht == GPL::DOUBLE || rht == GPL::DOUBLE)
-    return GPL::DOUBLE;
   return GPL::INT;
 }
 
@@ -422,10 +311,6 @@ const Constant* NOT_EQUAL::evaluate() const
 
 GPL::Type NOT_EQUAL::type() const
 {
-  GPL::Type lht = lhs->type();
-  GPL::Type rht = rhs->type();
-  if (lht == GPL::DOUBLE || rht == GPL::DOUBLE)
-    return GPL::DOUBLE;
   return GPL::INT;
 }
 
@@ -435,10 +320,6 @@ const Constant* NEGATIVE::evaluate() const
   // const Constant* lhs_constant = lhs->evaluate();
   const Constant* value_constant = value->evaluate();
 
-  if (value->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "-");
-    return ret(new Integer_constant(0 * 0));
-  }
 
   if(value->type()==GPL::DOUBLE) {
         return ret(new Double_constant(-1 *value_constant->as_double()));
@@ -455,13 +336,8 @@ GPL::Type NEGATIVE::type() const
 
 const Constant* NOT::evaluate() const
 {
-  // const Constant* lhs_constant = lhs->evaluate();
   const Constant* value_constant = value->evaluate();
 
-  if (value->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "!");
-    return ret(new Integer_constant(0 * 0));
-  }
 
   if(value->type()==GPL::DOUBLE) {
         return ret(new Integer_constant(!value_constant->as_double()));
@@ -472,18 +348,12 @@ const Constant* NOT::evaluate() const
 
 GPL::Type NOT::type() const
 {
-  return value->type();
+  return GPL::INT;
 }
 
 const Constant* SIN::evaluate() const
 {
-  // const Constant* lhs_constant = lhs->evaluate();
   const Constant* value_constant = value->evaluate();
-
-  if (value->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "sin");
-    return ret(new Integer_constant(0 * 0));
-  }
 
   return ret(new Double_constant(std::sin(value_constant->as_double() * (std::numbers::pi / 180))));
 
@@ -491,56 +361,36 @@ const Constant* SIN::evaluate() const
 
 GPL::Type SIN::type() const
 {
-  return value->type();
+  return GPL::DOUBLE;
 }
 
 const Constant* COS::evaluate() const
 {
-  // const Constant* lhs_constant = lhs->evaluate();
   const Constant* value_constant = value->evaluate();
-
-  if (value->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "cos");
-    return ret(new Integer_constant(0 * 0));
-  }
 
   return ret(new Double_constant(std::cos(value_constant->as_double()* (std::numbers::pi / 180))));
 }
 
 GPL::Type COS::type() const
 {
-  return value->type();
+  return GPL::DOUBLE;
 }
 
 const Constant* TAN::evaluate() const
 {
-  // const Constant* lhs_constant = lhs->evaluate();
   const Constant* value_constant = value->evaluate();
-
-  if (value->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "tan");
-    return ret(new Integer_constant(0 * 0));
-  }
-
-
   return ret(new Double_constant(std::tan(value_constant->as_double()* (std::numbers::pi / 180))));
 
 }
 
 GPL::Type TAN::type() const
 {
-  return value->type();
+  return GPL::DOUBLE;
 }
 
 const Constant* ASIN::evaluate() const
 {
-  // const Constant* lhs_constant = lhs->evaluate();
   const Constant* value_constant = value->evaluate();
-
-  if (value->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "asin");
-    return ret(new Integer_constant(0 * 0));
-  }
 
   return ret(new Double_constant(std::asin(value_constant->as_double())*180/std::numbers::pi));
 
@@ -548,18 +398,12 @@ const Constant* ASIN::evaluate() const
 
 GPL::Type ASIN::type() const
 {
-  return value->type();
+  return GPL::DOUBLE;
 }
 
 const Constant* ACOS::evaluate() const
 {
-  // const Constant* lhs_constant = lhs->evaluate();
   const Constant* value_constant = value->evaluate();
-
-  if (value->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "acos");
-    return ret(new Integer_constant(0 * 0));
-  }
 
   return ret(new Double_constant(std::acos(value_constant->as_double())*180/std::numbers::pi));
 
@@ -567,18 +411,12 @@ const Constant* ACOS::evaluate() const
 
 GPL::Type ACOS::type() const
 {
-  return value->type();
+  return GPL::DOUBLE;
 }
 
 const Constant* ATAN::evaluate() const
 {
-  // const Constant* lhs_constant = lhs->evaluate();
   const Constant* value_constant = value->evaluate();
-
-  if (value->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "atan");
-    return ret(new Integer_constant(0 * 0));
-  }
 
   return ret(new Double_constant(std::atan(value_constant->as_double())*180/std::numbers::pi));
 
@@ -587,19 +425,13 @@ const Constant* ATAN::evaluate() const
 
 GPL::Type ATAN::type() const
 {
-  return value->type();
+  return GPL::DOUBLE;
 }
 
 
 const Constant* SQRT::evaluate() const
 {
-  // const Constant* lhs_constant = lhs->evaluate();
   const Constant* value_constant = value->evaluate();
-
-  if (value->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "sqrt");
-    return ret(new Integer_constant(0 * 0));
-  }
 
   return ret(new Double_constant(std::sqrt(value_constant->as_double())));
 
@@ -608,19 +440,13 @@ const Constant* SQRT::evaluate() const
 
 GPL::Type SQRT::type() const
 {
-  return value->type();
+  return GPL::DOUBLE;
 }
 
 const Constant* ABS::evaluate() const
 {
-  // const Constant* lhs_constant = lhs->evaluate();
   const Constant* value_constant = value->evaluate();
 
-  if (value->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "abs");
-    return ret(new Integer_constant(0 * 0));
-  }
-  
   if(value->type()==GPL::DOUBLE) {
         return ret(new Double_constant(std::abs(value_constant->as_double())));
   }
@@ -637,35 +463,24 @@ GPL::Type ABS::type() const
 
 const Constant* FLOOR::evaluate() const
 {
-  // const Constant* lhs_constant = lhs->evaluate();
   const Constant* value_constant = value->evaluate();
 
-  if (value->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "floor");
-    return ret(new Integer_constant(0 * 0));
-  }
-
-  return ret(new Integer_constant(std::floor(value_constant->as_double())));
-
+  return ret(new Integer_constant(floor(value_constant->as_double())));
 
 }
 
 GPL::Type FLOOR::type() const
 {
-  return value->type();
+  return GPL::INT;
 }
 
 const Constant* RANDOM::evaluate() const
 {
   const Constant* value_constant = value->evaluate();
 
-  if (value->type() == GPL::STRING) {
-    Error::error(Error::INVALID_RIGHT_OPERAND_TYPE, "random");
-    return ret(new Integer_constant(0 * 0));
-  }
   if (value_constant->as_double() <1){
     Error::error(Error::INVALID_ARGUMENT_FOR_RANDOM, value_constant->as_string());
-    return ret(new Integer_constant(0 * 0));
+    return ret(new Integer_constant(0));
   }
 
   return ret(new Integer_constant(std::rand()% static_cast<int>(std::floor(value_constant->as_double()))));
@@ -675,49 +490,7 @@ const Constant* RANDOM::evaluate() const
 
 GPL::Type RANDOM::type() const
 {
-  return value->type();
+  return GPL::INT;
 }
 
 
-
-Variable::Variable(const std::string& symbol_name)
-    : symbol_name(symbol_name), array_index_expression(nullptr) {}
-
-Variable::Variable(const std::string& symbol_name, const Expression* index_expr)
-    : symbol_name(symbol_name), array_index_expression(index_expr) {}
-
-const Constant* Variable::evaluate() const {
-    if (symbol_name.empty()) {
-        return ret(new Integer_constant(0));
-    }
-    auto symbol_ptr = symbol();
-    if (array_index_expression == nullptr) {
-        return ret(symbol_ptr->as_constant());
-    }
-    int index;
-    try {
-        index = array_index_expression->evaluate()->as_int();
-        std::cout << "Int: " << index<< std::endl;
-    } catch (const std::exception& e) {
-        std::cout << "Error: " << e.what() << std::endl;
-        index = 0; // Set a default value for the index
-    }
-    
-    auto array_size = symbol_ptr->get_count();
-    if (index < 0 || index >= array_size) {
-        std::cerr << "Error: index out of bounds for array variable " << symbol_name << std::endl;
-        return ret(symbol_ptr->as_constant(0));
-    }
-    return ret(symbol_ptr->as_constant(index));
-}
-
-GPL::Type Variable::type() const {
-    if (symbol_name.empty()) {
-        return GPL::INT;
-    }
-    return symbol()->get_type();
-}
-
-Variable::~Variable() {
-    delete array_index_expression;
-}

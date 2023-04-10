@@ -151,11 +151,11 @@ const Constant* Symbol::as_constant(int index) const {
     //ToDo: I need to change for array
     switch (type_) {
         case GPL::Type::INT:
-            return new Integer_constant(*value_.int_pointer);
+            return new Integer_constant(value_.int_pointer[index]);
         case GPL::Type::DOUBLE:
-            return new Double_constant(*value_.double_pointer);
+            return new Double_constant(value_.double_pointer[index]);
         case GPL::Type::STRING:
-            return new String_constant(*value_.string_pointer);
+            return new String_constant(value_.string_pointer[index]);
         default:
             throw type_;
     }
