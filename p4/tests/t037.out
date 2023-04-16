@@ -4,21 +4,12 @@ gpl.cpp::main()
   read_keypresses_from_standard_input(false)
   dump_pixels(false)
   symbol_table(true)
-  graphics(false)
+  graphics(true)
 
 gpl.cpp::main() Calling yyparse()
 
 
 gpl.cpp::main() after call to yyparse().
 
-No errors found (parser probably worked correctly).
-
-
-Printing the symbol table from main()
-string a = "3"
-string b = "1.666667"
-string d = "6.250000"
-string e = "2.976190"
-Graphics is turned off by the Makefile.  Program exiting.
-
-gpl.cpp::main() done.
+1 error found.
+gpl giving up.

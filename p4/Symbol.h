@@ -7,16 +7,36 @@
 #include "types_and_ops.h"
 #include <assert.h>
 
+// gameobject type
+#include "Rectangle.h"
+#include "Circle.h"
+#include "Textbox.h"
+#include "Triangle.h"
+#include "Pixmap.h"
+
 class Constant;
 union symboltype{
         double *double_pointer;
         int *int_pointer;
         std::string *string_pointer;
+        Circle *circle_pointer;
+        Rectangle *rectangle_pointer;
+        Textbox *textbox_pointer;
+        Triangle *triangle_pointer;
+        Pixmap *pixmap_pointer;
+
+
+
 
         symboltype(){}
         symboltype(int* value): int_pointer(value){};
         symboltype(double* value): double_pointer(value){};
         symboltype(std::string* value): string_pointer(value){};
+        symboltype(Circle *value) : circle_pointer(value) {}
+        symboltype(Rectangle *value) : rectangle_pointer(value) {}
+        symboltype(Textbox *value) : textbox_pointer(value) {}
+        symboltype(Triangle *value) : triangle_pointer(value) {}
+        symboltype(Pixmap *value) : pixmap_pointer(value) {}
 };
 
 class Symbol {
@@ -29,7 +49,19 @@ class Symbol {
         Symbol(const std::string& name, int* value, int count);
         Symbol(const std::string& name, std::string* value);
         Symbol(const std::string& name, std::string* value, int count);
-        // here??
+        // game objects
+        // Constructor for individual GameObjectType1 objects
+        Symbol(const std::string &name, Circle *game_object);
+        Symbol(const std::string &name, Circle *game_object, int count);
+        Symbol(const std::string &name, Rectangle *game_object);
+        Symbol(const std::string &name, Rectangle *game_object, int count);
+        Symbol(const std::string &name, Textbox *game_object);
+        Symbol(const std::string &name, Textbox *game_object, int count);
+        Symbol(const std::string &name, Triangle *game_object);
+        Symbol(const std::string &name, Triangle *game_object, int count);
+        Symbol(const std::string &name, Pixmap *game_object);
+        Symbol(const std::string &name, Pixmap *game_object, int count);
+
 
         
         GPL::Type get_type() const;
@@ -42,6 +74,9 @@ class Symbol {
         //↓here?
         const Constant* as_constant() const;          //Symbol value is not an array
         const Constant* as_constant(int index) const; //Symbol value is an array
+        const Constant* as_constant(const std::string& attribute_name) const; // non-arrays
+        const Constant* as_constant(int index, const std::string& attribute_name) const; // arrays
+
     private:
         GPL::Type type_;
         std::string name_;

@@ -1,1 +1,2 @@
-double f;
+string window_title = "Project 4 t004.gpl -- compare to t004.jpg  ***PRESS q TO QUIT***";
+rectangle my_rectangle[3];

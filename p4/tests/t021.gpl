@@ -1,1 +1,4 @@
-int a = 7 - 2;
+circle wheel;
+textbox billboards[5];
+double font=billboards["bellicose"].size;
+double faint=billboards[wheel].size;

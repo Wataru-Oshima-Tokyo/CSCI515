@@ -1,4 +1,5 @@
-int a = 7 || 2;
-int b = 7 || 4.2;
-int d = 12.5 || 2;
-int e = 12.5 || 4.2;
+string window_title = "Project 4 t39.gpl";
+
+rectangle my_rectangle[3];
+
+int x = my_rectangle[1].apex; //no such member. See also t015.gpl

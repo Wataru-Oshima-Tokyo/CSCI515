@@ -4,12 +4,12 @@ gpl.cpp::main()
   read_keypresses_from_standard_input(false)
   dump_pixels(false)
   symbol_table(true)
-  graphics(false)
+  graphics(true)
 
 gpl.cpp::main() Calling yyparse()
 
 
 gpl.cpp::main() after call to yyparse().
 
-6 errors found.
+1 error found.
 gpl giving up.

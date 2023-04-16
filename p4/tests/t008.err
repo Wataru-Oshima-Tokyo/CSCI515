@@ -1,1 +1,2 @@
-Semantic error on line 3: Incorrect type (string) for initial value of variable 'some_number' of type (int).
+Semantic error on line 3: Variable 'one_shape' previously declared.
+Semantic error on line 5: Variable 'another_shape' previously declared.

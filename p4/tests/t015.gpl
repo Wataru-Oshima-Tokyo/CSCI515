@@ -1,1 +1,2 @@
-int a = 7 * 2;
+triangle pyramid;
+int top=pyramid.apex; //error: undeclared member

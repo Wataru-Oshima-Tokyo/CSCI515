@@ -1,3 +1,5 @@
-//Doubles cannot be assigned to integers.
-//This should generate an error message
-int some_number=3.14;
+//Should report errors on array size
+
+int ii=-5;
+rectangle my_rectangle[ii]; //should default to size of 1
+circle    my_circle[0]; //should default to size of 1

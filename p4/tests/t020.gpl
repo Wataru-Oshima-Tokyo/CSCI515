@@ -1,5 +1,7 @@
-string c = 7 * "apples";
-string f = 12.5 * "apples";
-string g = "bobbing" * 2;
-string h = "bobbing" * 4.2;
-string i = "bobbing" * "apples";
+rectangle brick[-3];//error: illegal array size
+int a=brick[0].x; //should work
+
+triangle one[0];//error: illegal array size
+
+circle parachute["fdsa"];//error: array size must be an integer
+int b=parachute[0].x; //should work

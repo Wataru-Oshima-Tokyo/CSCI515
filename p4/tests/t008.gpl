@@ -1,3 +1,5 @@
-//Strings cannot be assigned to integers.
-//This should generate an error message
-int some_number="Happy Days";
+// Error. previously declared variable errors
+rectangle one_shape[3];
+circle    one_shape[2];
+triangle  another_shape[4];
+triangle  another_shape[3];

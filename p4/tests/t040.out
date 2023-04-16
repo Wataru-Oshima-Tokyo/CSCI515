@@ -4,7 +4,7 @@ gpl.cpp::main()
   read_keypresses_from_standard_input(false)
   dump_pixels(false)
   symbol_table(true)
-  graphics(false)
+  graphics(true)
 
 gpl.cpp::main() Calling yyparse()
 

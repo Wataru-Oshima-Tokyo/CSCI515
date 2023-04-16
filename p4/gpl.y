@@ -5,6 +5,7 @@
   #include <string>
   #include "Scope_manager.h"
   #include "Variable.h"
+  #include "Parameter.h"
   class Expression;
   class Variable;
   struct Parameter;
@@ -34,6 +35,7 @@ extern int line_count;            // current line in the input; from record.l
 // turn on verbose (longer) error messages
 %define parse.error verbose
 
+
 %union {
  int            union_int;
  std::string*   union_string;  // MUST be a pointer to a string
@@ -41,6 +43,7 @@ extern int line_count;            // current line in the input; from record.l
  GPL::Type      union_gpl_type;
  const Variable* union_variable_ptr;
  const Expression* union_expression_ptr;
+ const Parameter* union_param_node_ptr;
 };
 %destructor { delete $$; } <union_string>
 
@@ -75,8 +78,8 @@ extern int line_count;            // current line in the input; from record.l
 %token T_IF                  "if";
 %token T_FOR                 "for";
 %token T_ELSE                "else";
-%token <union_int> T_EXIT            "exit"; /* value is line number */
-%token <union_int> T_PRINT           "print"; /* value is line number */
+%token <union_int> T_EXIT    "exit"; /* value is line number */
+%token <union_int> T_PRINT   "print"; /* value is line number */
 %token T_TRUE                "true";
 %token T_FALSE               "false";
 
@@ -162,24 +165,25 @@ extern int line_count;            // current line in the input; from record.l
 
 
 %type <union_gpl_type> simple_type;
+%type <union_gpl_type> object_type;
 %type <union_expression_ptr> primary_expression;
 %type <union_expression_ptr> expression;
 %type <union_expression_ptr> optional_initializer;
 %type <union_variable_ptr> variable;
+%type <union_param_node_ptr> parameter;
+%type <union_param_node_ptr> parameter_list_or_empty;
 // Add the %nonassoc directive for the non-associative operators
+%type <union_expression_ptr> or_expr;
+%type <union_expression_ptr> and_expr;
+%type <union_expression_ptr> equality_expr;
+%type <union_expression_ptr> relational_expr;
+%type <union_expression_ptr> add_sub_expr;
+%type <union_expression_ptr> mul_div_mod_expr;
+%type <union_expression_ptr> not_expr;
+%type <union_expression_ptr> unary_expr; 
 
-%left T_OR;
-%left T_AND; 
-%left T_EQUAL T_NOT_EQUAL;
-%left T_LESS T_GREATER T_LESS_EQUAL T_GREATER_EQUAL;
-%left T_PLUS T_MINUS;
-%left T_MULTIPLY T_DIVIDE T_MOD;
-
-%nonassoc T_NEAR T_TOUCHES;
-%nonassoc T_NOT;
-%nonassoc UNARY_OPS;
-%nonassoc T_IF_NO_ELSE;
-%nonassoc T_ELSE;
+%nonassoc T_ELSE
+%nonassoc T_IF_NO_ELSE
 
 %{
 template<typename OP, GPL::Operator op_type>
@@ -332,113 +336,49 @@ variable_declaration:
 
     }
     | simple_type T_ID T_LBRACKET expression T_RBRACKET {
-        Scope_manager& symtab = Scope_manager::instance();
-        try{
-            int* array_size = new int($4->evaluate()->as_int());
-            if(*array_size <= 0)
-            {
-                Error::error(Error::INVALID_ARRAY_SIZE, *$2,std::to_string(*array_size));
-                if(symtab.defined_in_current_scope(*$2))
-                {
-                    Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE,*$2);
-                    delete $2;
-                    break;
-                }
-                switch($1) {
-                case GPL::INT:
-                {
-                    int* ivalue = new int[1];
-                    ivalue[0] = 0;
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue, 1));
-                    break;
-                }
-                case GPL::DOUBLE:
-                {
-                    double* dvalue = new double[1];
-                    dvalue[0] = 0.0;
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue, 1));
-                    break;
-                }
-                case GPL::STRING:
-                {
-                    std::string* svalue = new std::string[1];
-                    svalue[0] = "";
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue, 1));
-                    break;
-                }
-                default:
-                    assert(false);
-                }
-
-                delete $2;
-                break;
-            }    
-        switch($1){
-            case GPL::INT :
-                {
-
-                    int *ivalue = new int[*array_size];
-                    for (int i=0; i<*array_size;i++){
-                        ivalue[i] = 0;
-                    }
-                     symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue, *array_size));
-                }
-                break;
-            case GPL::DOUBLE :
-                {
-                    double *dvalue = new double[*array_size];
-                    for (int i=0; i< *array_size;i++){
-                        dvalue[i] = 0.0;
-                    }
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue,*array_size));
-                }
-                break;
-            case GPL::STRING :
-                {
-                    std::string *svalue = new std::string[*array_size];
-                    for (int i=0; i< *array_size;i++){
-                        svalue[i] = "";
-                    }
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue, *array_size));
-                }
-                break;
-            default:
-                assert(false);
-        }
-        }catch(GPL::Type errorneous_type){
+            Scope_manager& symtab = Scope_manager::instance();
             
-            Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, GPL::to_string(errorneous_type), *$2, "a");                
-            switch($1) {
-                case GPL::INT:
-                {
-                    int* ivalue = new int[1];
-                    ivalue[0] = 0;
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue, 1));
-                    break;
+            if ($4->type() != GPL::INT) {
+                Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, GPL::to_string($4->type()), *$2, "a");
+            } else {
+                int array_size = $4->evaluate()->as_int();
+                if (array_size <= 0) {
+                    Error::error(Error::INVALID_ARRAY_SIZE, *$2, std::to_string(array_size));
                 }
-                case GPL::DOUBLE:
-                {
-                    double* dvalue = new double[1];
-                    dvalue[0] = 0.0;
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue, 1));
-                    break;
+                if (symtab.defined_in_current_scope(*$2)) {
+                    Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE, *$2);
+                } else {
+                    switch ($1) {
+                        case GPL::INT: {
+                            int *ivalue = new int[array_size];
+                            for (int i = 0; i < array_size; i++) {
+                                ivalue[i] = 0;
+                            }
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, ivalue, array_size));
+                            break;
+                        }
+                        case GPL::DOUBLE: {
+                            double *dvalue = new double[array_size];
+                            for (int i = 0; i < array_size; i++) {
+                                dvalue[i] = 0.0;
+                            }
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue, array_size));
+                            break;
+                        }
+                        case GPL::STRING: {
+                            std::string *svalue = new std::string[array_size];
+                            for (int i = 0; i < array_size; i++) {
+                                svalue[i] = "";
+                            }
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue, array_size));
+                            break;
+                        }
+                        default:
+                            assert(false);
+                    }
                 }
-                case GPL::STRING:
-                {
-                    std::string* svalue = new std::string[1];
-                    svalue[0] = "";
-                    symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue, 1));
-                    break;
-                }
-                default:
-                    assert(false);
             }
-            break;
-        }
-            
-
-        delete $2;
-
+            delete $2;
     }
 
 
@@ -451,6 +391,8 @@ simple_type:
 
 
 
+
+
 //---------------------------------------------------------------------
 optional_initializer:
     T_ASSIGN expression  {$$=$2;}
@@ -459,17 +401,125 @@ optional_initializer:
 
 //---------------------------------------------------------------------
 object_declaration:
-    object_type T_ID parameter_list_or_empty
-    | object_type T_ID T_LBRACKET expression T_RBRACKET
+    object_type T_ID parameter_list_or_empty {
+        Scope_manager& symtab = Scope_manager::instance();
+        if (symtab.defined_in_current_scope(*$2)) {
+            Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE, *$2);
+            delete $2;
+            break;
+        }
+
+        // Create game object symbols and insert them into the symbol table
+        std::vector<const Expression *> params;
+        for (const Parameter *p = $3; p != nullptr; p = p->next) {
+            params.push_back(p->value);
+        }
+        switch ($1) {
+            case GPL::Type::CIRCLE: {
+                Circle* circle_obj = new Circle();
+                symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, circle_obj));
+                break;
+            }
+            case GPL::Type::RECTANGLE: {
+                
+                Rectangle* rectangle_obj = new Rectangle();
+                symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, rectangle_obj));
+                break;
+            }
+            case GPL::Type::TEXTBOX: {
+                Textbox* textbox_obj = new Textbox();
+                symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, textbox_obj));
+                break;
+            }
+            case GPL::Type::TRIANGLE: {
+                Triangle* triangle_obj = new Triangle();
+                symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, triangle_obj));
+                break;
+            }
+            case GPL::Type::PIXMAP: {
+                Pixmap* pixmap_obj = new Pixmap();
+                symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, pixmap_obj));
+                break;
+            }
+            default:
+                assert(false);
+        }
+
+        // TODO: Process the object's parameters (if any) using the parameter_list_or_empty
+
+        delete $2;
+    }
+    | object_type T_ID T_LBRACKET expression T_RBRACKET{
+            Scope_manager& symtab = Scope_manager::instance();
+            
+            if ($4->type() != GPL::INT) {
+                Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, GPL::to_string($4->type()), *$2, "a");
+            } else {
+                int array_size = $4->evaluate()->as_int();
+                if (array_size <= 0) {
+                    Error::error(Error::INVALID_ARRAY_SIZE, *$2, std::to_string(array_size));
+                    array_size = 1;
+                }
+                if (symtab.defined_in_current_scope(*$2)) {
+                    Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE, *$2);
+                } else {
+                    switch ($1) {
+                        case GPL::CIRCLE: {
+                            Circle* circle_array = new Circle[array_size];
+                            // for (int i = 0; i < array_size; i++) {
+                            //     circle_ptr[i] = new Circle();
+                            // }
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, circle_array, array_size));
+                            break;
+                        }
+                        case GPL::RECTANGLE: {
+                            Rectangle* rectangle_array = new Rectangle[array_size];
+                            // for (int i = 0; i < array_size; i++) {
+                            //     circle_ptr[i] = new Circle();
+                            // }
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, rectangle_array, array_size));
+                            break;
+                        }
+                        case GPL::TRIANGLE: {
+                            Triangle* triangle_array = new Triangle[array_size];
+                            // for (int i = 0; i < array_size; i++) {
+                            //     circle_ptr[i] = new Circle();
+                            // }
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, triangle_array, array_size));
+                            break;
+                        }
+                        case GPL::PIXMAP: {
+                            Pixmap* pixmap_array = new Pixmap[array_size];
+                            // for (int i = 0; i < array_size; i++) {
+                            //     circle_ptr[i] = new Circle();
+                            // }
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, pixmap_array, array_size));
+                            break;
+                        }
+                        case GPL::TEXTBOX: {
+                            Textbox* text_array = new Textbox[array_size];
+                            // for (int i = 0; i < array_size; i++) {
+                            //     circle_ptr[i] = new Circle();
+                            // }
+                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, text_array, array_size));
+                            break;
+                        }
+                        default:
+                            assert(false);
+                    }
+                }
+            }
+            delete $2;
+    }
 
 
 //---------------------------------------------------------------------
 object_type:
-    T_TRIANGLE
-    | T_PIXMAP
-    | T_CIRCLE
-    | T_RECTANGLE
-    | T_TEXTBOX
+    T_TRIANGLE      {$$=GPL::TRIANGLE;}
+    | T_PIXMAP {$$=GPL::PIXMAP;}
+    | T_CIRCLE {$$=GPL::CIRCLE;}
+    | T_RECTANGLE {$$=GPL::RECTANGLE;}
+    | T_TEXTBOX {$$=GPL::TEXTBOX;}
 
 
 //---------------------------------------------------------------------
@@ -487,7 +537,9 @@ parameter_list :
 
 //---------------------------------------------------------------------
 parameter:
-    T_ID T_ASSIGN expression
+    T_ID T_ASSIGN expression{
+        $$ = new Parameter(*$1, $3);
+    }
 
 
 //---------------------------------------------------------------------
@@ -598,10 +650,9 @@ statement:
 
 //---------------------------------------------------------------------
 if_statement:
-    T_IF T_LPAREN expression T_RPAREN statement_or_block_of_statements
+    T_IF T_LPAREN expression T_RPAREN statement_or_block_of_statements %prec T_IF_NO_ELSE
     | T_IF T_LPAREN expression T_RPAREN statement_or_block_of_statements T_ELSE statement_or_block_of_statements
-    | T_IF expression statement  IF_NO_ELSE %prec IF_NO_ELSE
-    | T_IF expression statement T_ELSE statement
+    ;
 
 
 //---------------------------------------------------------------------
@@ -682,51 +733,61 @@ variable:
 
 
 //---------------------------------------------------------------------
-expression: 
-    primary_expression {$$=$1;}
-
 expression:
-    expression T_OR expression { $$= bin_op_check<OR, GPL::OR>($1, $3, GPL::INT|GPL::DOUBLE);}
-    | expression T_AND expression {$$= bin_op_check<AND, GPL::AND>($1, $3, GPL::INT|GPL::DOUBLE);}
-    | expression T_LESS_EQUAL expression {$$= bin_op_check<LESS_EQUAL, GPL::LESS_EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING);}
-    | expression T_GREATER_EQUAL  expression {
-         $$= bin_op_check<GREATER_EQUAL, GPL::GREATER_EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
-         }
-    | expression T_LESS expression {
-         $$= bin_op_check<LESS, GPL::LESS_THAN>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
-         }
-    | expression T_GREATER  expression {
-         $$= bin_op_check<GREATER, GPL::GREATER_THAN>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
-         }
-    | expression T_EQUAL expression  {
-         $$= bin_op_check<EQUAL, GPL::EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
-         }
-    | expression T_NOT_EQUAL expression {
-         $$= bin_op_check<NOT_EQUAL, GPL::NOT_EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
-         }
-    | expression T_PLUS expression {
-         $$= bin_op_check<Plus, GPL::PLUS>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); 
-         }
-    | expression T_MINUS expression {
-         $$= bin_op_check<Minus, GPL::MINUS>($1, $3, GPL::INT|GPL::DOUBLE); 
-         }
-    | expression T_MULTIPLY expression {
-         $$= bin_op_check<Multiply, GPL::MULTIPLY>($1, $3, GPL::INT|GPL::DOUBLE); 
-         }
-    | expression T_DIVIDE expression {
-         $$= bin_op_check<Divide, GPL::DIVIDE>($1, $3, GPL::INT|GPL::DOUBLE); 
-         }
-    | expression T_MOD expression {
-         $$= bin_op_check<Modulus, GPL::MOD>($1, $3, GPL::INT); 
-         }
-    | T_MINUS  expression %prec UNARY_OPS {
-         $$= unary_op_check<NEGATIVE, GPL::UNARY_MINUS>($2, GPL::INT|GPL::DOUBLE); 
-         }
-    | T_NOT  expression {
-         $$= unary_op_check<NOT, GPL::NOT>($2, GPL::INT|GPL::DOUBLE); 
-         }
-    | expression T_NEAR expression
-    | expression T_TOUCHES expression
+    or_expr
+    ;
+
+or_expr
+    : and_expr
+    | or_expr T_OR and_expr { $$ = bin_op_check<OR, GPL::OR>($1, $3, GPL::INT|GPL::DOUBLE); }
+    ;
+
+and_expr
+    : equality_expr
+    | and_expr T_AND equality_expr { $$ = bin_op_check<AND, GPL::AND>($1, $3, GPL::INT|GPL::DOUBLE); }
+    ;
+
+equality_expr
+    : relational_expr
+    | equality_expr T_EQUAL relational_expr { $$ = bin_op_check<EQUAL, GPL::EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); }
+    | equality_expr T_NOT_EQUAL relational_expr { $$ = bin_op_check<NOT_EQUAL, GPL::NOT_EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); }
+    ;
+
+relational_expr
+    : add_sub_expr
+    | relational_expr T_LESS add_sub_expr { $$ = bin_op_check<LESS, GPL::LESS_THAN>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); }
+    | relational_expr T_GREATER add_sub_expr { $$ = bin_op_check<GREATER, GPL::GREATER_THAN>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); }
+    | relational_expr T_LESS_EQUAL add_sub_expr { $$ = bin_op_check<LESS_EQUAL, GPL::LESS_EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); }
+    | relational_expr T_GREATER_EQUAL add_sub_expr { $$ = bin_op_check<GREATER_EQUAL, GPL::GREATER_EQUAL>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); }
+    ;
+
+add_sub_expr
+    : mul_div_mod_expr
+    | add_sub_expr T_PLUS mul_div_mod_expr { $$ = bin_op_check<Plus, GPL::PLUS>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); }
+    | add_sub_expr T_MINUS mul_div_mod_expr { $$ = bin_op_check<Minus, GPL::MINUS>($1, $3, GPL::INT|GPL::DOUBLE); }
+    ;
+
+mul_div_mod_expr
+    : not_expr
+    | mul_div_mod_expr T_MULTIPLY not_expr { $$ = bin_op_check<Multiply, GPL::MULTIPLY>($1, $3, GPL::INT|GPL::DOUBLE); }
+    | mul_div_mod_expr T_DIVIDE not_expr { $$ = bin_op_check<Divide, GPL::DIVIDE>($1, $3, GPL::INT|GPL::DOUBLE); }
+    | mul_div_mod_expr T_MOD not_expr { $$ = bin_op_check<Modulus, GPL::MOD>($1, $3, GPL::INT); }
+    ;
+
+not_expr
+    : unary_expr
+    | T_NOT unary_expr { $$ = unary_op_check<NOT, GPL::NOT>($2, GPL::INT|GPL::DOUBLE); }
+
+
+unary_expr
+    : primary_expression
+    | T_MINUS not_expr { $$ = unary_op_check<NEGATIVE, GPL::UNARY_MINUS>($2, GPL::INT|GPL::DOUBLE); }
+    | primary_expression T_TOUCHES primary_expression
+    | primary_expression T_NEAR primary_expression
+    ;
+
+
+
 
 primary_expression:
     T_SIN T_LPAREN expression T_RPAREN {
@@ -759,6 +820,7 @@ primary_expression:
     | T_RANDOM T_LPAREN expression T_RPAREN {
         $$ = unary_op_check<RANDOM, GPL::RANDOM>($3, GPL::INT|GPL::DOUBLE);
     }
+    
 
 
 //---------------------------------------------------------------------
