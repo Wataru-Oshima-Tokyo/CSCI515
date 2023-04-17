@@ -1,3 +1,5 @@
-string a = -0;
-string b = !0;
-string c = sin(42);
+string window_title = "Project 4 t013.gpl ***PRESS q TO QUIT***";
+
+rectangle box;
+double the_height=box.y;
+double color = box.red;

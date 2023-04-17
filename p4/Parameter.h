@@ -2,11 +2,11 @@
 #include "Expression.h"
 
 struct Parameter {
-public:
-    Parameter(const std::string& name, const Expression* value)
-        : name(name), value(value), next(nullptr) {}
-
     std::string name;
     const Expression* value;
     Parameter* next;
+
+    // Add a constructor to initialize 'next' to nullptr
+    Parameter(const std::string& name, const Expression* value)
+        : name(name), value(value), next(nullptr) {}
 };

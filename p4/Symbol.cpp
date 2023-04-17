@@ -69,6 +69,23 @@ int Symbol::get_count() const{
     return count_;
 }
 
+Game_object* Symbol::as_game_object() {
+    if (type_ == GPL::CIRCLE) {
+        return value_.circle_pointer;
+    } else if (type_ == GPL::RECTANGLE) {
+        return value_.rectangle_pointer;
+    } else if (type_ == GPL::TEXTBOX) {
+        return value_.textbox_pointer;
+    } else if (type_ == GPL::TRIANGLE) {
+        return value_.triangle_pointer;
+    } else if (type_ == GPL::PIXMAP) {
+        return value_.pixmap_pointer;
+    } else {
+        // Throw an exception or return nullptr if the type is not a game object
+        return nullptr;
+    }
+}
+
 Symbol::~Symbol() {
     switch (type_) {
         case GPL::Type::DOUBLE:

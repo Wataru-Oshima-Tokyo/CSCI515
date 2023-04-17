@@ -66,6 +66,7 @@ class Symbol {
         
         GPL::Type get_type() const;
         std::string get_name() const;
+        Game_object*  as_game_object();
         virtual ~Symbol();
         friend std::ostream& operator<<(std::ostream& os, const Symbol& sym);
         Symbol(const Symbol&) = delete;

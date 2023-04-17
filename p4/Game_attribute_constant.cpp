@@ -14,7 +14,7 @@ int Game_attribute_constant::as_int() const {
 }
 
 double Game_attribute_constant::as_double() const{
-    if (type() != GPL::STRING)
+    if (type() != GPL::DOUBLE)
         throw type();
     double value;
     try {

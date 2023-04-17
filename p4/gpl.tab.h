@@ -52,10 +52,13 @@ extern int yydebug;
   #include "Scope_manager.h"
   #include "Variable.h"
   #include "Parameter.h"
+  #include "Member_variable.h"
+ 
   class Expression;
   class Variable;
   struct Parameter;
   class Statement;
+  class Member_variable;
   #ifndef P1
     #include "types_and_ops.h"  //include in all projects except the first
   #endif
@@ -63,7 +66,7 @@ extern int yydebug;
     #include "Window.h"
   #endif
 
-#line 67 "gpl.tab.h"
+#line 70 "gpl.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -172,7 +175,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 39 "gpl.y"
+#line 43 "gpl.y"
 
  int            union_int;
  std::string*   union_string;  // MUST be a pointer to a string
@@ -180,9 +183,9 @@ union YYSTYPE
  GPL::Type      union_gpl_type;
  const Variable* union_variable_ptr;
  const Expression* union_expression_ptr;
- const Parameter* union_param_node_ptr;
+Parameter* union_param_node_ptr;
 
-#line 186 "gpl.tab.h"
+#line 189 "gpl.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

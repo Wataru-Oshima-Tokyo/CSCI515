@@ -6,10 +6,13 @@
   #include "Scope_manager.h"
   #include "Variable.h"
   #include "Parameter.h"
+  #include "Member_variable.h"
+ 
   class Expression;
   class Variable;
   struct Parameter;
   class Statement;
+  class Member_variable;
   #ifndef P1
     #include "types_and_ops.h"  //include in all projects except the first
   #endif
@@ -27,7 +30,8 @@ extern int line_count;            // current line in the input; from record.l
 
 #include "error.h"      // class for printing errors (used by gpl)
 #include <iostream>
-
+#include <iomanip>
+ #include <sstream>
 // bison syntax indicating the end of a C/C++ code section
 %} 
 
@@ -43,7 +47,7 @@ extern int line_count;            // current line in the input; from record.l
  GPL::Type      union_gpl_type;
  const Variable* union_variable_ptr;
  const Expression* union_expression_ptr;
- const Parameter* union_param_node_ptr;
+Parameter* union_param_node_ptr;
 };
 %destructor { delete $$; } <union_string>
 
@@ -171,6 +175,7 @@ extern int line_count;            // current line in the input; from record.l
 %type <union_expression_ptr> optional_initializer;
 %type <union_variable_ptr> variable;
 %type <union_param_node_ptr> parameter;
+%type <union_param_node_ptr> parameter_list;
 %type <union_param_node_ptr> parameter_list_or_empty;
 // Add the %nonassoc directive for the non-associative operators
 %type <union_expression_ptr> or_expr;
@@ -274,7 +279,13 @@ variable_declaration:
                     {
                         if ($3 != nullptr) {
                             const Constant* const_value = $3->evaluate();
-                            double* dvalue = new double(const_value->as_double());
+                            double* dvalue = nullptr;
+                            
+                            if (const_value->type() == GPL::INT) {
+                                dvalue = new double(static_cast<double>(const_value->as_int()));
+                            } else if (const_value->type() == GPL::DOUBLE) {
+                                dvalue = new double(const_value->as_double());
+                            }
                             
                             // double* dvalue = new double(const_value->as_double());
                             symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, dvalue));
@@ -289,7 +300,19 @@ variable_declaration:
                     {
                         if ($3 != nullptr) {
                             const Constant* const_value = $3->evaluate();
-                            std::string* svalue = new std::string(const_value->as_string());
+
+                            std::stringstream ss;
+
+                            if (const_value->type() == GPL::INT) {
+                                ss << const_value->as_int();
+                            } else if (const_value->type() == GPL::DOUBLE) {
+                                    ss << std::fixed << std::setprecision(6) << const_value->as_double();
+
+                            } else {
+                                ss << const_value->as_string();
+                            }
+
+                            std::string* svalue = new std::string(ss.str());
                             symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue));
                         }else{
                             std::string *svalue = new std::string("");
@@ -410,10 +433,7 @@ object_declaration:
         }
 
         // Create game object symbols and insert them into the symbol table
-        std::vector<const Expression *> params;
-        for (const Parameter *p = $3; p != nullptr; p = p->next) {
-            params.push_back(p->value);
-        }
+
         switch ($1) {
             case GPL::Type::CIRCLE: {
                 Circle* circle_obj = new Circle();
@@ -446,8 +466,62 @@ object_declaration:
         }
 
         // TODO: Process the object's parameters (if any) using the parameter_list_or_empty
+        // Parameter *p = $3;
+        // while (p != nullptr) {
+        for (const Parameter *p = $3; p != nullptr; p = p->next) {
+            
+            std::shared_ptr<Symbol> game_object = symtab.lookup(*$2);
+            // if (game_object && game_object->is_game_object()) {
+               
+            if (game_object) {
+                // std::cout << p->name << std::endl;
+                Game_object* obj = game_object->as_game_object(); 
+                GPL::Type expected_type;
+                try {
+                    // std::cout << "done  "<< p->name << std::endl;
+                    expected_type = obj->attribute_type(p->name);
+                    // if (expected_type == p->value->type()) {
+                        switch (expected_type){
+                            case GPL::INT: {
+                                const Constant* const_value = p->value->evaluate();
+                            
+                                obj->write_attribute(p->name, const_value->as_int());
+                                break;
+                            }
+                            case GPL::DOUBLE: {
+                                const Constant* const_value = p->value->evaluate();
+                            
+                                obj->write_attribute(p->name, const_value->as_double());
+                                break;
+                            }
+                            case GPL::STRING: {
+                                const Constant* const_value = p->value->evaluate();
+                            
+                                obj->write_attribute(p->name, const_value->as_string());
+                                break;
+                            }
+                            default:
+                                assert(false);
+                        }
+                } catch (const std::runtime_error& e) {
+                    Error::error(Error::UNKNOWN_CONSTRUCTOR_PARAMETER, p->name, *$2);
+                } catch (const std::out_of_range& e){
+                    Error::error(Error::UNKNOWN_CONSTRUCTOR_PARAMETER,*$2, p->name);
+                } catch (GPL::Type errorneous_type){
+                    Error::error(Error::INCORRECT_CONSTRUCTOR_PARAMETER_TYPE, *$2, p->name);
+                }
+            }
+            // p = p->next;
+        }
 
+        // Clean up
         delete $2;
+        while ($3 != nullptr) {
+            Parameter* temp = $3->next;
+            delete $3;
+            $3 = temp;
+        }
+
     }
     | object_type T_ID T_LBRACKET expression T_RBRACKET{
             Scope_manager& symtab = Scope_manager::instance();
@@ -524,15 +598,32 @@ object_type:
 
 //---------------------------------------------------------------------
 parameter_list_or_empty :
-    T_LPAREN parameter_list T_RPAREN
-    | T_LPAREN T_RPAREN
-    | %empty
+    T_LPAREN parameter_list T_RPAREN{
+        $$ = $2;
+    }
+    | T_LPAREN T_RPAREN{
+        $$ =nullptr;
+    }
+    | %empty{
+        $$ =nullptr;
+    }
 
 
 //---------------------------------------------------------------------
-parameter_list :
-    parameter_list T_COMMA parameter
-    | parameter
+parameter_list:
+    parameter_list T_COMMA parameter {
+        
+        Parameter* current = $1;
+        while (current->next) {
+            current = current->next;
+        }
+        current->next = $3;
+        current->next->next = nullptr;
+        $$ = $1;
+    }
+    | parameter {
+        $$ = $1;
+    }
 
 
 //---------------------------------------------------------------------
@@ -728,8 +819,41 @@ variable:
         }
         $$ = new Variable(*$1, $3);
     }
-    | T_ID T_PERIOD T_ID
-    | T_ID T_LBRACKET expression T_RBRACKET T_PERIOD T_ID
+    | T_ID T_PERIOD T_ID {
+        Scope_manager& scopemgr = Scope_manager::instance();
+        auto symbol = scopemgr.lookup(*$1);
+        if (symbol == nullptr) {
+            Error::error(Error::UNDECLARED_VARIABLE, *$1);
+            // $$ = new Member_variable("");
+            delete $1;
+            delete $3;
+            break;
+        }
+        $$ = new Member_variable(*$1, *$3);
+        delete $1;
+    }
+    | T_ID T_LBRACKET expression T_RBRACKET T_PERIOD T_ID {
+        std::cout << "T_LBRACKET get the parameter" << std::endl;
+        Scope_manager& scopemgr = Scope_manager::instance();
+        auto symbol = scopemgr.lookup(*$1);
+        if (symbol == nullptr) {
+            Error::error(Error::UNDECLARED_VARIABLE, *$1);
+            // $$ = new Member_variable("");
+            delete $1;
+            delete $6;
+            break;
+        }
+        if ($3->type() != GPL::INT) {
+            Error::error(Error::ARRAY_INDEX_MUST_BE_AN_INTEGER, *$1, GPL::to_string($3->type()));
+            // $$ = new Member_variable("");
+            delete $1;
+            delete $6;
+            break;
+        }
+        $$ = new Member_variable(*$1, $3, *$6);
+        delete $1;
+        delete $6;
+    }
 
 
 //---------------------------------------------------------------------
