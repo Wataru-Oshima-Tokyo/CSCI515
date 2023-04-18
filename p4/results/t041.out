@@ -8,12 +8,6 @@ gpl.cpp::main()
 
 gpl.cpp::main() Calling yyparse()
 
-T_LBRACKET get the parameter
-T_LBRACKET get the parameter
-T_LBRACKET get the parameter
-T_LBRACKET get the parameter
-T_LBRACKET get the parameter
-T_LBRACKET get the parameter
 
 gpl.cpp::main() after call to yyparse().
 

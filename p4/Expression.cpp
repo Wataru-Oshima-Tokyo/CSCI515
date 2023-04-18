@@ -29,9 +29,13 @@ const Constant* Plus::evaluate() const
   GPL::Type rht=rhs->type();
   const Constant* lhs_constant=lhs->evaluate();
   const Constant* rhs_constant=rhs->evaluate();
-  if(lht==GPL::STRING || rht==GPL::STRING)
-    return ret(new String_constant(lhs_constant->as_string() + //<--addition
-                                   rhs_constant->as_string()));
+  if(lht==GPL::STRING || rht==GPL::STRING){
+      std::cout << rhs_constant->as_string() << std::endl;
+      std::cout << lhs_constant->as_string() << std::endl;
+      return ret(new String_constant(lhs_constant->as_string() + //<--addition
+                                  rhs_constant->as_string()));
+  }
+
   if(lht==GPL::DOUBLE || rht==GPL::DOUBLE)
     return ret(new Double_constant(lhs_constant->as_double() + //<--addition
                                    rhs_constant->as_double()));

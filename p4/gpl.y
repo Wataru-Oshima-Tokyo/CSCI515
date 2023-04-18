@@ -196,8 +196,10 @@ const Expression* bin_op_check(const Expression* one, const Expression* three, u
     {
         bool lhs_valid = one->type() & valid_types;
         bool rhs_valid = three->type() & valid_types;
-        if (lhs_valid && rhs_valid)
+        if (lhs_valid && rhs_valid){
             return new OP(one, three);
+        }
+
         if (!lhs_valid)
             Error::error(Error::INVALID_LEFT_OPERAND_TYPE, to_string(op_type));
         if (!rhs_valid)
@@ -325,7 +327,8 @@ variable_declaration:
                     break;
 
             }
-            
+
+
         }catch(GPL::Type errorneous_type){
             
             Error::error(Error::INVALID_TYPE_FOR_INITIAL_VALUE, GPL::to_string(errorneous_type), *$2, GPL::to_string($1));
@@ -360,11 +363,13 @@ variable_declaration:
     }
     | simple_type T_ID T_LBRACKET expression T_RBRACKET {
             Scope_manager& symtab = Scope_manager::instance();
-            
+            int array_size;
             if ($4->type() != GPL::INT) {
                 Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, GPL::to_string($4->type()), *$2, "a");
+                array_size = 1;
             } else {
-                int array_size = $4->evaluate()->as_int();
+                array_size = $4->evaluate()->as_int();
+            }
                 if (array_size <= 0) {
                     Error::error(Error::INVALID_ARRAY_SIZE, *$2, std::to_string(array_size));
                 }
@@ -393,6 +398,7 @@ variable_declaration:
                             for (int i = 0; i < array_size; i++) {
                                 svalue[i] = "";
                             }
+                            
                             symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, svalue, array_size));
                             break;
                         }
@@ -400,7 +406,6 @@ variable_declaration:
                             assert(false);
                     }
                 }
-            }
             delete $2;
     }
 
@@ -481,6 +486,7 @@ object_declaration:
                     // std::cout << "done  "<< p->name << std::endl;
                     expected_type = obj->attribute_type(p->name);
                     // if (expected_type == p->value->type()) {
+                         
                         switch (expected_type){
                             case GPL::INT: {
                                 const Constant* const_value = p->value->evaluate();
@@ -496,23 +502,38 @@ object_declaration:
                             }
                             case GPL::STRING: {
                                 const Constant* const_value = p->value->evaluate();
-                            
-                                obj->write_attribute(p->name, const_value->as_string());
+
+                                std::string number_string;
+
+                                if (const_value->type() == GPL::INT) {
+                                    // ss << const_value->as_int();
+                                    number_string = std::to_string(const_value->as_int());
+                                    std::cout << number_string << std::endl;
+                                } else if (const_value->type() == GPL::DOUBLE) {
+                                    number_string = std::to_string(const_value->as_double());
+                                } else {
+                                    number_string =  const_value->as_string();
+                                }
+                                // std::cout << ss.str() << std::endl;
+                                // std::string* svalue = new std::string(ss.str());
+                                //obj->write_attribute(p->name, svalue);
+                                obj->write_attribute(p->name, number_string);
+                                
                                 break;
                             }
                             default:
                                 assert(false);
                         }
-                } catch (const std::runtime_error& e) {
-                    Error::error(Error::UNKNOWN_CONSTRUCTOR_PARAMETER, p->name, *$2);
-                } catch (const std::out_of_range& e){
-                    Error::error(Error::UNKNOWN_CONSTRUCTOR_PARAMETER,*$2, p->name);
+                }
+
+                catch (const  std::out_of_range& e){
+                    Error::error(Error::UNKNOWN_CONSTRUCTOR_PARAMETER,*$2,p->name);
                 } catch (GPL::Type errorneous_type){
                     Error::error(Error::INCORRECT_CONSTRUCTOR_PARAMETER_TYPE, *$2, p->name);
                 }
             }
-            // p = p->next;
         }
+        
 
         // Clean up
         delete $2;
@@ -521,66 +542,62 @@ object_declaration:
             delete $3;
             $3 = temp;
         }
-
     }
     | object_type T_ID T_LBRACKET expression T_RBRACKET{
             Scope_manager& symtab = Scope_manager::instance();
-            
+            int array_size;
             if ($4->type() != GPL::INT) {
                 Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, GPL::to_string($4->type()), *$2, "a");
+                array_size =1;
+            }else{
+                array_size = $4->evaluate()->as_int();
+            } 
+             
+            if (array_size <= 0) {
+                Error::error(Error::INVALID_ARRAY_SIZE, *$2, std::to_string(array_size));
+                array_size = 1;
+            }
+            if (symtab.defined_in_current_scope(*$2)) {
+                Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE, *$2);
             } else {
-                int array_size = $4->evaluate()->as_int();
-                if (array_size <= 0) {
-                    Error::error(Error::INVALID_ARRAY_SIZE, *$2, std::to_string(array_size));
-                    array_size = 1;
-                }
-                if (symtab.defined_in_current_scope(*$2)) {
-                    Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE, *$2);
-                } else {
-                    switch ($1) {
-                        case GPL::CIRCLE: {
-                            Circle* circle_array = new Circle[array_size];
-                            // for (int i = 0; i < array_size; i++) {
-                            //     circle_ptr[i] = new Circle();
-                            // }
-                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, circle_array, array_size));
-                            break;
-                        }
-                        case GPL::RECTANGLE: {
-                            Rectangle* rectangle_array = new Rectangle[array_size];
-                            // for (int i = 0; i < array_size; i++) {
-                            //     circle_ptr[i] = new Circle();
-                            // }
-                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, rectangle_array, array_size));
-                            break;
-                        }
-                        case GPL::TRIANGLE: {
-                            Triangle* triangle_array = new Triangle[array_size];
-                            // for (int i = 0; i < array_size; i++) {
-                            //     circle_ptr[i] = new Circle();
-                            // }
-                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, triangle_array, array_size));
-                            break;
-                        }
-                        case GPL::PIXMAP: {
-                            Pixmap* pixmap_array = new Pixmap[array_size];
-                            // for (int i = 0; i < array_size; i++) {
-                            //     circle_ptr[i] = new Circle();
-                            // }
-                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, pixmap_array, array_size));
-                            break;
-                        }
-                        case GPL::TEXTBOX: {
-                            Textbox* text_array = new Textbox[array_size];
-                            // for (int i = 0; i < array_size; i++) {
-                            //     circle_ptr[i] = new Circle();
-                            // }
-                            symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, text_array, array_size));
-                            break;
-                        }
-                        default:
-                            assert(false);
+                switch ($1) {
+                    case GPL::CIRCLE: {
+                        Circle* circle_array = new Circle[array_size];
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, circle_array, array_size));
+                        break;
                     }
+                    case GPL::RECTANGLE: {
+                        Rectangle* rectangle_array = new Rectangle[array_size];
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, rectangle_array, array_size));
+                        break;
+                    }
+                    case GPL::TRIANGLE: {
+                        Triangle* triangle_array = new Triangle[array_size];
+                        // for (int i = 0; i < array_size; i++) {
+                        //     circle_ptr[i] = new Circle();
+                        // }
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, triangle_array, array_size));
+                        break;
+                    }
+                    case GPL::PIXMAP: {
+                        Pixmap* pixmap_array = new Pixmap[array_size];
+                        // for (int i = 0; i < array_size; i++) {
+                        //     circle_ptr[i] = new Circle();
+                        // }
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, pixmap_array, array_size));
+                        break;
+                    }
+                    case GPL::TEXTBOX: {
+                        Textbox* text_array = new Textbox[array_size];
+                        // for (int i = 0; i < array_size; i++) {
+                        //     circle_ptr[i] = new Circle();
+                        // }
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*$2, text_array, array_size));
+                        break;
+                    }
+                    default:
+                        assert(false);
+                
                 }
             }
             delete $2;
@@ -612,7 +629,6 @@ parameter_list_or_empty :
 //---------------------------------------------------------------------
 parameter_list:
     parameter_list T_COMMA parameter {
-        
         Parameter* current = $1;
         while (current->next) {
             current = current->next;
@@ -820,39 +836,84 @@ variable:
         $$ = new Variable(*$1, $3);
     }
     | T_ID T_PERIOD T_ID {
+        
         Scope_manager& scopemgr = Scope_manager::instance();
         auto symbol = scopemgr.lookup(*$1);
         if (symbol == nullptr) {
             Error::error(Error::UNDECLARED_VARIABLE, *$1);
             // $$ = new Member_variable("");
+            $$ = nullptr;
             delete $1;
             delete $3;
             break;
+        }else {
+            if (symbol->get_count() > 0) {
+                Error::error(Error::VARIABLE_IS_AN_ARRAY, *$1);
+                $$ = nullptr;
+                delete $1;
+                delete $3;
+                break;
+            }
+            try{
+                std::shared_ptr<const Constant>(symbol->as_constant(*$3));
+                $$ = new Member_variable(*$1, *$3);
+            }catch (GPL::Type type){
+                Error::error(Error::LHS_OF_PERIOD_MUST_BE_OBJECT, *$1, GPL::to_string(type));
+                $$ = nullptr;
+            }catch (const std::out_of_range&) {
+                Error::error(Error::UNDECLARED_MEMBER, *$1, *$3);
+                $$ = nullptr;
+            }
+        
+            delete $1;
+            delete $3;
         }
-        $$ = new Member_variable(*$1, *$3);
-        delete $1;
+
     }
     | T_ID T_LBRACKET expression T_RBRACKET T_PERIOD T_ID {
-        std::cout << "T_LBRACKET get the parameter" << std::endl;
+        // std::cout << "T_LBRACKET get the parameter" << std::endl;
         Scope_manager& scopemgr = Scope_manager::instance();
         auto symbol = scopemgr.lookup(*$1);
         if (symbol == nullptr) {
-            Error::error(Error::UNDECLARED_VARIABLE, *$1);
+            Error::error(Error::UNDECLARED_VARIABLE, *$1 + "[]");
             // $$ = new Member_variable("");
+            $$ = nullptr;
             delete $1;
             delete $6;
             break;
-        }
-        if ($3->type() != GPL::INT) {
+        }else{
+            if ($3->type() != GPL::INT) {
             Error::error(Error::ARRAY_INDEX_MUST_BE_AN_INTEGER, *$1, GPL::to_string($3->type()));
-            // $$ = new Member_variable("");
+            $$ = new Member_variable(*$1, 0, *$6);
+            $$ = nullptr;
             delete $1;
             delete $6;
             break;
+            }else {
+                if (symbol->get_count() <=0) {
+                    Error::error(Error::VARIABLE_NOT_AN_ARRAY, *$1);
+                    $$ = new Member_variable(*$1, 0, *$6);
+                    delete $1;
+                    delete $6;
+                    break;
+                }
+                try{
+                    std::shared_ptr<const Constant>(symbol->as_constant(*$6));
+                    $$ = new Member_variable(*$1, $3, *$6);
+                }catch (GPL::Type type) {
+                    Error::error(Error::LHS_OF_PERIOD_MUST_BE_OBJECT, *$1, GPL::to_string(type));
+                    $$ = nullptr;
+                } catch (const std::out_of_range&) {
+                    Error::error(Error::UNDECLARED_MEMBER, *$1, *$6);
+                    $$ = nullptr;
+                }
+                delete $1;
+                delete $6;
+            }
+            
+
         }
-        $$ = new Member_variable(*$1, $3, *$6);
-        delete $1;
-        delete $6;
+
     }
 
 

@@ -10,22 +10,31 @@ const Constant *Member_variable::evaluate() const {
     if (attribute_name_.empty()) {
         return ret(new Integer_constant(0));
     }
+    
     auto symbol_ptr = symbol();
     if (array_index_expression == nullptr) {
-        return ret(symbol_ptr->as_constant(attribute_name_));
+        try{
+            return ret(symbol_ptr->as_constant(attribute_name_));
+        }catch (const  std::out_of_range& e){
+            Error::error(Error::UNDECLARED_MEMBER, symbol_ptr->get_name(), attribute_name_);
+        }
+        return ret(new Integer_constant(0));
     }
+    
     int index;
     try {
         index = array_index_expression->evaluate()->as_int();
     } catch (const std::exception& e) {
         index = 0; // Set a default value for the index
     }
+
     
     auto array_size = symbol_ptr->get_count();
     if (index < 0 || index >= array_size) {
         Error::error(Error::ARRAY_INDEX_OUT_OF_BOUNDS, symbol_name, array_index_expression->evaluate()->as_string());
-        return ret(symbol_ptr->as_constant(0));
+        return ret(symbol_ptr->as_constant(attribute_name_));
     }
+    std::cout << symbol_ptr->as_constant(index, attribute_name_)->as_string() << std::endl;
     return ret(symbol_ptr->as_constant(index, attribute_name_));
 }
 

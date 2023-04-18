@@ -256,8 +256,10 @@ const Expression* bin_op_check(const Expression* one, const Expression* three, u
     {
         bool lhs_valid = one->type() & valid_types;
         bool rhs_valid = three->type() & valid_types;
-        if (lhs_valid && rhs_valid)
+        if (lhs_valid && rhs_valid){
             return new OP(one, three);
+        }
+
         if (!lhs_valid)
             Error::error(Error::INVALID_LEFT_OPERAND_TYPE, to_string(op_type));
         if (!rhs_valid)
@@ -279,7 +281,7 @@ const Expression* unary_op_check(const Expression* two, unsigned int valid_types
         return new Integer_constant(0);
     }
 
-#line 283 "gpl.tab.c"
+#line 285 "gpl.tab.c"
 
 
 #ifdef short
@@ -670,20 +672,20 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   234,   234,   239,   240,   245,   246,   247,   252,   361,
-     411,   412,   413,   421,   422,   427,   526,   592,   593,   594,
-     595,   596,   601,   604,   607,   614,   624,   631,   638,   639,
-     644,   645,   646,   647,   652,   657,   662,   667,   668,   673,
-     678,   683,   688,   689,   690,   691,   692,   693,   694,   695,
-     696,   697,   698,   699,   700,   701,   702,   703,   704,   705,
-     706,   707,   708,   709,   710,   711,   716,   717,   722,   723,
-     729,   730,   735,   736,   737,   738,   739,   744,   745,   751,
-     756,   761,   766,   767,   772,   773,   774,   775,   776,   781,
-     799,   822,   835,   861,   865,   866,   870,   871,   875,   876,
-     877,   881,   882,   883,   884,   885,   889,   890,   891,   895,
-     896,   897,   898,   902,   903,   907,   908,   909,   910,   917,
-     920,   923,   926,   929,   932,   935,   938,   941,   944,   952,
-     953,   954,   955,   956,   957,   958
+       0,   236,   236,   241,   242,   247,   248,   249,   254,   364,
+     416,   417,   418,   426,   427,   432,   546,   609,   610,   611,
+     612,   613,   618,   621,   624,   631,   640,   647,   654,   655,
+     660,   661,   662,   663,   668,   673,   678,   683,   684,   689,
+     694,   699,   704,   705,   706,   707,   708,   709,   710,   711,
+     712,   713,   714,   715,   716,   717,   718,   719,   720,   721,
+     722,   723,   724,   725,   726,   727,   732,   733,   738,   739,
+     745,   746,   751,   752,   753,   754,   755,   760,   761,   767,
+     772,   777,   782,   783,   788,   789,   790,   791,   792,   797,
+     815,   838,   873,   922,   926,   927,   931,   932,   936,   937,
+     938,   942,   943,   944,   945,   946,   950,   951,   952,   956,
+     957,   958,   959,   963,   964,   968,   969,   970,   971,   978,
+     981,   984,   987,   990,   993,   996,   999,  1002,  1005,  1013,
+    1014,  1015,  1016,  1017,  1018,  1019
 };
 #endif
 
@@ -1440,13 +1442,13 @@ yydestruct (const char *yymsg,
     case YYSYMBOL_T_STRING_CONSTANT: /* "string constant"  */
 #line 52 "gpl.y"
             { delete ((*yyvaluep).union_string); }
-#line 1444 "gpl.tab.c"
+#line 1446 "gpl.tab.c"
         break;
 
     case YYSYMBOL_T_ID: /* "identifier"  */
 #line 52 "gpl.y"
             { delete ((*yyvaluep).union_string); }
-#line 1450 "gpl.tab.c"
+#line 1452 "gpl.tab.c"
         break;
 
       default:
@@ -1717,7 +1719,7 @@ yyreduce:
   switch (yyn)
     {
   case 8: /* variable_declaration: simple_type "identifier" optional_initializer  */
-#line 252 "gpl.y"
+#line 254 "gpl.y"
                                          {
         Scope_manager& symtab = Scope_manager::instance();
         if(symtab.defined_in_current_scope(*(yyvsp[-1].union_string)))
@@ -1794,7 +1796,8 @@ yyreduce:
                     break;
 
             }
-            
+
+
         }catch(GPL::Type errorneous_type){
             
             Error::error(Error::INVALID_TYPE_FOR_INITIAL_VALUE, GPL::to_string(errorneous_type), *(yyvsp[-1].union_string), GPL::to_string((yyvsp[-2].union_gpl_type)));
@@ -1827,18 +1830,20 @@ yyreduce:
         delete (yyvsp[0].union_expression_ptr);
 
     }
-#line 1831 "gpl.tab.c"
+#line 1834 "gpl.tab.c"
     break;
 
   case 9: /* variable_declaration: simple_type "identifier" "[" expression "]"  */
-#line 361 "gpl.y"
+#line 364 "gpl.y"
                                                         {
             Scope_manager& symtab = Scope_manager::instance();
-            
+            int array_size;
             if ((yyvsp[-1].union_expression_ptr)->type() != GPL::INT) {
                 Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, GPL::to_string((yyvsp[-1].union_expression_ptr)->type()), *(yyvsp[-3].union_string), "a");
+                array_size = 1;
             } else {
-                int array_size = (yyvsp[-1].union_expression_ptr)->evaluate()->as_int();
+                array_size = (yyvsp[-1].union_expression_ptr)->evaluate()->as_int();
+            }
                 if (array_size <= 0) {
                     Error::error(Error::INVALID_ARRAY_SIZE, *(yyvsp[-3].union_string), std::to_string(array_size));
                 }
@@ -1867,6 +1872,7 @@ yyreduce:
                             for (int i = 0; i < array_size; i++) {
                                 svalue[i] = "";
                             }
+                            
                             symtab.add_to_current_scope(std::make_shared<Symbol>(*(yyvsp[-3].union_string), svalue, array_size));
                             break;
                         }
@@ -1874,44 +1880,43 @@ yyreduce:
                             assert(false);
                     }
                 }
-            }
             delete (yyvsp[-3].union_string);
     }
-#line 1881 "gpl.tab.c"
+#line 1886 "gpl.tab.c"
     break;
 
   case 10: /* simple_type: "int"  */
-#line 411 "gpl.y"
+#line 416 "gpl.y"
                {(yyval.union_gpl_type)=GPL::INT;}
-#line 1887 "gpl.tab.c"
+#line 1892 "gpl.tab.c"
     break;
 
   case 11: /* simple_type: "double"  */
-#line 412 "gpl.y"
+#line 417 "gpl.y"
                {(yyval.union_gpl_type)=GPL::DOUBLE;}
-#line 1893 "gpl.tab.c"
+#line 1898 "gpl.tab.c"
     break;
 
   case 12: /* simple_type: "string"  */
-#line 413 "gpl.y"
+#line 418 "gpl.y"
                {(yyval.union_gpl_type)=GPL::STRING;}
-#line 1899 "gpl.tab.c"
+#line 1904 "gpl.tab.c"
     break;
 
   case 13: /* optional_initializer: "=" expression  */
-#line 421 "gpl.y"
+#line 426 "gpl.y"
                          {(yyval.union_expression_ptr)=(yyvsp[0].union_expression_ptr);}
-#line 1905 "gpl.tab.c"
+#line 1910 "gpl.tab.c"
     break;
 
   case 14: /* optional_initializer: %empty  */
-#line 422 "gpl.y"
+#line 427 "gpl.y"
               {(yyval.union_expression_ptr)=nullptr;}
-#line 1911 "gpl.tab.c"
+#line 1916 "gpl.tab.c"
     break;
 
   case 15: /* object_declaration: object_type "identifier" parameter_list_or_empty  */
-#line 427 "gpl.y"
+#line 432 "gpl.y"
                                              {
         Scope_manager& symtab = Scope_manager::instance();
         if (symtab.defined_in_current_scope(*(yyvsp[-1].union_string))) {
@@ -1969,6 +1974,7 @@ yyreduce:
                     // std::cout << "done  "<< p->name << std::endl;
                     expected_type = obj->attribute_type(p->name);
                     // if (expected_type == p->value->type()) {
+                         
                         switch (expected_type){
                             case GPL::INT: {
                                 const Constant* const_value = p->value->evaluate();
@@ -1984,23 +1990,38 @@ yyreduce:
                             }
                             case GPL::STRING: {
                                 const Constant* const_value = p->value->evaluate();
-                            
-                                obj->write_attribute(p->name, const_value->as_string());
+
+                                std::string number_string;
+
+                                if (const_value->type() == GPL::INT) {
+                                    // ss << const_value->as_int();
+                                    number_string = std::to_string(const_value->as_int());
+                                    std::cout << number_string << std::endl;
+                                } else if (const_value->type() == GPL::DOUBLE) {
+                                    number_string = std::to_string(const_value->as_double());
+                                } else {
+                                    number_string =  const_value->as_string();
+                                }
+                                // std::cout << ss.str() << std::endl;
+                                // std::string* svalue = new std::string(ss.str());
+                                //obj->write_attribute(p->name, svalue);
+                                obj->write_attribute(p->name, number_string);
+                                
                                 break;
                             }
                             default:
                                 assert(false);
                         }
-                } catch (const std::runtime_error& e) {
-                    Error::error(Error::UNKNOWN_CONSTRUCTOR_PARAMETER, p->name, *(yyvsp[-1].union_string));
-                } catch (const std::out_of_range& e){
-                    Error::error(Error::UNKNOWN_CONSTRUCTOR_PARAMETER,*(yyvsp[-1].union_string), p->name);
+                }
+
+                catch (const  std::out_of_range& e){
+                    Error::error(Error::UNKNOWN_CONSTRUCTOR_PARAMETER,*(yyvsp[-1].union_string),p->name);
                 } catch (GPL::Type errorneous_type){
                     Error::error(Error::INCORRECT_CONSTRUCTOR_PARAMETER_TYPE, *(yyvsp[-1].union_string), p->name);
                 }
             }
-            // p = p->next;
         }
+        
 
         // Clean up
         delete (yyvsp[-1].union_string);
@@ -2009,136 +2030,131 @@ yyreduce:
             delete (yyvsp[0].union_param_node_ptr);
             (yyvsp[0].union_param_node_ptr) = temp;
         }
-
     }
-#line 2015 "gpl.tab.c"
+#line 2035 "gpl.tab.c"
     break;
 
   case 16: /* object_declaration: object_type "identifier" "[" expression "]"  */
-#line 526 "gpl.y"
+#line 546 "gpl.y"
                                                        {
             Scope_manager& symtab = Scope_manager::instance();
-            
+            int array_size;
             if ((yyvsp[-1].union_expression_ptr)->type() != GPL::INT) {
                 Error::error(Error::ARRAY_SIZE_MUST_BE_AN_INTEGER, GPL::to_string((yyvsp[-1].union_expression_ptr)->type()), *(yyvsp[-3].union_string), "a");
+                array_size =1;
+            }else{
+                array_size = (yyvsp[-1].union_expression_ptr)->evaluate()->as_int();
+            } 
+             
+            if (array_size <= 0) {
+                Error::error(Error::INVALID_ARRAY_SIZE, *(yyvsp[-3].union_string), std::to_string(array_size));
+                array_size = 1;
+            }
+            if (symtab.defined_in_current_scope(*(yyvsp[-3].union_string))) {
+                Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE, *(yyvsp[-3].union_string));
             } else {
-                int array_size = (yyvsp[-1].union_expression_ptr)->evaluate()->as_int();
-                if (array_size <= 0) {
-                    Error::error(Error::INVALID_ARRAY_SIZE, *(yyvsp[-3].union_string), std::to_string(array_size));
-                    array_size = 1;
-                }
-                if (symtab.defined_in_current_scope(*(yyvsp[-3].union_string))) {
-                    Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE, *(yyvsp[-3].union_string));
-                } else {
-                    switch ((yyvsp[-4].union_gpl_type)) {
-                        case GPL::CIRCLE: {
-                            Circle* circle_array = new Circle[array_size];
-                            // for (int i = 0; i < array_size; i++) {
-                            //     circle_ptr[i] = new Circle();
-                            // }
-                            symtab.add_to_current_scope(std::make_shared<Symbol>(*(yyvsp[-3].union_string), circle_array, array_size));
-                            break;
-                        }
-                        case GPL::RECTANGLE: {
-                            Rectangle* rectangle_array = new Rectangle[array_size];
-                            // for (int i = 0; i < array_size; i++) {
-                            //     circle_ptr[i] = new Circle();
-                            // }
-                            symtab.add_to_current_scope(std::make_shared<Symbol>(*(yyvsp[-3].union_string), rectangle_array, array_size));
-                            break;
-                        }
-                        case GPL::TRIANGLE: {
-                            Triangle* triangle_array = new Triangle[array_size];
-                            // for (int i = 0; i < array_size; i++) {
-                            //     circle_ptr[i] = new Circle();
-                            // }
-                            symtab.add_to_current_scope(std::make_shared<Symbol>(*(yyvsp[-3].union_string), triangle_array, array_size));
-                            break;
-                        }
-                        case GPL::PIXMAP: {
-                            Pixmap* pixmap_array = new Pixmap[array_size];
-                            // for (int i = 0; i < array_size; i++) {
-                            //     circle_ptr[i] = new Circle();
-                            // }
-                            symtab.add_to_current_scope(std::make_shared<Symbol>(*(yyvsp[-3].union_string), pixmap_array, array_size));
-                            break;
-                        }
-                        case GPL::TEXTBOX: {
-                            Textbox* text_array = new Textbox[array_size];
-                            // for (int i = 0; i < array_size; i++) {
-                            //     circle_ptr[i] = new Circle();
-                            // }
-                            symtab.add_to_current_scope(std::make_shared<Symbol>(*(yyvsp[-3].union_string), text_array, array_size));
-                            break;
-                        }
-                        default:
-                            assert(false);
+                switch ((yyvsp[-4].union_gpl_type)) {
+                    case GPL::CIRCLE: {
+                        Circle* circle_array = new Circle[array_size];
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*(yyvsp[-3].union_string), circle_array, array_size));
+                        break;
                     }
+                    case GPL::RECTANGLE: {
+                        Rectangle* rectangle_array = new Rectangle[array_size];
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*(yyvsp[-3].union_string), rectangle_array, array_size));
+                        break;
+                    }
+                    case GPL::TRIANGLE: {
+                        Triangle* triangle_array = new Triangle[array_size];
+                        // for (int i = 0; i < array_size; i++) {
+                        //     circle_ptr[i] = new Circle();
+                        // }
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*(yyvsp[-3].union_string), triangle_array, array_size));
+                        break;
+                    }
+                    case GPL::PIXMAP: {
+                        Pixmap* pixmap_array = new Pixmap[array_size];
+                        // for (int i = 0; i < array_size; i++) {
+                        //     circle_ptr[i] = new Circle();
+                        // }
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*(yyvsp[-3].union_string), pixmap_array, array_size));
+                        break;
+                    }
+                    case GPL::TEXTBOX: {
+                        Textbox* text_array = new Textbox[array_size];
+                        // for (int i = 0; i < array_size; i++) {
+                        //     circle_ptr[i] = new Circle();
+                        // }
+                        symtab.add_to_current_scope(std::make_shared<Symbol>(*(yyvsp[-3].union_string), text_array, array_size));
+                        break;
+                    }
+                    default:
+                        assert(false);
+                
                 }
             }
             delete (yyvsp[-3].union_string);
     }
-#line 2082 "gpl.tab.c"
+#line 2099 "gpl.tab.c"
     break;
 
   case 17: /* object_type: "triangle"  */
-#line 592 "gpl.y"
+#line 609 "gpl.y"
                     {(yyval.union_gpl_type)=GPL::TRIANGLE;}
-#line 2088 "gpl.tab.c"
+#line 2105 "gpl.tab.c"
     break;
 
   case 18: /* object_type: "pixmap"  */
-#line 593 "gpl.y"
+#line 610 "gpl.y"
                {(yyval.union_gpl_type)=GPL::PIXMAP;}
-#line 2094 "gpl.tab.c"
+#line 2111 "gpl.tab.c"
     break;
 
   case 19: /* object_type: "circle"  */
-#line 594 "gpl.y"
+#line 611 "gpl.y"
                {(yyval.union_gpl_type)=GPL::CIRCLE;}
-#line 2100 "gpl.tab.c"
+#line 2117 "gpl.tab.c"
     break;
 
   case 20: /* object_type: "rectangle"  */
-#line 595 "gpl.y"
+#line 612 "gpl.y"
                   {(yyval.union_gpl_type)=GPL::RECTANGLE;}
-#line 2106 "gpl.tab.c"
+#line 2123 "gpl.tab.c"
     break;
 
   case 21: /* object_type: "textbox"  */
-#line 596 "gpl.y"
+#line 613 "gpl.y"
                 {(yyval.union_gpl_type)=GPL::TEXTBOX;}
-#line 2112 "gpl.tab.c"
+#line 2129 "gpl.tab.c"
     break;
 
   case 22: /* parameter_list_or_empty: "(" parameter_list ")"  */
-#line 601 "gpl.y"
+#line 618 "gpl.y"
                                     {
         (yyval.union_param_node_ptr) = (yyvsp[-1].union_param_node_ptr);
     }
-#line 2120 "gpl.tab.c"
+#line 2137 "gpl.tab.c"
     break;
 
   case 23: /* parameter_list_or_empty: "(" ")"  */
-#line 604 "gpl.y"
+#line 621 "gpl.y"
                        {
         (yyval.union_param_node_ptr) =nullptr;
     }
-#line 2128 "gpl.tab.c"
+#line 2145 "gpl.tab.c"
     break;
 
   case 24: /* parameter_list_or_empty: %empty  */
-#line 607 "gpl.y"
+#line 624 "gpl.y"
             {
         (yyval.union_param_node_ptr) =nullptr;
     }
-#line 2136 "gpl.tab.c"
+#line 2153 "gpl.tab.c"
     break;
 
   case 25: /* parameter_list: parameter_list "," parameter  */
-#line 614 "gpl.y"
+#line 631 "gpl.y"
                                      {
-        
         Parameter* current = (yyvsp[-2].union_param_node_ptr);
         while (current->next) {
             current = current->next;
@@ -2147,27 +2163,27 @@ yyreduce:
         current->next->next = nullptr;
         (yyval.union_param_node_ptr) = (yyvsp[-2].union_param_node_ptr);
     }
-#line 2151 "gpl.tab.c"
-    break;
-
-  case 26: /* parameter_list: parameter  */
-#line 624 "gpl.y"
-                {
-        (yyval.union_param_node_ptr) = (yyvsp[0].union_param_node_ptr);
-    }
-#line 2159 "gpl.tab.c"
-    break;
-
-  case 27: /* parameter: "identifier" "=" expression  */
-#line 631 "gpl.y"
-                            {
-        (yyval.union_param_node_ptr) = new Parameter(*(yyvsp[-2].union_string), (yyvsp[0].union_expression_ptr));
-    }
 #line 2167 "gpl.tab.c"
     break;
 
+  case 26: /* parameter_list: parameter  */
+#line 640 "gpl.y"
+                {
+        (yyval.union_param_node_ptr) = (yyvsp[0].union_param_node_ptr);
+    }
+#line 2175 "gpl.tab.c"
+    break;
+
+  case 27: /* parameter: "identifier" "=" expression  */
+#line 647 "gpl.y"
+                            {
+        (yyval.union_param_node_ptr) = new Parameter(*(yyvsp[-2].union_string), (yyvsp[0].union_expression_ptr));
+    }
+#line 2183 "gpl.tab.c"
+    break;
+
   case 89: /* variable: "identifier"  */
-#line 781 "gpl.y"
+#line 797 "gpl.y"
          {
         Scope_manager& scopemgr = Scope_manager::instance();
         // Lookup symbol
@@ -2186,11 +2202,11 @@ yyreduce:
         }
         (yyval.union_variable_ptr) = new Variable(*(yyvsp[0].union_string));
     }
-#line 2190 "gpl.tab.c"
+#line 2206 "gpl.tab.c"
     break;
 
   case 90: /* variable: "identifier" "[" expression "]"  */
-#line 799 "gpl.y"
+#line 815 "gpl.y"
                                             {
         Scope_manager& scopemgr = Scope_manager::instance();
         auto symbol=scopemgr.lookup(*(yyvsp[-3].union_string));
@@ -2214,268 +2230,313 @@ yyreduce:
         }
         (yyval.union_variable_ptr) = new Variable(*(yyvsp[-3].union_string), (yyvsp[-1].union_expression_ptr));
     }
-#line 2218 "gpl.tab.c"
+#line 2234 "gpl.tab.c"
     break;
 
   case 91: /* variable: "identifier" "." "identifier"  */
-#line 822 "gpl.y"
+#line 838 "gpl.y"
                          {
+        
         Scope_manager& scopemgr = Scope_manager::instance();
         auto symbol = scopemgr.lookup(*(yyvsp[-2].union_string));
         if (symbol == nullptr) {
             Error::error(Error::UNDECLARED_VARIABLE, *(yyvsp[-2].union_string));
             // $$ = new Member_variable("");
+            (yyval.union_variable_ptr) = nullptr;
             delete (yyvsp[-2].union_string);
             delete (yyvsp[0].union_string);
             break;
+        }else {
+            if (symbol->get_count() > 0) {
+                Error::error(Error::VARIABLE_IS_AN_ARRAY, *(yyvsp[-2].union_string));
+                (yyval.union_variable_ptr) = nullptr;
+                delete (yyvsp[-2].union_string);
+                delete (yyvsp[0].union_string);
+                break;
+            }
+            try{
+                std::shared_ptr<const Constant>(symbol->as_constant(*(yyvsp[0].union_string)));
+                (yyval.union_variable_ptr) = new Member_variable(*(yyvsp[-2].union_string), *(yyvsp[0].union_string));
+            }catch (GPL::Type type){
+                Error::error(Error::LHS_OF_PERIOD_MUST_BE_OBJECT, *(yyvsp[-2].union_string), GPL::to_string(type));
+                (yyval.union_variable_ptr) = nullptr;
+            }catch (const std::out_of_range&) {
+                Error::error(Error::UNDECLARED_MEMBER, *(yyvsp[-2].union_string), *(yyvsp[0].union_string));
+                (yyval.union_variable_ptr) = nullptr;
+            }
+        
+            delete (yyvsp[-2].union_string);
+            delete (yyvsp[0].union_string);
         }
-        (yyval.union_variable_ptr) = new Member_variable(*(yyvsp[-2].union_string), *(yyvsp[0].union_string));
-        delete (yyvsp[-2].union_string);
+
     }
-#line 2236 "gpl.tab.c"
+#line 2274 "gpl.tab.c"
     break;
 
   case 92: /* variable: "identifier" "[" expression "]" "." "identifier"  */
-#line 835 "gpl.y"
+#line 873 "gpl.y"
                                                           {
-        std::cout << "T_LBRACKET get the parameter" << std::endl;
+        // std::cout << "T_LBRACKET get the parameter" << std::endl;
         Scope_manager& scopemgr = Scope_manager::instance();
         auto symbol = scopemgr.lookup(*(yyvsp[-5].union_string));
         if (symbol == nullptr) {
-            Error::error(Error::UNDECLARED_VARIABLE, *(yyvsp[-5].union_string));
+            Error::error(Error::UNDECLARED_VARIABLE, *(yyvsp[-5].union_string) + "[]");
             // $$ = new Member_variable("");
+            (yyval.union_variable_ptr) = nullptr;
             delete (yyvsp[-5].union_string);
             delete (yyvsp[0].union_string);
             break;
-        }
-        if ((yyvsp[-3].union_expression_ptr)->type() != GPL::INT) {
+        }else{
+            if ((yyvsp[-3].union_expression_ptr)->type() != GPL::INT) {
             Error::error(Error::ARRAY_INDEX_MUST_BE_AN_INTEGER, *(yyvsp[-5].union_string), GPL::to_string((yyvsp[-3].union_expression_ptr)->type()));
-            // $$ = new Member_variable("");
+            (yyval.union_variable_ptr) = new Member_variable(*(yyvsp[-5].union_string), 0, *(yyvsp[0].union_string));
+            (yyval.union_variable_ptr) = nullptr;
             delete (yyvsp[-5].union_string);
             delete (yyvsp[0].union_string);
             break;
+            }else {
+                if (symbol->get_count() <=0) {
+                    Error::error(Error::VARIABLE_NOT_AN_ARRAY, *(yyvsp[-5].union_string));
+                    (yyval.union_variable_ptr) = new Member_variable(*(yyvsp[-5].union_string), 0, *(yyvsp[0].union_string));
+                    delete (yyvsp[-5].union_string);
+                    delete (yyvsp[0].union_string);
+                    break;
+                }
+                try{
+                    std::shared_ptr<const Constant>(symbol->as_constant(*(yyvsp[0].union_string)));
+                    (yyval.union_variable_ptr) = new Member_variable(*(yyvsp[-5].union_string), (yyvsp[-3].union_expression_ptr), *(yyvsp[0].union_string));
+                }catch (GPL::Type type) {
+                    Error::error(Error::LHS_OF_PERIOD_MUST_BE_OBJECT, *(yyvsp[-5].union_string), GPL::to_string(type));
+                    (yyval.union_variable_ptr) = nullptr;
+                } catch (const std::out_of_range&) {
+                    Error::error(Error::UNDECLARED_MEMBER, *(yyvsp[-5].union_string), *(yyvsp[0].union_string));
+                    (yyval.union_variable_ptr) = nullptr;
+                }
+                delete (yyvsp[-5].union_string);
+                delete (yyvsp[0].union_string);
+            }
+            
+
         }
-        (yyval.union_variable_ptr) = new Member_variable(*(yyvsp[-5].union_string), (yyvsp[-3].union_expression_ptr), *(yyvsp[0].union_string));
-        delete (yyvsp[-5].union_string);
-        delete (yyvsp[0].union_string);
+
     }
-#line 2263 "gpl.tab.c"
+#line 2324 "gpl.tab.c"
     break;
 
   case 95: /* or_expr: or_expr "||" and_expr  */
-#line 866 "gpl.y"
+#line 927 "gpl.y"
                             { (yyval.union_expression_ptr) = bin_op_check<OR, GPL::OR>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE); }
-#line 2269 "gpl.tab.c"
+#line 2330 "gpl.tab.c"
     break;
 
   case 97: /* and_expr: and_expr "&&" equality_expr  */
-#line 871 "gpl.y"
+#line 932 "gpl.y"
                                    { (yyval.union_expression_ptr) = bin_op_check<AND, GPL::AND>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE); }
-#line 2275 "gpl.tab.c"
+#line 2336 "gpl.tab.c"
     break;
 
   case 99: /* equality_expr: equality_expr "==" relational_expr  */
-#line 876 "gpl.y"
+#line 937 "gpl.y"
                                             { (yyval.union_expression_ptr) = bin_op_check<EQUAL, GPL::EQUAL>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE|GPL::STRING); }
-#line 2281 "gpl.tab.c"
+#line 2342 "gpl.tab.c"
     break;
 
   case 100: /* equality_expr: equality_expr "!=" relational_expr  */
-#line 877 "gpl.y"
+#line 938 "gpl.y"
                                                 { (yyval.union_expression_ptr) = bin_op_check<NOT_EQUAL, GPL::NOT_EQUAL>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE|GPL::STRING); }
-#line 2287 "gpl.tab.c"
+#line 2348 "gpl.tab.c"
     break;
 
   case 102: /* relational_expr: relational_expr "<" add_sub_expr  */
-#line 882 "gpl.y"
+#line 943 "gpl.y"
                                           { (yyval.union_expression_ptr) = bin_op_check<LESS, GPL::LESS_THAN>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE|GPL::STRING); }
-#line 2293 "gpl.tab.c"
+#line 2354 "gpl.tab.c"
     break;
 
   case 103: /* relational_expr: relational_expr ">" add_sub_expr  */
-#line 883 "gpl.y"
+#line 944 "gpl.y"
                                              { (yyval.union_expression_ptr) = bin_op_check<GREATER, GPL::GREATER_THAN>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE|GPL::STRING); }
-#line 2299 "gpl.tab.c"
+#line 2360 "gpl.tab.c"
     break;
 
   case 104: /* relational_expr: relational_expr "<=" add_sub_expr  */
-#line 884 "gpl.y"
+#line 945 "gpl.y"
                                                 { (yyval.union_expression_ptr) = bin_op_check<LESS_EQUAL, GPL::LESS_EQUAL>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE|GPL::STRING); }
-#line 2305 "gpl.tab.c"
+#line 2366 "gpl.tab.c"
     break;
 
   case 105: /* relational_expr: relational_expr ">=" add_sub_expr  */
-#line 885 "gpl.y"
+#line 946 "gpl.y"
                                                    { (yyval.union_expression_ptr) = bin_op_check<GREATER_EQUAL, GPL::GREATER_EQUAL>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE|GPL::STRING); }
-#line 2311 "gpl.tab.c"
+#line 2372 "gpl.tab.c"
     break;
 
   case 107: /* add_sub_expr: add_sub_expr "+" mul_div_mod_expr  */
-#line 890 "gpl.y"
+#line 951 "gpl.y"
                                            { (yyval.union_expression_ptr) = bin_op_check<Plus, GPL::PLUS>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE|GPL::STRING); }
-#line 2317 "gpl.tab.c"
+#line 2378 "gpl.tab.c"
     break;
 
   case 108: /* add_sub_expr: add_sub_expr "-" mul_div_mod_expr  */
-#line 891 "gpl.y"
+#line 952 "gpl.y"
                                             { (yyval.union_expression_ptr) = bin_op_check<Minus, GPL::MINUS>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE); }
-#line 2323 "gpl.tab.c"
+#line 2384 "gpl.tab.c"
     break;
 
   case 110: /* mul_div_mod_expr: mul_div_mod_expr "*" not_expr  */
-#line 896 "gpl.y"
+#line 957 "gpl.y"
                                            { (yyval.union_expression_ptr) = bin_op_check<Multiply, GPL::MULTIPLY>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE); }
-#line 2329 "gpl.tab.c"
+#line 2390 "gpl.tab.c"
     break;
 
   case 111: /* mul_div_mod_expr: mul_div_mod_expr "/" not_expr  */
-#line 897 "gpl.y"
+#line 958 "gpl.y"
                                          { (yyval.union_expression_ptr) = bin_op_check<Divide, GPL::DIVIDE>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE); }
-#line 2335 "gpl.tab.c"
+#line 2396 "gpl.tab.c"
     break;
 
   case 112: /* mul_div_mod_expr: mul_div_mod_expr "%" not_expr  */
-#line 898 "gpl.y"
+#line 959 "gpl.y"
                                       { (yyval.union_expression_ptr) = bin_op_check<Modulus, GPL::MOD>((yyvsp[-2].union_expression_ptr), (yyvsp[0].union_expression_ptr), GPL::INT); }
-#line 2341 "gpl.tab.c"
+#line 2402 "gpl.tab.c"
     break;
 
   case 114: /* not_expr: "!" unary_expr  */
-#line 903 "gpl.y"
+#line 964 "gpl.y"
                        { (yyval.union_expression_ptr) = unary_op_check<NOT, GPL::NOT>((yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE); }
-#line 2347 "gpl.tab.c"
+#line 2408 "gpl.tab.c"
     break;
 
   case 116: /* unary_expr: "-" not_expr  */
-#line 908 "gpl.y"
+#line 969 "gpl.y"
                        { (yyval.union_expression_ptr) = unary_op_check<NEGATIVE, GPL::UNARY_MINUS>((yyvsp[0].union_expression_ptr), GPL::INT|GPL::DOUBLE); }
-#line 2353 "gpl.tab.c"
+#line 2414 "gpl.tab.c"
     break;
 
   case 119: /* primary_expression: "sin" "(" expression ")"  */
-#line 917 "gpl.y"
+#line 978 "gpl.y"
                                        {
         (yyval.union_expression_ptr) = unary_op_check<SIN, GPL::SIN>((yyvsp[-1].union_expression_ptr), GPL::INT|GPL::DOUBLE);
     }
-#line 2361 "gpl.tab.c"
+#line 2422 "gpl.tab.c"
     break;
 
   case 120: /* primary_expression: "cos" "(" expression ")"  */
-#line 920 "gpl.y"
+#line 981 "gpl.y"
                                          {
         (yyval.union_expression_ptr) = unary_op_check<COS, GPL::COS>((yyvsp[-1].union_expression_ptr), GPL::INT|GPL::DOUBLE);
     }
-#line 2369 "gpl.tab.c"
+#line 2430 "gpl.tab.c"
     break;
 
   case 121: /* primary_expression: "tan" "(" expression ")"  */
-#line 923 "gpl.y"
+#line 984 "gpl.y"
                                          {
         (yyval.union_expression_ptr) = unary_op_check<TAN, GPL::TAN>((yyvsp[-1].union_expression_ptr), GPL::INT|GPL::DOUBLE);
     }
-#line 2377 "gpl.tab.c"
+#line 2438 "gpl.tab.c"
     break;
 
   case 122: /* primary_expression: "asin" "(" expression ")"  */
-#line 926 "gpl.y"
+#line 987 "gpl.y"
                                           {
         (yyval.union_expression_ptr) = unary_op_check<ASIN, GPL::ASIN>((yyvsp[-1].union_expression_ptr), GPL::INT|GPL::DOUBLE);
     }
-#line 2385 "gpl.tab.c"
+#line 2446 "gpl.tab.c"
     break;
 
   case 123: /* primary_expression: "acos" "(" expression ")"  */
-#line 929 "gpl.y"
+#line 990 "gpl.y"
                                           {
         (yyval.union_expression_ptr) = unary_op_check<ACOS, GPL::ACOS>((yyvsp[-1].union_expression_ptr), GPL::INT|GPL::DOUBLE);
     }
-#line 2393 "gpl.tab.c"
+#line 2454 "gpl.tab.c"
     break;
 
   case 124: /* primary_expression: "atan" "(" expression ")"  */
-#line 932 "gpl.y"
+#line 993 "gpl.y"
                                           {
         (yyval.union_expression_ptr) = unary_op_check<ATAN, GPL::ATAN>((yyvsp[-1].union_expression_ptr), GPL::INT|GPL::DOUBLE);
     }
-#line 2401 "gpl.tab.c"
+#line 2462 "gpl.tab.c"
     break;
 
   case 125: /* primary_expression: "sqrt" "(" expression ")"  */
-#line 935 "gpl.y"
+#line 996 "gpl.y"
                                           {
         (yyval.union_expression_ptr) = unary_op_check<SQRT, GPL::SQRT>((yyvsp[-1].union_expression_ptr), GPL::INT|GPL::DOUBLE);
     }
-#line 2409 "gpl.tab.c"
+#line 2470 "gpl.tab.c"
     break;
 
   case 126: /* primary_expression: "abs" "(" expression ")"  */
-#line 938 "gpl.y"
+#line 999 "gpl.y"
                                          {
         (yyval.union_expression_ptr) = unary_op_check<ABS, GPL::ABS>((yyvsp[-1].union_expression_ptr), GPL::INT|GPL::DOUBLE);
     }
-#line 2417 "gpl.tab.c"
+#line 2478 "gpl.tab.c"
     break;
 
   case 127: /* primary_expression: "floor" "(" expression ")"  */
-#line 941 "gpl.y"
+#line 1002 "gpl.y"
                                            {
         (yyval.union_expression_ptr) = unary_op_check<FLOOR, GPL::FLOOR>((yyvsp[-1].union_expression_ptr), GPL::INT|GPL::DOUBLE);
     }
-#line 2425 "gpl.tab.c"
+#line 2486 "gpl.tab.c"
     break;
 
   case 128: /* primary_expression: "random" "(" expression ")"  */
-#line 944 "gpl.y"
+#line 1005 "gpl.y"
                                             {
         (yyval.union_expression_ptr) = unary_op_check<RANDOM, GPL::RANDOM>((yyvsp[-1].union_expression_ptr), GPL::INT|GPL::DOUBLE);
     }
-#line 2433 "gpl.tab.c"
+#line 2494 "gpl.tab.c"
     break;
 
   case 129: /* primary_expression: "(" expression ")"  */
-#line 952 "gpl.y"
+#line 1013 "gpl.y"
                                   {(yyval.union_expression_ptr)=(yyvsp[-1].union_expression_ptr);}
-#line 2439 "gpl.tab.c"
+#line 2500 "gpl.tab.c"
     break;
 
   case 130: /* primary_expression: variable  */
-#line 953 "gpl.y"
+#line 1014 "gpl.y"
                {(yyval.union_expression_ptr)=(yyvsp[0].union_variable_ptr);}
-#line 2445 "gpl.tab.c"
+#line 2506 "gpl.tab.c"
     break;
 
   case 131: /* primary_expression: "int constant"  */
-#line 954 "gpl.y"
+#line 1015 "gpl.y"
                      { (yyval.union_expression_ptr)=new Integer_constant((yyvsp[0].union_int));}
-#line 2451 "gpl.tab.c"
+#line 2512 "gpl.tab.c"
     break;
 
   case 132: /* primary_expression: "true"  */
-#line 955 "gpl.y"
+#line 1016 "gpl.y"
              { (yyval.union_expression_ptr)=new Integer_constant(1); }
-#line 2457 "gpl.tab.c"
+#line 2518 "gpl.tab.c"
     break;
 
   case 133: /* primary_expression: "false"  */
-#line 956 "gpl.y"
+#line 1017 "gpl.y"
               { (yyval.union_expression_ptr)=new Integer_constant(0); }
-#line 2463 "gpl.tab.c"
+#line 2524 "gpl.tab.c"
     break;
 
   case 134: /* primary_expression: "double constant"  */
-#line 957 "gpl.y"
+#line 1018 "gpl.y"
                         { (yyval.union_expression_ptr)=new Double_constant((yyvsp[0].union_double));}
-#line 2469 "gpl.tab.c"
+#line 2530 "gpl.tab.c"
     break;
 
   case 135: /* primary_expression: "string constant"  */
-#line 958 "gpl.y"
+#line 1019 "gpl.y"
                         { (yyval.union_expression_ptr)=new String_constant(*(yyvsp[0].union_string)); delete (yyvsp[0].union_string);}
-#line 2475 "gpl.tab.c"
+#line 2536 "gpl.tab.c"
     break;
 
 
-#line 2479 "gpl.tab.c"
+#line 2540 "gpl.tab.c"
 
       default: break;
     }
@@ -2699,4 +2760,4 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 961 "gpl.y"
+#line 1022 "gpl.y"

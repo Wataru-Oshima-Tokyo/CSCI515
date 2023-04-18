@@ -7,7 +7,7 @@ int Game_attribute_constant::as_int() const {
     try {
         gop->read_attribute(attribute_name, value);
     } catch (const std::out_of_range& e){
-        // throw Error::error(Error::ATTRIBUTE_NOT_FOUND, attribute_name);
+        Error::error(Error::UNDECLARED_MEMBER,attribute_name, "here");
     }
     return value;
     
@@ -20,20 +20,23 @@ double Game_attribute_constant::as_double() const{
     try {
         gop->read_attribute(attribute_name, value);
     } catch (const std::out_of_range& e){
-        // throw Error::error(Error::ATTRIBUTE_NOT_FOUND, attribute_name);
+        Error::error(Error::UNDECLARED_MEMBER,attribute_name, "here");
     }
     return value;
     
 }
 
 std::string Game_attribute_constant::as_string() const {
-    if (type() != GPL::STRING)
-        throw type();
+    // if (type() != GPL::STRING)
+    //     throw type();
+    std::cout << "AS_STRING" << std::endl;
     std::string value;
     try {
         gop->read_attribute(attribute_name, value);
+        std::cout << value << std::endl;
     } catch (const std::out_of_range& e){
-        // throw Error::error(Error::ATTRIBUTE_NOT_FOUND, attribute_name);
+        std::cout << "error" << std::endl;
+        Error::error(Error::UNDECLARED_MEMBER,attribute_name, "here");
     }
     return value;
 }
