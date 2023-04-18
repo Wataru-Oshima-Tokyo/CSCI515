@@ -257,6 +257,7 @@ variable_declaration:
         {
             Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE,*$2);
             delete $2;
+            delete $3;
             break;
         }
         try{
@@ -309,7 +310,6 @@ variable_declaration:
                                 ss << const_value->as_int();
                             } else if (const_value->type() == GPL::DOUBLE) {
                                     ss << std::fixed << std::setprecision(6) << const_value->as_double();
-
                             } else {
                                 ss << const_value->as_string();
                             }
@@ -434,6 +434,7 @@ object_declaration:
         if (symtab.defined_in_current_scope(*$2)) {
             Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE, *$2);
             delete $2;
+            delete $3;
             break;
         }
 
@@ -470,6 +471,34 @@ object_declaration:
                 assert(false);
         }
 
+        // if (should_delete_object) {
+        //     switch ($1) {
+        //         case GPL::Type::CIRCLE: {
+        //             delete circle_obj;
+        //             break;
+        //         }
+        //         case GPL::Type::RECTANGLE: {
+        //             delete rectangle_obj;
+        //             break;
+        //         }
+        //         case GPL::Type::TEXTBOX: {
+        //             delete textbox_obj;
+        //             break;
+        //         }
+        //         case GPL::Type::TRIANGLE: {
+        //             delete triangle_obj;
+        //             break;
+        //         }
+        //         case GPL::Type::PIXMAP: {
+        //             delete pixmap_obj;
+        //             break;
+        //         }
+        //         default:
+        //             assert(false);
+        //     }
+        // }
+
+
         // TODO: Process the object's parameters (if any) using the parameter_list_or_empty
         // Parameter *p = $3;
         // while (p != nullptr) {
@@ -502,22 +531,20 @@ object_declaration:
                             }
                             case GPL::STRING: {
                                 const Constant* const_value = p->value->evaluate();
+                                // std::cout << "here" << std::endl;
+                                // std::stringstream ss;
 
-                                std::string number_string;
-
-                                if (const_value->type() == GPL::INT) {
-                                    // ss << const_value->as_int();
-                                    number_string = std::to_string(const_value->as_int());
-                                    std::cout << number_string << std::endl;
-                                } else if (const_value->type() == GPL::DOUBLE) {
-                                    number_string = std::to_string(const_value->as_double());
-                                } else {
-                                    number_string =  const_value->as_string();
-                                }
+                                // if (const_value->type() == GPL::INT) {
+                                //     ss << const_value->as_int();
+                                // } else if (const_value->type() == GPL::DOUBLE) {
+                                //         ss << std::fixed << std::setprecision(6) << const_value->as_double();
+                                // } else {
+                                //     ss << const_value->as_string();
+                                // }
                                 // std::cout << ss.str() << std::endl;
                                 // std::string* svalue = new std::string(ss.str());
-                                //obj->write_attribute(p->name, svalue);
-                                obj->write_attribute(p->name, number_string);
+                                // obj->write_attribute(p->name, svalue);
+                                obj->write_attribute(p->name, const_value->as_string());
                                 
                                 break;
                             }
