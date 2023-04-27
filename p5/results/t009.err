@@ -1,0 +1,9 @@
+Semantic error on line 14: LHS of assignment must be (INT || DOUBLE || STRING || ANIMATION_BLOCK).  Variable 'lhs_int' is of type 'double'.
+Semantic error on line 15: LHS of assignment must be (INT || DOUBLE || STRING || ANIMATION_BLOCK).  Variable 'lhs_int' is of type 'string'.
+Semantic error on line 16: LHS of assignment must be (INT || DOUBLE || STRING || ANIMATION_BLOCK).  Variable 'lhs_int' is of type 'circle'.
+Semantic error on line 22: LHS of assignment must be (INT || DOUBLE || STRING || ANIMATION_BLOCK).  Variable 'lhs_double' is of type 'string'.
+Semantic error on line 23: LHS of assignment must be (INT || DOUBLE || STRING || ANIMATION_BLOCK).  Variable 'lhs_double' is of type 'circle'.
+Semantic error on line 29: LHS of assignment must be (INT || DOUBLE || STRING || ANIMATION_BLOCK).  Variable 'lhs_string' is of type 'circle'.
+Semantic error on line 35: LHS of assignment must be (INT || DOUBLE || STRING || ANIMATION_BLOCK).  Variable 'lhs_circle' is of type 'int'.
+Semantic error on line 36: LHS of assignment must be (INT || DOUBLE || STRING || ANIMATION_BLOCK).  Variable 'lhs_circle' is of type 'double'.
+Semantic error on line 37: LHS of assignment must be (INT || DOUBLE || STRING || ANIMATION_BLOCK).  Variable 'lhs_circle' is of type 'string'.
