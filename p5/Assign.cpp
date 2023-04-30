@@ -26,6 +26,7 @@ void Assign::execute() const {
             throw lvalue->type();
             break;
     }
+    
     if (next != nullptr) {
         next->execute();
     }

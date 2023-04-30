@@ -6,3 +6,4 @@ GPL::Type  Constant::type() const
 
 const Constant* Constant::evaluate() const
 { return this; }
+

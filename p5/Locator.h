@@ -4,6 +4,7 @@
 #include <cassert>
 #include "types_and_ops.h"
 #include "Game_object.h"
+#include <iostream>
 class Statement;
 
 class Locator {
@@ -16,6 +17,9 @@ class Locator {
     virtual void mutate(double)             {throw intrinsic_type;}
     virtual void mutate(const std::string& ){throw intrinsic_type;}
     GPL::Type type() const;
+    virtual int get_int_value() const;
+    virtual double get_double_value() const;
+    virtual std::string get_string_value() const;
 };
 
 class Integer_locator : public Locator {
@@ -25,6 +29,7 @@ class Integer_locator : public Locator {
     Integer_locator(int& d) 
       : Locator(GPL::INT), data(d) {}
     virtual void mutate(int val) { data=val; }
+    int get_int_value() const;
 };
 
 class Double_locator : public Locator {
@@ -33,7 +38,8 @@ class Double_locator : public Locator {
   public:
     Double_locator(double& d) 
       : Locator(GPL::DOUBLE), data(d) {}
-    virtual void mutate(double val) { data=val; }
+    virtual void mutate(double val) {data=val; }
+    double get_double_value() const;
 };
 
 class String_locator : public Locator {
@@ -43,6 +49,7 @@ class String_locator : public Locator {
     String_locator(std::string& d) 
       : Locator(GPL::STRING), data(d) {}
     virtual void mutate(const std::string& val) { data=val;}
+    std::string get_string_value() const;
 };
 
 class Game_attribute_locator : public Locator {

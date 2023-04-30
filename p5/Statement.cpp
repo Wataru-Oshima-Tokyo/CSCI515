@@ -16,9 +16,12 @@ void Statement::append_statement(Statement* atend)
   current->next=atend;
 }
 
+
+
 //##
 // NullStatement
 //##
 void NullStatement::execute() const
 {
+
 }

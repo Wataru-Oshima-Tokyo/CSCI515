@@ -750,7 +750,6 @@ statement_list:
     }
     | statement{
         $$=$1;
-        // std::cout << "statement" << std::endl;
     }
 
 
@@ -758,7 +757,7 @@ statement_list:
 statement:
     if_statement
     | for_statement
-    | assign_statement T_SEMIC
+    | assign_statement T_SEMIC {$$= $1;}
     | print_statement T_SEMIC
     | exit_statement T_SEMIC
 
@@ -789,26 +788,58 @@ print_statement:
 
 //---------------------------------------------------------------------
 exit_statement:
-    T_EXIT T_LPAREN expression T_RPAREN
+    T_EXIT T_LPAREN expression T_RPAREN 
 
 
 //---------------------------------------------------------------------
 assign_statement_or_empty:
-    assign_statement {$$ =$1;}
+    assign_statement {$$ = $1;}
     | %empty
 
 
 //---------------------------------------------------------------------
 assign_statement:
     variable T_ASSIGN expression{
+        //ex :) lhs_int = rhs_double;
         //#TODO: need to handle the error message here 
-        if ($3->type() == $1->type()){
-            $$ = new Assign($1,$3);
+        // std::cout << "Expression type:" << GPL::to_string($1->type()) <<std::endl;
+        if (($1->type() == GPL::CIRCLE || $1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
+            Error::error(Error::INVALID_LHS_OF_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
+        }else if ($1->type() == $3->type()){
+            //do nothing
+        }else if ($1->type() == GPL::DOUBLE && $3->type() == GPL::INT){
+            //do nothing
+        }else if ($1->type() == GPL::STRING && ($3->type() == GPL::DOUBLE || $3->type() == GPL::INT)){
+            //do nothing
         }else{
-            Error::error(Error::INVALID_LHS_OF_ASSIGNMENT, $1->get_name(),GPL::to_string($3->type()));
+           Error::error(Error::ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
         }
+        $$ = new Assign($1,$3);
     }
-    | variable T_PLUS_ASSIGN expression
+    | variable T_PLUS_ASSIGN expression {
+        // Lookup symbol
+        std::cout << "variable T_PLUS_ASSIGN expression" << std::endl;
+
+        if (($1->type() == GPL::CIRCLE || $1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
+            Error::error(Error::INVALID_LHS_OF_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
+            $$ = new Assign($1,$3);
+        }else if ($1->type() == GPL::DOUBLE && ($3->type() == GPL::INT || $3->type() == GPL::DOUBLE)){
+            Expression *total = new Plus($3, new Double_constant($1->evaluate()->as_double()));
+            std::cout << "left "<< $1->modify()->get_double_value() << std::endl;
+            std::cout << "right "<< $3->evaluate()->as_double() << std::endl;
+            std::cout << "total "<< total->evaluate()->as_string() << std::endl;
+            $$ = new Assign($1, total->evaluate());
+        }else if ($1->type() == GPL::STRING && ($3->type() == GPL::STRING || $3->type() == GPL::DOUBLE || $3->type() == GPL::INT)){
+            Expression *total = new Plus($3, new String_constant($1->evaluate()->as_string()));
+            $$ =  new Assign($1, total);
+        }else if ($1->type() == GPL::INT &&  $3->type() == GPL::INT){
+            Expression *total = new Plus($3, new Integer_constant($1->evaluate()->as_int()));
+            $$ =  new Assign($1, total);
+        }else{
+           Error::error(Error::ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
+           $$ = new Assign($1,$3);
+        } 
+    }
     | variable T_MINUS_ASSIGN expression
     | variable T_PLUS_PLUS
     | variable T_MINUS_MINUS
@@ -832,7 +863,8 @@ variable:
             delete $1;
             break;
         }
-        $$ = new Variable(*$1);
+        $$ = new Variable(*$1); 
+
     }
     | T_ID T_LBRACKET expression T_RBRACKET {
         Scope_manager& scopemgr = Scope_manager::instance();
@@ -898,7 +930,6 @@ variable:
         auto symbol = scopemgr.lookup(*$1);
         if (symbol == nullptr) {
             Error::error(Error::UNDECLARED_VARIABLE, *$1 + "[]");
-            // $$ = new Member_variable("");
             $$ = nullptr;
             delete $1;
             delete $6;

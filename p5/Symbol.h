@@ -89,6 +89,9 @@ class Symbol {
         // //array element: game object
         std::shared_ptr<Locator> as_lvalue(int index, const std::string& attribute_name) const;
 
+
+        
+
     private:
         GPL::Type type_;
         std::string name_;

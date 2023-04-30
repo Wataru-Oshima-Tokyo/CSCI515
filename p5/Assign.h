@@ -1,6 +1,7 @@
 #ifndef ASSIGN_HPP
 #define ASSIGN_HPP
 #include "Statement.h"
+#include <iostream>
 class Assign : public Statement {
   public:
     Assign(const Variable* lhs, const Expression* rhs) : lhs(lhs), rhs(rhs){}

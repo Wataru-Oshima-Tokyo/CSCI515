@@ -462,3 +462,4 @@ std::shared_ptr<Locator> Symbol::as_lvalue(int index, const std::string& attribu
     }
     return nullptr; // Replace with the appropriate Constant object
 }
+
