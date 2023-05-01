@@ -1,1 +1,1 @@
-Parse error on line 6 reported by parser: syntax error, unexpected else.
+terminate called after throwing an instance of 'GPL::Type'

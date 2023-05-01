@@ -60,6 +60,7 @@ public:
 
     void execute() const override {
         int exit_status = m_status->evaluate()->as_int();
+        std::cout << "gpl[" << m_line_number << "]: exit(" << exit_status << ")"<<std::endl;
         exit(exit_status);
     }
 

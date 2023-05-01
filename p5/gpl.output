@@ -3,11 +3,6 @@ Terminals unused in grammar
     "error"
 
 
-Rules useless in parser due to conflicts
-
-   77 if_statement: "if" "(" expression ")" statement_or_block_of_statements "else" statement_or_block_of_statements
-
-
 Grammar
 
     0 $accept: program $end
@@ -3440,6 +3435,8 @@ State 235
    76 if_statement: "if" "(" expression ")" statement_or_block_of_statements •
    77             | "if" "(" expression ")" statement_or_block_of_statements • "else" statement_or_block_of_statements
 
+    "else"  shift, and go to state 240
+
     $default  reduce using rule 76 (if_statement)
 
 
@@ -3461,7 +3458,7 @@ State 238
 
    78 for_statement: "for" "(" assign_statement_or_empty ";" expression • ";" assign_statement_or_empty ")" statement_or_block_of_statements
 
-    ";"  shift, and go to state 240
+    ";"  shift, and go to state 241
 
 
 State 239
@@ -3473,27 +3470,7 @@ State 239
 
 State 240
 
-   78 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" • assign_statement_or_empty ")" statement_or_block_of_statements
-
-    "identifier"  shift, and go to state 92
-
-    $default  reduce using rule 82 (assign_statement_or_empty)
-
-    assign_statement_or_empty  go to state 241
-    assign_statement           go to state 211
-    variable                   go to state 122
-
-
-State 241
-
-   78 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty • ")" statement_or_block_of_statements
-
-    ")"  shift, and go to state 242
-
-
-State 242
-
-   78 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty ")" • statement_or_block_of_statements
+   77 if_statement: "if" "(" expression ")" statement_or_block_of_statements "else" • statement_or_block_of_statements
 
     "if"          shift, and go to state 110
     "for"         shift, and go to state 111
@@ -3502,7 +3479,7 @@ State 242
     "{"           shift, and go to state 43
     "identifier"  shift, and go to state 92
 
-    statement_or_block_of_statements  go to state 243
+    statement_or_block_of_statements  go to state 242
     statement_block                   go to state 236
     statement                         go to state 237
     if_statement                      go to state 117
@@ -3513,7 +3490,56 @@ State 242
     variable                          go to state 122
 
 
+State 241
+
+   78 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" • assign_statement_or_empty ")" statement_or_block_of_statements
+
+    "identifier"  shift, and go to state 92
+
+    $default  reduce using rule 82 (assign_statement_or_empty)
+
+    assign_statement_or_empty  go to state 243
+    assign_statement           go to state 211
+    variable                   go to state 122
+
+
+State 242
+
+   77 if_statement: "if" "(" expression ")" statement_or_block_of_statements "else" statement_or_block_of_statements •
+
+    $default  reduce using rule 77 (if_statement)
+
+
 State 243
+
+   78 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty • ")" statement_or_block_of_statements
+
+    ")"  shift, and go to state 244
+
+
+State 244
+
+   78 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty ")" • statement_or_block_of_statements
+
+    "if"          shift, and go to state 110
+    "for"         shift, and go to state 111
+    "exit"        shift, and go to state 112
+    "print"       shift, and go to state 113
+    "{"           shift, and go to state 43
+    "identifier"  shift, and go to state 92
+
+    statement_or_block_of_statements  go to state 245
+    statement_block                   go to state 236
+    statement                         go to state 237
+    if_statement                      go to state 117
+    for_statement                     go to state 118
+    print_statement                   go to state 119
+    exit_statement                    go to state 120
+    assign_statement                  go to state 121
+    variable                          go to state 122
+
+
+State 245
 
    78 for_statement: "for" "(" assign_statement_or_empty ";" expression ";" assign_statement_or_empty ")" statement_or_block_of_statements •
 

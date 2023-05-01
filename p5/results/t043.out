@@ -24,3 +24,13 @@ gpl.cpp::main() Calling window->initialize().
 
 
 gpl.cpp::main() Passing control to window->main_loop().
+print[21]: nums[k] = 42
+
+User quit program. Printing the symbol table.
+int i = 5
+int k = 3
+int nums[0] = 0
+int nums[1] = 1
+int nums[2] = 2
+int nums[3] = 42
+int nums[4] = 4

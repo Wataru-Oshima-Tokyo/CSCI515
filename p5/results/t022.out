@@ -18,3 +18,11 @@ gpl.cpp::main() Calling window->initialize().
 
 
 gpl.cpp::main() Passing control to window->main_loop().
+print[5]: Counting: 0
+print[5]: Counting: 1
+print[5]: Counting: 2
+print[5]: Counting: 3
+print[5]: Counting: 4
+
+User quit program. Printing the symbol table.
+int i = 5

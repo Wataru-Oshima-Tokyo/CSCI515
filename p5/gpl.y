@@ -208,8 +208,9 @@ extern int line_count;            // current line in the input; from record.l
 %type <union_expression_ptr> not_expr;
 %type <union_expression_ptr> unary_expr; 
 
-%nonassoc T_ELSE
 %nonassoc T_IF_NO_ELSE
+%nonassoc T_ELSE
+
 
 %{
 template<typename OP, GPL::Operator op_type>
@@ -801,7 +802,7 @@ print_statement:
 
 exit_statement:
     T_EXIT T_LPAREN expression T_RPAREN {
-        $$ = new Exit(T_EXIT, $3);
+        $$ = new Exit($1, $3);
     }
 
 

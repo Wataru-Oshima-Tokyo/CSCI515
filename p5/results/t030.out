@@ -18,3 +18,16 @@ gpl.cpp::main() Calling window->initialize().
 
 
 gpl.cpp::main() Passing control to window->main_loop().
+print[7]: i = 0
+print[7]: i = 1
+print[7]: i = 2
+print[7]: i = 3
+print[7]: i = 4
+print[7]: i = 5
+print[7]: i = 6
+print[7]: i = 7
+print[7]: i = 8
+print[7]: i = 9
+
+User quit program. Printing the symbol table.
+int i = 10
