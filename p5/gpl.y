@@ -216,6 +216,11 @@ extern int line_count;            // current line in the input; from record.l
 template<typename OP, GPL::Operator op_type>
 const Expression* bin_op_check(const Expression* one, const Expression* three, unsigned int valid_types)
     {
+        if (one == nullptr || three == nullptr){
+            delete one;
+            delete three;
+            return new Integer_constant(0);
+        }
         bool lhs_valid = one->type() & valid_types;
         bool rhs_valid = three->type() & valid_types;
         if (lhs_valid && rhs_valid){
@@ -501,41 +506,39 @@ object_declaration:
             
             std::shared_ptr<Symbol> game_object = symtab.lookup(*$2);
             // if (game_object && game_object->is_game_object()) {
-               
+
             if (game_object) {
                 // std::cout << p->name << std::endl;
                 Game_object* obj = game_object->as_game_object(); 
                 GPL::Type expected_type;
                 try {
-                    // std::cout << "done  "<< p->name << std::endl;
                     expected_type = obj->attribute_type(p->name);
-                    // if (expected_type == p->value->type()) {
-                         
-                        switch (expected_type){
-                            case GPL::INT: {
-                                const Constant* const_value = p->value->evaluate();
-                            
-                                obj->write_attribute(p->name, const_value->as_int());
-                                break;
-                            }
-                            case GPL::DOUBLE: {
-                                const Constant* const_value = p->value->evaluate();
-                            
-                                obj->write_attribute(p->name, const_value->as_double());
-                                break;
-                            }
-                            case GPL::STRING: {
-                                const Constant* const_value = p->value->evaluate();
-                                obj->write_attribute(p->name, const_value->as_string());
+                        if (p->value != nullptr){
+                            switch (expected_type ){
+                                case GPL::INT: {
+                                    const Constant* const_value = p->value->evaluate();
                                 
-                                break;
+                                    obj->write_attribute(p->name, const_value->as_int());
+                                    break;
+                                }
+                                case GPL::DOUBLE: {
+                                    const Constant* const_value = p->value->evaluate();
+                                
+                                    obj->write_attribute(p->name, const_value->as_double());
+                                    break;
+                                }
+                                case GPL::STRING: {
+                                    const Constant* const_value = p->value->evaluate();
+                                    obj->write_attribute(p->name, const_value->as_string());
+                                    
+                                    break;
+                                }
+                                default:
+                                    assert(false);
                             }
-                            default:
-                                assert(false);
                         }
-                }
 
-                catch (const  std::out_of_range& e){
+                } catch (const std::out_of_range& e){
                     Error::error(Error::UNKNOWN_CONSTRUCTOR_PARAMETER,*$2,p->name);
                 } catch (GPL::Type errorneous_type){
                     Error::error(Error::INCORRECT_CONSTRUCTOR_PARAMETER_TYPE, *$2, p->name);
@@ -842,24 +845,26 @@ assign_statement:
         //#TODO: need to handle the error message here 
         // std::cout << "Expression type:" << GPL::to_string($1->type()) <<std::endl;
         
-        if (($1->type() == GPL::CIRCLE || $1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
+        if (($1->type() == GPL::CIRCLE || $1->type() == GPL::RECTANGLE ||$1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
             Error::error(Error::INVALID_LHS_OF_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
+            $$=new Assign($1,nullptr, true);
         }else if ($1->type() == $3->type()){
-            //do nothing
+            $$ = new Assign($1,$3, true);
         }else if ($1->type() == GPL::DOUBLE && $3->type() == GPL::INT){
-            //do nothing
+            $$ = new Assign($1,$3, true);
         }else if ($1->type() == GPL::STRING && ($3->type() == GPL::DOUBLE || $3->type() == GPL::INT)){
-            //do nothing
+            $$ = new Assign($1,$3, true);
         }else{
            Error::error(Error::ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
-        }else
-        $$ = new Assign($1,$3, true);
+           $$=new Assign($1,nullptr, true);
+        }
+        
     }
     | variable T_PLUS_ASSIGN expression {
         
-        if (($1->type() == GPL::CIRCLE || $1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
+        if (($1->type() == GPL::CIRCLE || $1->type() == GPL::RECTANGLE ||$1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
             Error::error(Error::INVALID_LHS_OF_PLUS_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
-            $$ = new Assign($1,$3, true);
+            $$=new Assign($1,nullptr, true);
         }else if ($1->type() == GPL::DOUBLE && ($3->type() == GPL::INT || $3->type() == GPL::DOUBLE)){
             $$ = new Assign($1, new Plus($1, $3), false);
         }else if ($1->type() == GPL::STRING && ($3->type() == GPL::STRING || $3->type() == GPL::DOUBLE || $3->type() == GPL::INT)){
@@ -870,13 +875,13 @@ assign_statement:
             $$ =  new Assign($1, new Plus($1, $3), false);
         }else{
            Error::error(Error::PLUS_ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
-           $$ = new Assign($1,$3, true);
+           $$=new Assign($1,nullptr, true);
         } 
     }
     | variable T_MINUS_ASSIGN expression{
-        if (($1->type() == GPL::CIRCLE || $1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP || $1->type() == GPL::STRING)){
+        if (($1->type() == GPL::CIRCLE || $1->type() == GPL::RECTANGLE ||$1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP|| $1->type() == GPL::STRING)){
             Error::error(Error::INVALID_LHS_OF_MINUS_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
-            $$ = new Assign($1,$3, true);
+            $$=new Assign($1,nullptr, true);
         }else if ($1->type() == GPL::DOUBLE && ($3->type() == GPL::INT || $3->type() == GPL::DOUBLE)){
             $$ = new Assign($1, new Minus($1, $3), false);
         }else if ($1->type() == GPL::INT &&  $3->type() == GPL::INT){
@@ -884,13 +889,13 @@ assign_statement:
             $$ =  new Assign($1, new Minus($1, $3), false);
         }else{
            Error::error(Error::MINUS_ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
-           $$ = new Assign($1,$3, true);
+            $$=new Assign($1,nullptr, true);
         } 
     }
     | variable T_PLUS_PLUS{
         if ($1->type() != GPL::INT){
             Error::error(Error::INVALID_LHS_OF_PLUS_PLUS, $1->get_name(),GPL::to_string($1->type()));
-            $$ = new Assign($1,new Plus($1, new Integer_constant(0)), false);
+            $$=new Assign($1,nullptr, true);
         }else{
             $$ =  new Assign($1, new Plus($1, new Integer_constant(1)), false);
         }
@@ -898,7 +903,7 @@ assign_statement:
     | variable T_MINUS_MINUS{
         if ($1->type() != GPL::INT){
             Error::error(Error::INVALID_LHS_OF_MINUS_MINUS, $1->get_name(),GPL::to_string($1->type()));
-            $$ = new Assign($1,new Minus($1, new Integer_constant(0)), false);
+            $$=new Assign($1,nullptr, true);
         }else{
             $$ =  new Assign($1, new Minus($1, new Integer_constant(1)), false);
         }
@@ -999,7 +1004,6 @@ variable:
             if ($3->type() != GPL::INT) {
             Error::error(Error::ARRAY_INDEX_MUST_BE_AN_INTEGER, *$1, GPL::to_string($3->type()));
             $$ = new Member_variable(*$1, 0, *$6);
-            $$ = nullptr;
             delete $1;
             delete $6;
             break;

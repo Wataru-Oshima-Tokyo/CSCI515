@@ -1,1 +1,0 @@
-Semantic error on line 6: Cannot -= an expression of type 'string' from a variable of type 'double'.
