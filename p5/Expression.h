@@ -12,6 +12,7 @@ class Expression {
     virtual const Constant* evaluate() const=0;
     virtual GPL::Type type() const=0;
     virtual ~Expression();
+    virtual std::string get_name() const;
     Expression(const Expression&) = delete;
     Expression& operator=(const Expression&) = delete;
     

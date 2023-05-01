@@ -35,13 +35,14 @@ std::shared_ptr<Locator> Variable::modify() const {
 
 
 const Constant* Variable::evaluate() const {
+
     if (symbol_name.empty()) {
         return ret(new Integer_constant(0));
     }
     auto symbol_ptr = symbol();
     if (array_index_expression == nullptr) {
         return ret(symbol_ptr->as_constant());
-    }
+        }
     int index;
     try {
         index = array_index_expression->evaluate()->as_int();

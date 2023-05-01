@@ -774,10 +774,21 @@ statement:
 //---------------------------------------------------------------------
 if_statement:
     T_IF T_LPAREN expression T_RPAREN statement_or_block_of_statements %prec T_IF_NO_ELSE{
-        $$ = new If($3, $5, nullptr);
+        if($3->type() == GPL::INT){
+           $$ = new If($3, $5, nullptr);
+        }else{
+            Error::error(Error::INVALID_TYPE_FOR_IF_STMT_EXPRESSION);
+            $$=nullptr;
+        }
+        
     }
     | T_IF T_LPAREN expression T_RPAREN statement_or_block_of_statements T_ELSE statement_or_block_of_statements {
-        $$ = new If($3, $5, $7);
+        if($3->type() == GPL::INT){
+           $$ = new If($3, $5, $7);
+        }else{
+            Error::error(Error::INVALID_TYPE_FOR_IF_STMT_EXPRESSION);
+            $$=nullptr;
+        }
     }
     ;
 
@@ -785,7 +796,13 @@ if_statement:
 //---------------------------------------------------------------------
 for_statement:
     T_FOR T_LPAREN assign_statement_or_empty T_SEMIC expression T_SEMIC assign_statement_or_empty T_RPAREN statement_or_block_of_statements {
-        $$ = new For($3, $5, $7, $9);
+        if($5->type() == GPL::INT){
+            $$ = new For($3, $5, $7, $9);
+        }else{
+            Error::error(Error::INVALID_TYPE_FOR_FOR_STMT_EXPRESSION);
+            $$=nullptr;
+        }
+        
     }
 
 //---------------------------------------------------------------------
@@ -824,6 +841,7 @@ assign_statement:
         //ex :) lhs_int = rhs_double;
         //#TODO: need to handle the error message here 
         // std::cout << "Expression type:" << GPL::to_string($1->type()) <<std::endl;
+        
         if (($1->type() == GPL::CIRCLE || $1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
             Error::error(Error::INVALID_LHS_OF_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
         }else if ($1->type() == $3->type()){
@@ -834,11 +852,11 @@ assign_statement:
             //do nothing
         }else{
            Error::error(Error::ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
-        }
+        }else
         $$ = new Assign($1,$3, true);
     }
     | variable T_PLUS_ASSIGN expression {
-
+        
         if (($1->type() == GPL::CIRCLE || $1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
             Error::error(Error::INVALID_LHS_OF_PLUS_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
             $$ = new Assign($1,$3, true);
@@ -1044,7 +1062,7 @@ relational_expr
 
 add_sub_expr
     : mul_div_mod_expr
-    | add_sub_expr T_PLUS mul_div_mod_expr { $$ = bin_op_check<Plus, GPL::PLUS>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); }
+    | add_sub_expr T_PLUS mul_div_mod_expr {$$ = bin_op_check<Plus, GPL::PLUS>($1, $3, GPL::INT|GPL::DOUBLE|GPL::STRING); }
     | add_sub_expr T_MINUS mul_div_mod_expr { $$ = bin_op_check<Minus, GPL::MINUS>($1, $3, GPL::INT|GPL::DOUBLE); }
     ;
 

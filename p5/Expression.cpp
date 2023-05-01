@@ -23,6 +23,12 @@ const Constant* Expression::ret(const Constant* new_evald_constant) const
 /************* Other operators ****************/
 /**********************************************/
 
+std::string Expression::get_name() const
+{
+  return "";
+}
+
+
 const Constant* Plus::evaluate() const
 {
   GPL::Type lht=lhs->type();

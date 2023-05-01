@@ -18,9 +18,14 @@ double Game_attribute_constant::as_double() const{
     //     throw type();
     double value;
     try {
+        
         gop->read_attribute(attribute_name, value);
     } catch (const std::out_of_range& e){
         Error::error(Error::UNDECLARED_MEMBER,attribute_name, "here");
+    } catch(...){
+        int ivalue;
+        gop->read_attribute(attribute_name, ivalue);
+        value = double(static_cast<double>(ivalue));
     }
     return value;
     

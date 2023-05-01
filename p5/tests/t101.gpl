@@ -1,32 +1,35 @@
-int    lhs_int;
-double lhs_double;
-string lhs_string;
-double ex;
-double ex2;
-int    rhs_int=22;
-double rhs_double=33.33;
-string rhs_string="Blobo";
+int index;
+int i = 42;
+double x = 3.14159;
+string s = "hello";
+int ints[3];
+double doubles[3];
+string strings[3];
+rectangle rects[3];
+triangle my_triangle();
 
-on hkey
+
+on akey
 {
-  print("Assignment. h-key pressed");
-  lhs_int    = rhs_int;
-  lhs_double = rhs_double;
-  lhs_string = rhs_string;
+    for (index = 0; index < 3; index = index + 1)
+    {
+        ints[index] = index;
+        doubles[index] = 3.14159 * index;
+        strings[index] = "index = " + index;
+        rects[index].x = 42;
+    }
+
+    my_triangle.x = 42;
 }
 
-on jkey
+on skey
 {
-  print("Assignment. j-key pressed");
-  lhs_double = rhs_double;
-  lhs_string = rhs_int;
-  ex = rhs_int;
+    i = index + ints[0] + my_triangle.x + rects[0].x;
+    print("i = " + i);
+    x =  rects[0].x + 1.1;
+    //x = x+i;
+    print("x = " + x);
+    s = strings[0] + "  " + strings[1] + "  " + strings[2];
+    print("s = " + s);
 }
 
-on kkey
-{
-  print("Assignment. k-key pressed");
-  lhs_string = rhs_double;
-  ex2 = ex;
-  ex += lhs_double;
-}
