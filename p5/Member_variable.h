@@ -9,6 +9,7 @@ public:
     virtual const Constant *evaluate() const override;
     virtual std::shared_ptr<Locator> modify() const ;
     virtual GPL::Type type() const override;
+    virtual std::string get_name() const override;
 
 private:
     std::string attribute_name_;

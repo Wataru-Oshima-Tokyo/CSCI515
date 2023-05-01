@@ -30,7 +30,7 @@ print[20]: Assignment. j-key pressed
 print[28]: Assignment. k-key pressed
 
 User quit program. Printing the symbol table.
-double ex = 0
+double ex = 55.33
 double ex2 = 22
 double lhs_double = 33.33
 int lhs_int = 22

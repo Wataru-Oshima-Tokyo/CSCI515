@@ -56,11 +56,15 @@ extern int yydebug;
   #include "Print.h"
   #include "Event_manager.h"
   #include "Assign.h"
+  #include "Conditions.h"
   class Expression;
   class Variable;
   struct Parameter;
   class Statement;
   class Member_variable;
+  class If;
+  class For;
+  class Exit;
   #ifndef P1
     #include "types_and_ops.h"  //include in all projects except the first
   #endif
@@ -68,7 +72,7 @@ extern int yydebug;
     #include "Window.h"
   #endif
 
-#line 72 "gpl.tab.h"
+#line 76 "gpl.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -177,7 +181,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 45 "gpl.y"
+#line 49 "gpl.y"
 
  int            union_int;
  std::string*   union_string;  // MUST be a pointer to a string
@@ -191,7 +195,7 @@ union YYSTYPE
  Window::Keystroke window_keystroke;
  Assign* assign_expression_ptr;
 
-#line 195 "gpl.tab.h"
+#line 199 "gpl.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

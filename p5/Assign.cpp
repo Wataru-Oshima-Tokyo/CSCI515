@@ -5,8 +5,10 @@
 #include "Constant.h"
 #include "errno.h"
 Assign::~Assign() {
-    delete lhs;
-    delete rhs;
+    if (owns_expressions) {
+        delete lhs;
+        delete rhs;
+    }
 }
 
 void Assign::execute() const {

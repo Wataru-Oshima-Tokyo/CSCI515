@@ -6,6 +6,10 @@ Member_variable::Member_variable(const std::string &name, const std::string &att
 Member_variable::Member_variable(const std::string &name, const Expression *index_expression, const std::string &attribute_name)
     : Variable(name, index_expression), attribute_name_(attribute_name) {}
 
+std::string Member_variable::get_name() const {
+    return symbol_name + "." + attribute_name_;
+}
+
 const Constant *Member_variable::evaluate() const {
     if (attribute_name_.empty()) {
         return ret(new Integer_constant(0));

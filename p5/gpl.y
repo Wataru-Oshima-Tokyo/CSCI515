@@ -10,11 +10,15 @@
   #include "Print.h"
   #include "Event_manager.h"
   #include "Assign.h"
+  #include "Conditions.h"
   class Expression;
   class Variable;
   struct Parameter;
   class Statement;
   class Member_variable;
+  class If;
+  class For;
+  class Exit;
   #ifndef P1
     #include "types_and_ops.h"  //include in all projects except the first
   #endif
@@ -186,7 +190,11 @@ extern int line_count;            // current line in the input; from record.l
 %type <print_expression_ptr> print_statement;
 %type <statement_expression_ptr> statement_list;
 %type <statement_expression_ptr> statement;
+%type <statement_expression_ptr> exit_statement;
+%type <statement_expression_ptr> if_statement;
+%type <statement_expression_ptr> for_statement;
 %type <statement_expression_ptr> statement_block;
+%type <statement_expression_ptr> statement_or_block_of_statements;
 %type <window_keystroke> keystroke;
 %type <assign_expression_ptr> assign_statement;
 %type <assign_expression_ptr> assign_statement_or_empty;
@@ -731,8 +739,8 @@ keystroke:
 
 //---------------------------------------------------------------------
 statement_or_block_of_statements:
-    statement_block
-    | statement
+    statement_block {$$=$1;}
+    | statement {$$=$1;}
 
 
 //---------------------------------------------------------------------
@@ -755,24 +763,29 @@ statement_list:
 
 //---------------------------------------------------------------------
 statement:
-    if_statement
-    | for_statement
-    | assign_statement T_SEMIC {$$= $1;}
+    if_statement {$$=$1;}
+    | for_statement {$$=$1;}
+    | assign_statement T_SEMIC
     | print_statement T_SEMIC
-    | exit_statement T_SEMIC
+    | exit_statement T_SEMIC {$$=$1;}
 
 
 //---------------------------------------------------------------------
 if_statement:
-    T_IF T_LPAREN expression T_RPAREN statement_or_block_of_statements %prec T_IF_NO_ELSE
-    | T_IF T_LPAREN expression T_RPAREN statement_or_block_of_statements T_ELSE statement_or_block_of_statements
+    T_IF T_LPAREN expression T_RPAREN statement_or_block_of_statements %prec T_IF_NO_ELSE{
+        $$ = new If($3, $5, nullptr);
+    }
+    | T_IF T_LPAREN expression T_RPAREN statement_or_block_of_statements T_ELSE statement_or_block_of_statements {
+        $$ = new If($3, $5, $7);
+    }
     ;
 
 
 //---------------------------------------------------------------------
 for_statement:
-    T_FOR T_LPAREN assign_statement_or_empty T_SEMIC expression T_SEMIC assign_statement_or_empty T_RPAREN statement_or_block_of_statements
-
+    T_FOR T_LPAREN assign_statement_or_empty T_SEMIC expression T_SEMIC assign_statement_or_empty T_RPAREN statement_or_block_of_statements {
+        $$ = new For($3, $5, $7, $9);
+    }
 
 //---------------------------------------------------------------------
 print_statement:
@@ -786,15 +799,16 @@ print_statement:
     }
 
 
-//---------------------------------------------------------------------
 exit_statement:
-    T_EXIT T_LPAREN expression T_RPAREN 
+    T_EXIT T_LPAREN expression T_RPAREN {
+        $$ = new Exit(T_EXIT, $3);
+    }
 
 
 //---------------------------------------------------------------------
 assign_statement_or_empty:
     assign_statement {$$ = $1;}
-    | %empty
+    | %empty {$$=nullptr;}
 
 
 //---------------------------------------------------------------------
@@ -814,35 +828,57 @@ assign_statement:
         }else{
            Error::error(Error::ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
         }
-        $$ = new Assign($1,$3);
+        $$ = new Assign($1,$3, true);
     }
     | variable T_PLUS_ASSIGN expression {
-        // Lookup symbol
-        std::cout << "variable T_PLUS_ASSIGN expression" << std::endl;
 
         if (($1->type() == GPL::CIRCLE || $1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
-            Error::error(Error::INVALID_LHS_OF_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
-            $$ = new Assign($1,$3);
+            Error::error(Error::INVALID_LHS_OF_PLUS_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
+            $$ = new Assign($1,$3, true);
         }else if ($1->type() == GPL::DOUBLE && ($3->type() == GPL::INT || $3->type() == GPL::DOUBLE)){
-            Expression *total = new Plus($3, new Double_constant($1->evaluate()->as_double()));
-            std::cout << "left "<< $1->modify()->get_double_value() << std::endl;
-            std::cout << "right "<< $3->evaluate()->as_double() << std::endl;
-            std::cout << "total "<< total->evaluate()->as_string() << std::endl;
-            $$ = new Assign($1, total->evaluate());
+            $$ = new Assign($1, new Plus($1, $3), false);
         }else if ($1->type() == GPL::STRING && ($3->type() == GPL::STRING || $3->type() == GPL::DOUBLE || $3->type() == GPL::INT)){
-            Expression *total = new Plus($3, new String_constant($1->evaluate()->as_string()));
-            $$ =  new Assign($1, total);
+            // Expression *total = new Plus($1, $3);
+            $$ =  new Assign($1, new Plus($1, $3), false);
         }else if ($1->type() == GPL::INT &&  $3->type() == GPL::INT){
-            Expression *total = new Plus($3, new Integer_constant($1->evaluate()->as_int()));
-            $$ =  new Assign($1, total);
+            // Expression *total = new Plus($1, $3);
+            $$ =  new Assign($1, new Plus($1, $3), false);
         }else{
-           Error::error(Error::ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
-           $$ = new Assign($1,$3);
+           Error::error(Error::PLUS_ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
+           $$ = new Assign($1,$3, true);
         } 
     }
-    | variable T_MINUS_ASSIGN expression
-    | variable T_PLUS_PLUS
-    | variable T_MINUS_MINUS
+    | variable T_MINUS_ASSIGN expression{
+        if (($1->type() == GPL::CIRCLE || $1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP || $1->type() == GPL::STRING)){
+            Error::error(Error::INVALID_LHS_OF_MINUS_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
+            $$ = new Assign($1,$3, true);
+        }else if ($1->type() == GPL::DOUBLE && ($3->type() == GPL::INT || $3->type() == GPL::DOUBLE)){
+            $$ = new Assign($1, new Minus($1, $3), false);
+        }else if ($1->type() == GPL::INT &&  $3->type() == GPL::INT){
+            // Expression *total = new Plus($1, $3);
+            $$ =  new Assign($1, new Minus($1, $3), false);
+        }else{
+           Error::error(Error::MINUS_ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
+           $$ = new Assign($1,$3, true);
+        } 
+    }
+    | variable T_PLUS_PLUS{
+        if ($1->type() != GPL::INT){
+            Error::error(Error::INVALID_LHS_OF_PLUS_PLUS, $1->get_name(),GPL::to_string($1->type()));
+            $$ = new Assign($1,new Plus($1, new Integer_constant(0)), false);
+        }else{
+            $$ =  new Assign($1, new Plus($1, new Integer_constant(1)), false);
+        }
+    }
+    | variable T_MINUS_MINUS{
+        if ($1->type() != GPL::INT){
+            Error::error(Error::INVALID_LHS_OF_MINUS_MINUS, $1->get_name(),GPL::to_string($1->type()));
+            $$ = new Assign($1,new Minus($1, new Integer_constant(0)), false);
+        }else{
+            $$ =  new Assign($1, new Minus($1, new Integer_constant(1)), false);
+        }
+    }
+
 
 
 //---------------------------------------------------------------------

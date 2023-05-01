@@ -8,18 +8,6 @@ gpl.cpp::main()
 
 gpl.cpp::main() Calling yyparse()
 
-variable T_PLUS_ASSIGN expression
-variable T_PLUS_ASSIGN expression
-left 0
-right 33.33
-total 33.330000
-variable T_PLUS_ASSIGN expression
-variable T_PLUS_ASSIGN expression
-left 0
-right 22
-total 22.000000
-variable T_PLUS_ASSIGN expression
-variable T_PLUS_ASSIGN expression
 
 gpl.cpp::main() after call to yyparse().
 
@@ -40,9 +28,9 @@ print[19]: Plus-assign. j-key pressed
 print[26]: Plus-assign. k-key pressed
 
 User quit program. Printing the symbol table.
-double lhs_double = 22
+double lhs_double = 55.33
 int lhs_int = 22
-string lhs_string = "33.330000"
+string lhs_string = "Blobo2233.330000"
 double rhs_double = 33.33
 int rhs_int = 22
 string rhs_string = "Blobo"

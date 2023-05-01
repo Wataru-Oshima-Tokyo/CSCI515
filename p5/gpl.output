@@ -352,7 +352,7 @@ Nonterminals, with rules where they appear
     keystroke <window_keystroke> (114)
         on left: 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64
         on right: 40
-    statement_or_block_of_statements (115)
+    statement_or_block_of_statements <statement_expression_ptr> (115)
         on left: 65 66
         on right: 76 77 78
     statement_block <statement_expression_ptr> (116)
@@ -364,16 +364,16 @@ Nonterminals, with rules where they appear
     statement <statement_expression_ptr> (118)
         on left: 71 72 73 74 75
         on right: 66 69 70
-    if_statement (119)
+    if_statement <statement_expression_ptr> (119)
         on left: 76 77
         on right: 71
-    for_statement (120)
+    for_statement <statement_expression_ptr> (120)
         on left: 78
         on right: 72
     print_statement <print_expression_ptr> (121)
         on left: 79
         on right: 74
-    exit_statement (122)
+    exit_statement <statement_expression_ptr> (122)
         on left: 80
         on right: 75
     assign_statement_or_empty <assign_expression_ptr> (123)

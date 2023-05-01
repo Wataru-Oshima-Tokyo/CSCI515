@@ -25,7 +25,7 @@ class Variable : public Expression {
     virtual std::shared_ptr<Locator> modify() const;
     virtual GPL::Type type() const;
     virtual ~Variable();
-    std::string get_name() const ;
+    virtual std::string get_name() const ;
     Variable(const Variable&) = delete;
     Variable& operator=(const Variable&) = delete;
   protected: //allow derived class access
