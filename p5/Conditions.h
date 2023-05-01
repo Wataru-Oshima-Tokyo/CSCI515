@@ -3,6 +3,7 @@
 
 #include "Statement.h"
 #include "Constant.h"
+#include <iostream>
 
 class If : public Statement {
 public:
@@ -62,6 +63,7 @@ public:
         int exit_status = m_status->evaluate()->as_int();
         std::cout << "gpl[" << m_line_number << "]: exit(" << exit_status << ")"<<std::endl;
         exit(exit_status);
+        
     }
 
 private:

@@ -802,7 +802,13 @@ print_statement:
 
 exit_statement:
     T_EXIT T_LPAREN expression T_RPAREN {
-        $$ = new Exit($1, $3);
+        if ($3->type() == GPL::INT){
+            $$ = new Exit($1, $3);
+        }else{
+            Error::error(Error::EXIT_STATUS_MUST_BE_AN_INTEGER, GPL::to_string($3->type()));
+            $$=nullptr;
+        }
+        
     }
 
 

@@ -482,6 +482,8 @@ const Constant* RANDOM::evaluate() const
 
   if (value_constant->as_double() <1){
     Error::error(Error::INVALID_ARGUMENT_FOR_RANDOM, value_constant->as_string());
+    if (value_constant->type() == GPL::INT)
+      return ret(new Integer_constant(1));
     return ret(new Integer_constant(0));
   }
 

@@ -22,6 +22,6 @@ gpl.cpp::main() Calling window->initialize().
 gpl.cpp::main() Passing control to window->main_loop().
 
 User quit program. Printing the symbol table.
-int i = 0
+int i = 1
 int j = 0
 int k = 0

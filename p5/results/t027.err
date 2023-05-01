@@ -1,1 +1,1 @@
-terminate called after throwing an instance of 'GPL::Type'
+Semantic error on line 5: Value passed to exit() must be an integer. Value passed was of type 'string'.
