@@ -28,3 +28,7 @@ std::ostream& operator<<(std::ostream& os, const Symbol_table& symtab) {
     }
     return os;
 }
+
+void Symbol_table::erase(const std::string& name) {
+    symbols.erase(name);
+}

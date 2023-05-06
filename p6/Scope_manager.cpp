@@ -58,3 +58,12 @@ std::ostream& operator<<(std::ostream& os, const Scope_manager& sh) {
     }
     return os;
 }
+
+void Scope_manager::erase(const std::string& name) {
+    for (auto it = tables_.rbegin(); it != tables_.rend(); ++it) {
+        if ((*it)->lookup(name)) {
+            (*it)->erase(name);
+            break;
+        }
+    }
+}

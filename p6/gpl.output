@@ -332,7 +332,7 @@ Nonterminals, with rules where they appear
     forward_declaration (109)
         on left: 35
         on right: 6
-    animation_parameter (110)
+    animation_parameter <union_gpl_type> (110)
         on left: 36 37
         on right: 35
     animation_block (111)

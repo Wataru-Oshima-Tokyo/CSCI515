@@ -57,6 +57,7 @@ extern int yydebug;
   #include "Event_manager.h"
   #include "Assign.h"
   #include "Conditions.h"
+  #include "Animation_code.h"
   class Expression;
   class Variable;
   struct Parameter;
@@ -72,7 +73,7 @@ extern int yydebug;
     #include "Window.h"
   #endif
 
-#line 76 "gpl.tab.h"
+#line 77 "gpl.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -181,7 +182,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 49 "gpl.y"
+#line 50 "gpl.y"
 
  int            union_int;
  std::string*   union_string;  // MUST be a pointer to a string
@@ -195,7 +196,7 @@ union YYSTYPE
  Window::Keystroke window_keystroke;
  Assign* assign_expression_ptr;
 
-#line 199 "gpl.tab.h"
+#line 200 "gpl.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

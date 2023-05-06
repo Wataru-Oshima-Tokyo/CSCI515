@@ -11,6 +11,7 @@
   #include "Event_manager.h"
   #include "Assign.h"
   #include "Conditions.h"
+  #include "Animation_code.h"
   class Expression;
   class Variable;
   struct Parameter;
@@ -198,6 +199,7 @@ extern int line_count;            // current line in the input; from record.l
 %type <window_keystroke> keystroke;
 %type <assign_expression_ptr> assign_statement;
 %type <assign_expression_ptr> assign_statement_or_empty;
+%type <union_gpl_type>  animation_parameter;
 // Add the %nonassoc directive for the non-associative operators
 %type <union_expression_ptr> or_expr;
 %type <union_expression_ptr> and_expr;
@@ -260,7 +262,16 @@ const Expression* unary_op_check(const Expression* two, unsigned int valid_types
 
 //---------------------------------------------------------------------
 program:
-    declaration_list block_list
+    declaration_list block_list{
+        std::set<std::string> resultSet;
+        std::set_difference(Animation_code::declared_blocklist.begin(), Animation_code::declared_blocklist.end(),
+                            Animation_code::defined_blocklist.begin(), Animation_code::defined_blocklist.end(),
+                            std::inserter(resultSet, resultSet.begin()));
+
+        for (const auto& animationBlock : resultSet) {
+            Scope_manager::instance().erase(animationBlock);
+        }
+    }
 
 
 //---------------------------------------------------------------------
@@ -691,13 +702,34 @@ termination_block:
 
 //---------------------------------------------------------------------
 forward_declaration:
-    T_FORWARD T_ANIMATION T_ID T_LPAREN animation_parameter T_RPAREN
+    T_FORWARD T_ANIMATION T_ID T_LPAREN animation_parameter T_RPAREN {
+        Scope_manager& symtab = Scope_manager::instance();
+        if(symtab.defined_in_current_scope(*$3))
+        {
+            Error::error(Error::PREVIOUSLY_DECLARED_VARIABLE,*$3);
+            delete $3;
+            break;
+        }else{
+            Animation_code* animation_code = new Animation_code(*$3, $5);
+            symtab.add_to_current_scope(std::make_shared<Symbol>(*$3, animation_code));
+            animation_code->declared_blocklist.insert(*$3);
+        }
+
+    }
 
 
 //---------------------------------------------------------------------
 animation_parameter:
     object_type T_ID
+    {
+        $$ = $1;
+        // You can use $2 (T_ID) if you want to store or process the parameter name in the Animation_code object.
+    }
     | object_type
+    {
+        $$ = $1;
+    }
+;
 
 
 //---------------------------------------------------------------------

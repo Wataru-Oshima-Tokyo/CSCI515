@@ -23,6 +23,7 @@ public:
     // Prevent compiler-generated functions
     Scope_manager(const Scope_manager&) = delete;
     Scope_manager& operator=(const Scope_manager&) = delete;
+    void erase(const std::string& name);
     
 
 private:
