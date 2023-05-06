@@ -1,0 +1,33 @@
+//initialize animation_block parameter 
+//with another animation_block parameter
+forward animation stretch(triangle);
+
+triangle priest_anime;
+triangle priestess_anime;
+
+animation clockwise(triangle tri)
+{
+  tri.rotation+=0.2;
+}
+
+animation counterclockwise(triangle tri){
+  tri.rotation-=0.2;
+}
+
+initialization {
+  priest_anime.blue=1.0;
+  priestess_anime.blue=0.0;
+  priest_anime.red=0.0;
+  priestess_anime.red=1.0;
+  priest_anime.green=0.0;
+  priestess_anime.green=0.0;
+  priest_anime.size=30;
+  priestess_anime.size=30;
+  priest_anime.x=75;
+  priest_anime.y=75;
+  priestess_anime.x=160;
+  priestess_anime.y=160;
+  priest_anime.animation_block=clockwise;
+  priestess_anime.animation_block=counterclockwise;
+  counterclockwise=priest_anime.animation_block;
+}
