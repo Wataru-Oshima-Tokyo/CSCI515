@@ -265,6 +265,19 @@ const Expression* unary_op_check(const Expression* two, unsigned int valid_types
 //---------------------------------------------------------------------
 program:
     declaration_list block_list{
+        std::set<std::string> undefinedBlocks;
+
+        // 未定義のアニメーションブロックを検出する
+        std::set_difference(Animation_code::used_blocklist.begin(), Animation_code::used_blocklist.end(),
+                            Animation_code::defined_blocklist.begin(), Animation_code::defined_blocklist.end(),
+                            std::inserter(undefinedBlocks, undefinedBlocks.begin()));
+
+        // 未定義のアニメーションブロックのエラーを報告する
+        for (const auto& animationBlock : undefinedBlocks) {
+            Error::error(Error::NO_BODY_PROVIDED_FOR_FORWARD, animationBlock);
+        }
+
+        // 前方宣言があるが、未定義のアニメーションブロックをシンボルテーブルから削除する
         std::set<std::string> resultSet;
         std::set_difference(Animation_code::declared_blocklist.begin(), Animation_code::declared_blocklist.end(),
                             Animation_code::defined_blocklist.begin(), Animation_code::defined_blocklist.end(),
@@ -274,7 +287,6 @@ program:
             Scope_manager::instance().erase(animationBlock);
         }
     }
-
 
 //---------------------------------------------------------------------
 declaration_list:
@@ -552,8 +564,10 @@ object_declaration:
                                     if ($1 != animation_code->get_parameter_type()){
                                         Error::error(Error::GAME_OBJECT_ANIMATION_BLOCK_PARAMETER_TYPE_ERROR, GPL::to_string($1), GPL::to_string(animation_code->get_parameter_type()));
                                     }else{
+                                        // std::cout << p->name << std::endl;
+                                        //here is a suspicious part since p->name is "animation block" should it be like the name of the animation parameter?
                                         obj->write_attribute(p->name, animation_code);
-                                        animation_code->used_blocklist.insert(p->name); 
+                                        animation_code->used_blocklist.insert(animation_code->get_block_name()); 
                                     }
                                     break;
                                 }
