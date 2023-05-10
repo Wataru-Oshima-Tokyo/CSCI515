@@ -5,6 +5,7 @@
 #include "types_and_ops.h"
 #include "Game_object.h"
 #include <iostream>
+
 class Statement;
 
 class Locator {
@@ -16,6 +17,7 @@ class Locator {
     virtual void mutate(int)                {throw intrinsic_type;}
     virtual void mutate(double)             {throw intrinsic_type;}
     virtual void mutate(const std::string& ){throw intrinsic_type;}
+    virtual void mutate(const Animation_code* new_animation_block) {throw intrinsic_type;}
     GPL::Type type() const;
     virtual int get_int_value() const;
     virtual double get_double_value() const;
@@ -62,6 +64,19 @@ class Game_attribute_locator : public Locator {
     virtual void mutate(int val);
     virtual void mutate(double val);
     virtual void mutate(const std::string& val);
+    virtual void mutate(const Animation_code* val);
 };
+
+class Animation_code_locator : public Locator {
+  private:
+    Animation_code* anc;
+  public:
+    Animation_code_locator(Animation_code* d) 
+      : Locator(GPL::ANIMATION_CODE), anc(d) {}
+    virtual void mutate(const std::string& val); //set parameter_name
+    virtual void mutate(const Statement* val);   //set block
+};
+
+
 
 #endif

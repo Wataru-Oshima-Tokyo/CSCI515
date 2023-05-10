@@ -12,6 +12,7 @@ class Constant : public Expression {
     virtual double      as_double() const {throw intrinsic_type;}
     virtual std::string as_string() const {throw intrinsic_type;}
     virtual const Game_object* as_game_object() const {throw intrinsic_type;}
+    virtual const Animation_code* as_animation_block() const { throw intrinsic_type; }
     virtual GPL::Type   type()      const final;
     virtual ~Constant(){}//virtual dtor to ensure derived data is released properly, i.e., string
     
@@ -54,6 +55,14 @@ class Game_object_constant : public Constant{
     private:
         Game_object* data;
 
+};
+
+class Animation_block_constant : public Constant{
+    public:
+        Animation_block_constant(Animation_code* d): Constant(GPL::ANIMATION_CODE), data(d){}
+        virtual const Animation_code* as_animation_block() const { return data;}
+    private:
+        const Animation_code* data;
 };
 
 #endif

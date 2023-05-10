@@ -38,6 +38,20 @@ void Game_attribute_locator::mutate(const std::string& val)
   gop->write_attribute(attribute_name, val);
 }
 
+void Game_attribute_locator::mutate(const Animation_code* val)           
+{
+  gop->write_attribute(attribute_name, val);
+}
+
+void Animation_code_locator::mutate(const std::string& val){
+  anc->set_parameter_name(val);
+}
+
+void Animation_code_locator::mutate(const Statement* val){
+  anc->set_block(val);
+} 
+
+
 // Integer_locator
 int Integer_locator::get_int_value() const {
     return data;

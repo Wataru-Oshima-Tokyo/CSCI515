@@ -1,8 +1,6 @@
 
 #include "Game_attribute_constant.h"
 int Game_attribute_constant::as_int() const {
-    // if (type() != GPL::INT)
-    //     throw type();
     int value;
     try {
         gop->read_attribute(attribute_name, value);
@@ -64,3 +62,20 @@ std::string Game_attribute_constant::as_string() const {
     }
     return value;
 }
+
+Animation_code* Game_attribute_constant::as_animation_block() const {
+    Animation_code* value;
+    try {
+        gop->read_attribute(attribute_name, value);
+    } catch (const std::out_of_range& e){
+        Error::error(Error::UNDECLARED_MEMBER,attribute_name, "here");
+    }
+    return value;
+    
+}
+
+
+
+
+
+

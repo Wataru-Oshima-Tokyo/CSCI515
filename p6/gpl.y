@@ -184,6 +184,7 @@ extern int line_count;            // current line in the input; from record.l
 %type <union_expression_ptr> primary_expression;
 %type <union_expression_ptr> expression;
 %type <union_expression_ptr> optional_initializer;
+
 %type <union_variable_ptr> variable;
 %type <union_param_node_ptr> parameter;
 %type <union_param_node_ptr> parameter_list;
@@ -200,6 +201,7 @@ extern int line_count;            // current line in the input; from record.l
 %type <assign_expression_ptr> assign_statement;
 %type <assign_expression_ptr> assign_statement_or_empty;
 %type <union_gpl_type>  animation_parameter;
+%type <union_string> animation_declaration;
 // Add the %nonassoc directive for the non-associative operators
 %type <union_expression_ptr> or_expr;
 %type <union_expression_ptr> and_expr;
@@ -734,12 +736,100 @@ animation_parameter:
 
 //---------------------------------------------------------------------
 animation_block:
-    animation_declaration statement_block
+    animation_declaration statement_block{
+        Scope_manager& scopemgr = Scope_manager::instance();
+        scopemgr.pop_table();
+        // アニメーションブロックの名前がnullptrでないことを確認する
+        if ($1 != nullptr) {
+            // シンボルを取得し、そのステートメントポインタを設定する
+            auto symbol = scopemgr.lookup(*$1);
+            if (symbol && symbol->get_type() == GPL::ANIMATION_CODE) {
+                // symbol->as_animation_code()->set_statement($2);
+                // std::cout << *$1 << std::endl;
+            } else {
+                // throw "Symbol not found or type mismatch"; // 適切なエラーメッセージを提供する
+            }
+
+            // アニメーションブロックの名前をAnimation_code::defined_blocklistに挿入する
+            Animation_code::defined_blocklist.insert(*$1);
+        }
+    }
 
 
 //---------------------------------------------------------------------
 animation_declaration:
-    T_ANIMATION T_ID T_LPAREN object_type T_ID T_RPAREN
+    T_ANIMATION T_ID T_LPAREN object_type T_ID T_RPAREN{
+        bool error = false;
+        Scope_manager& scopemgr = Scope_manager::instance();
+        auto symbol=scopemgr.lookup(*$2);
+        if (!symbol){
+            
+            Animation_code* animation_code = new Animation_code(*$2, $4);
+            scopemgr.add_to_current_scope(std::make_shared<Symbol>(*$2, animation_code));
+            animation_code->declared_blocklist.insert(*$2);
+            symbol=scopemgr.lookup(*$2);
+        }
+        // シンボルのタイプがANIMATION_CODEであることを確認する
+        if (symbol->get_type() == GPL::ANIMATION_CODE) {
+            symbol->as_lvalue()->mutate(*$5);
+        }
+        //         // 新しいスコープのシンボルテーブルを作成する
+        Scope_manager::instance().push_table();
+        
+        // // 新しいゲームオブジェクトシンボルを作成し、シンボルテーブルに挿入する
+        //------- here you have to change later --------
+        try{
+            const Animation_code* const_value = symbol->as_constant()->evaluate()->as_animation_block();
+            if (const_value->get_parameter_type() != $4){
+                Error::error(Error::ANIMATION_PARAM_DOES_NOT_MATCH_FORWARD, GPL::to_string($4), GPL::to_string(const_value->get_parameter_type()));   
+            }  
+        }catch(GPL::Type errorneous_type){
+            Error::error(Error::REDECLARATION_OF_SYMBOL_AS_ANIMATION_BLOCK, *$2);  
+            error = true;
+        }
+
+
+        switch ($4){
+            case GPL::Type::CIRCLE: {
+                Circle* circle_obj = new Circle();
+                scopemgr.add_to_current_scope(std::make_shared<Symbol>(*$5, circle_obj));
+                }
+                break;
+            case GPL::Type::RECTANGLE: {
+                Rectangle* rectangle_obj = new Rectangle();
+                scopemgr.add_to_current_scope(std::make_shared<Symbol>(*$5, rectangle_obj));
+                }
+                break;
+            case GPL::Type::TRIANGLE: {
+                Triangle* triangle_obj = new Triangle();
+                scopemgr.add_to_current_scope(std::make_shared<Symbol>(*$5, triangle_obj));
+                }
+                break;
+            case GPL::Type::PIXMAP: {
+                Pixmap* pixmap_obj = new Pixmap();
+                scopemgr.add_to_current_scope(std::make_shared<Symbol>(*$5, pixmap_obj));
+                }
+                break;
+            case GPL::Type::TEXTBOX: {
+                Textbox* txtbox_obj = new Textbox();
+                scopemgr.add_to_current_scope(std::make_shared<Symbol>(*$5, txtbox_obj));
+                }
+                break;
+            default:{
+                int* ivalue = new int(0);
+                scopemgr.add_to_current_scope(std::make_shared<Symbol>(*$5, ivalue));
+                }
+                break;
+        }
+
+        // ----------------------------------------------
+
+        // animation_blockプロダクションにブロックの名前を渡す
+        if (!error)
+            $$ = $2;
+        else
+            $$ =nullptr;
+    }
 
 
 //---------------------------------------------------------------------
@@ -891,69 +981,81 @@ assign_statement:
         //ex :) lhs_int = rhs_double;
         //#TODO: need to handle the error message here 
         // std::cout << "Expression type:" << GPL::to_string($1->type()) <<std::endl;
-        
-        if (($1->type() == GPL::CIRCLE || $1->type() == GPL::RECTANGLE ||$1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
-            Error::error(Error::INVALID_LHS_OF_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
+        if ($1){
+            if (($1->type() == (GPL::CIRCLE|GPL::RECTANGLE|GPL::TRIANGLE|GPL::TEXTBOX|GPL::PIXMAP))){
+                Error::error(Error::INVALID_LHS_OF_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
+                $$=new Assign($1,nullptr, true);
+            }else if ($1->type() == $3->type()){
+                $$ = new Assign($1,$3, true);
+            }else if ($1->type() == GPL::DOUBLE && $3->type() == GPL::INT){
+                $$ = new Assign($1,$3, true);
+            }else if ($1->type() == GPL::STRING && ($3->type() == GPL::DOUBLE || $3->type() == GPL::INT)){
+                $$ = new Assign($1,$3, true);
+            }else{
+            Error::error(Error::ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
             $$=new Assign($1,nullptr, true);
-        }else if ($1->type() == $3->type()){
-            $$ = new Assign($1,$3, true);
-        }else if ($1->type() == GPL::DOUBLE && $3->type() == GPL::INT){
-            $$ = new Assign($1,$3, true);
-        }else if ($1->type() == GPL::STRING && ($3->type() == GPL::DOUBLE || $3->type() == GPL::INT)){
-            $$ = new Assign($1,$3, true);
-        }else{
-           Error::error(Error::ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
-           $$=new Assign($1,nullptr, true);
+            }
         }
+
         
     }
     | variable T_PLUS_ASSIGN expression {
-        
-        if (($1->type() == GPL::CIRCLE || $1->type() == GPL::RECTANGLE ||$1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
-            Error::error(Error::INVALID_LHS_OF_PLUS_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
+        if($1){
+            if (($1->type() == GPL::CIRCLE || $1->type() == GPL::RECTANGLE ||$1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
+                Error::error(Error::INVALID_LHS_OF_PLUS_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
+                $$=new Assign($1,nullptr, true);
+            }else if ($1->type() == GPL::DOUBLE && ($3->type() == GPL::INT || $3->type() == GPL::DOUBLE)){
+                $$ = new Assign($1, new Plus($1, $3), false);
+            }else if ($1->type() == GPL::STRING && ($3->type() == GPL::STRING || $3->type() == GPL::DOUBLE || $3->type() == GPL::INT)){
+                // Expression *total = new Plus($1, $3);
+                $$ =  new Assign($1, new Plus($1, $3), false);
+            }else if ($1->type() == GPL::INT &&  $3->type() == GPL::INT){
+                // Expression *total = new Plus($1, $3);
+                $$ =  new Assign($1, new Plus($1, $3), false);
+            }else{
+            Error::error(Error::PLUS_ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
             $$=new Assign($1,nullptr, true);
-        }else if ($1->type() == GPL::DOUBLE && ($3->type() == GPL::INT || $3->type() == GPL::DOUBLE)){
-            $$ = new Assign($1, new Plus($1, $3), false);
-        }else if ($1->type() == GPL::STRING && ($3->type() == GPL::STRING || $3->type() == GPL::DOUBLE || $3->type() == GPL::INT)){
-            // Expression *total = new Plus($1, $3);
-            $$ =  new Assign($1, new Plus($1, $3), false);
-        }else if ($1->type() == GPL::INT &&  $3->type() == GPL::INT){
-            // Expression *total = new Plus($1, $3);
-            $$ =  new Assign($1, new Plus($1, $3), false);
-        }else{
-           Error::error(Error::PLUS_ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
-           $$=new Assign($1,nullptr, true);
-        } 
+            } 
+        }
+
     }
     | variable T_MINUS_ASSIGN expression{
-        if (($1->type() == GPL::CIRCLE || $1->type() == GPL::RECTANGLE ||$1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP|| $1->type() == GPL::STRING)){
-            Error::error(Error::INVALID_LHS_OF_MINUS_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
-            $$=new Assign($1,nullptr, true);
-        }else if ($1->type() == GPL::DOUBLE && ($3->type() == GPL::INT || $3->type() == GPL::DOUBLE)){
-            $$ = new Assign($1, new Minus($1, $3), false);
-        }else if ($1->type() == GPL::INT &&  $3->type() == GPL::INT){
-            // Expression *total = new Plus($1, $3);
-            $$ =  new Assign($1, new Minus($1, $3), false);
-        }else{
-           Error::error(Error::MINUS_ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
-            $$=new Assign($1,nullptr, true);
-        } 
+        if($1){
+            if (($1->type() == GPL::CIRCLE || $1->type() == GPL::RECTANGLE ||$1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP|| $1->type() == GPL::STRING)){
+                Error::error(Error::INVALID_LHS_OF_MINUS_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
+                $$=new Assign($1,nullptr, true);
+            }else if ($1->type() == GPL::DOUBLE && ($3->type() == GPL::INT || $3->type() == GPL::DOUBLE)){
+                $$ = new Assign($1, new Minus($1, $3), false);
+            }else if ($1->type() == GPL::INT &&  $3->type() == GPL::INT){
+                // Expression *total = new Plus($1, $3);
+                $$ =  new Assign($1, new Minus($1, $3), false);
+            }else{
+            Error::error(Error::MINUS_ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
+                $$=new Assign($1,nullptr, true);
+            } 
+        }
     }
     | variable T_PLUS_PLUS{
-        if ($1->type() != GPL::INT){
-            Error::error(Error::INVALID_LHS_OF_PLUS_PLUS, $1->get_name(),GPL::to_string($1->type()));
-            $$=new Assign($1,nullptr, true);
-        }else{
-            $$ =  new Assign($1, new Plus($1, new Integer_constant(1)), false);
+        if($1){
+            if ($1->type() != GPL::INT){
+                Error::error(Error::INVALID_LHS_OF_PLUS_PLUS, $1->get_name(),GPL::to_string($1->type()));
+                $$=new Assign($1,nullptr, true);
+            }else{
+                $$ =  new Assign($1, new Plus($1, new Integer_constant(1)), false);
+            }
         }
+
     }
     | variable T_MINUS_MINUS{
-        if ($1->type() != GPL::INT){
-            Error::error(Error::INVALID_LHS_OF_MINUS_MINUS, $1->get_name(),GPL::to_string($1->type()));
-            $$=new Assign($1,nullptr, true);
-        }else{
-            $$ =  new Assign($1, new Minus($1, new Integer_constant(1)), false);
+        if($1){
+            if ($1->type() != GPL::INT){
+                Error::error(Error::INVALID_LHS_OF_MINUS_MINUS, $1->get_name(),GPL::to_string($1->type()));
+                $$=new Assign($1,nullptr, true);
+            }else{
+                $$ =  new Assign($1, new Minus($1, new Integer_constant(1)), false);
+            }
         }
+
     }
 
 

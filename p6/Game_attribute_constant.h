@@ -17,7 +17,7 @@ class Game_attribute_constant : public Constant {
     virtual int           as_int()         const;
     virtual double        as_double()      const;
     virtual std::string   as_string()      const;
-
+    virtual Animation_code* as_animation_block() const;
   private:
     const Game_object* gop;
     std::string attribute_name;

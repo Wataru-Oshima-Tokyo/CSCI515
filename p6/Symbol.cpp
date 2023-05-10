@@ -321,6 +321,8 @@ const Constant* Symbol::as_constant() const {
             return new Game_object_constant(value_.pixmap_pointer);
         case GPL::TRIANGLE:
             return new Game_object_constant(value_.triangle_pointer);
+        case GPL::ANIMATION_CODE:
+            return new Animation_block_constant(value_.animation_code_pointer);
         default:
             throw type_;
     }
@@ -412,6 +414,8 @@ std::shared_ptr<Locator> Symbol::as_lvalue() const {
             return std::make_shared<Double_locator>(*value_.double_pointer);
         case GPL::STRING:
             return std::make_shared<String_locator>(*value_.string_pointer);
+        case GPL::ANIMATION_CODE:
+            return std::make_shared<Animation_code_locator>(value_.animation_code_pointer);
         default:
             throw type_;       
     }

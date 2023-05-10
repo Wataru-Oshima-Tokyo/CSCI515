@@ -338,7 +338,7 @@ Nonterminals, with rules where they appear
     animation_block (111)
         on left: 38
         on right: 31
-    animation_declaration (112)
+    animation_declaration <union_string> (112)
         on left: 39
         on right: 38
     on_block (113)
