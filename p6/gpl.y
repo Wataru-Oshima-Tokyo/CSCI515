@@ -546,6 +546,17 @@ object_declaration:
                                     
                                     break;
                                 }
+                                case GPL::ANIMATION_BLOCK:{
+                                    
+                                    const Animation_code* animation_code = p->value->evaluate()->as_animation_block();
+                                    if ($1 != animation_code->get_parameter_type()){
+                                        Error::error(Error::GAME_OBJECT_ANIMATION_BLOCK_PARAMETER_TYPE_ERROR, GPL::to_string($1), GPL::to_string(animation_code->get_parameter_type()));
+                                    }else{
+                                        obj->write_attribute(p->name, animation_code);
+                                        animation_code->used_blocklist.insert(p->name); 
+                                    }
+                                    break;
+                                }
                                 default:
                                     assert(false);
                             }
