@@ -18,6 +18,7 @@ class Locator {
     virtual void mutate(double)             {throw intrinsic_type;}
     virtual void mutate(const std::string& ){throw intrinsic_type;}
     virtual void mutate(const Animation_code* new_animation_block) {throw intrinsic_type;}
+    virtual void mutate(const Statement* val) {throw intrinsic_type;}
     GPL::Type type() const;
     virtual int get_int_value() const;
     virtual double get_double_value() const;

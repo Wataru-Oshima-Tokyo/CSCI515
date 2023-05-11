@@ -57,6 +57,8 @@ Symbol::Symbol(const std::string &name, Pixmap *game_object, int count) :
 Symbol::Symbol(const std::string &name, Animation_code *game_object) :
      type_{GPL::Type::ANIMATION_CODE}, name_{name},value_{symboltype(game_object)}, count_{ 0 } {}
 
+Symbol::Symbol(const std::string &name, GPL::Type type, Game_object* argument):
+    type_{GPL::Type::GAME_OBJECT}, name_{name},value_{symboltype(argument)}, count_{ 0 } {}
 
 
 
@@ -157,9 +159,14 @@ Symbol::~Symbol() {
             break;
         case GPL::Type::ANIMATION_CODE:
             delete value_.animation_code_pointer;
-            break;       
+            break;
+        case GPL::Type::GAME_OBJECT:
+            // Don't delete value_.game_object_pointer here because it's a Reference,
+            // not an owning Symbol.
+            break;    
+
         default:
-         assert(false);
+            assert(false);
             break;
     }
 }

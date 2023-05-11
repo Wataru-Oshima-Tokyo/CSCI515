@@ -769,8 +769,7 @@ animation_block:
             // シンボルを取得し、そのステートメントポインタを設定する
             auto symbol = scopemgr.lookup(*$1);
             if (symbol && symbol->get_type() == GPL::ANIMATION_CODE) {
-                // symbol->as_animation_code()->set_statement($2);
-                // std::cout << *$1 << std::endl;
+                symbol->as_lvalue()->mutate($2);
             } else {
                 // throw "Symbol not found or type mismatch"; // 適切なエラーメッセージを提供する
             }

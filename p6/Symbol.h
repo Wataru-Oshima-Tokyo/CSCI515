@@ -25,7 +25,7 @@ union symboltype{
         Triangle *triangle_pointer;
         Pixmap *pixmap_pointer;
         Animation_code* animation_code_pointer;
-
+        Game_object* game_object_pointer;
 
         symboltype(){}
         symboltype(int* value): int_pointer(value){};
@@ -37,6 +37,7 @@ union symboltype{
         symboltype(Triangle *value) : triangle_pointer(value) {}
         symboltype(Pixmap *value) : pixmap_pointer(value) {}
         symboltype(Animation_code *value) : animation_code_pointer(value) {}
+        symboltype(Game_object *value) : game_object_pointer(value) {}
 };
 
 class Symbol {
@@ -63,7 +64,6 @@ class Symbol {
         Symbol(const std::string &name, Pixmap *game_object, int count);
         Symbol(const std::string &name, Animation_code *game_object);
 
-        
         GPL::Type get_type() const;
         std::string get_name() const;
         Game_object*  as_game_object();
@@ -91,13 +91,25 @@ class Symbol {
         std::shared_ptr<Locator> as_lvalue(int index, const std::string& attribute_name) const;
 
 
-        
 
-    private:
+
+    protected:
+        Symbol(const std::string& name, GPL::Type type, Game_object* argument);
         GPL::Type type_;
         std::string name_;
         symboltype value_;
         int count_;
+    
+        
+};
+
+class Reference : public Symbol {
+  public:
+    Reference(const std::string& parameter_name,
+              GPL::Type          parameter_type,
+              Game_object*       gop)
+    : Symbol(parameter_name, parameter_type, gop) {}
+    virtual ~Reference() {value_.game_object_pointer = nullptr; }
 };
 
 #endif
