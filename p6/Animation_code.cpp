@@ -27,8 +27,6 @@ void Animation_code::execute(Game_object* argument) const
 {
   //Implemented in P6
     Scope_manager::instance().push_table();
-
-      // 2. Create a Reference object to the game object argument
     std::shared_ptr<Symbol> argumentSymbol = std::make_shared<Reference>(this->parameter_name, this->parameter_type, argument);
     Scope_manager::instance().add_to_current_scope(argumentSymbol);
 
@@ -36,7 +34,6 @@ void Animation_code::execute(Game_object* argument) const
     if (this->block != nullptr) {
         this->block->execute();
     }
-
     // 4. Pop the symbol table off of the stack.
     Scope_manager::instance().pop_table();
 }

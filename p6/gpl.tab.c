@@ -681,7 +681,7 @@ static const yytype_int16 yyrline[] =
      468,   469,   470,   478,   479,   484,   596,   659,   660,   661,
      662,   663,   668,   671,   674,   681,   690,   697,   704,   705,
      710,   711,   712,   713,   718,   725,   732,   750,   755,   764,
-     785,   861,   868,   869,   870,   871,   872,   873,   874,   875,
+     786,   861,   868,   869,   870,   871,   872,   873,   874,   875,
      876,   877,   878,   879,   880,   881,   882,   883,   884,   885,
      886,   887,   888,   889,   890,   891,   896,   897,   902,   903,
      909,   913,   920,   921,   922,   923,   924,   929,   943,   962,
@@ -2271,7 +2271,7 @@ yyreduce:
 #line 764 "gpl.y"
                                          {
         Scope_manager& scopemgr = Scope_manager::instance();
-        scopemgr.pop_table();
+        Scope_manager::instance().pop_table();
         // アニメーションブロックの名前がnullptrでないことを確認する
         if ((yyvsp[-1].union_string) != nullptr) {
             // シンボルを取得し、そのステートメントポインタを設定する
@@ -2284,19 +2284,20 @@ yyreduce:
 
             // アニメーションブロックの名前をAnimation_code::defined_blocklistに挿入する
             Animation_code::defined_blocklist.insert(*(yyvsp[-1].union_string));
+            std::cout << "finish animation block" << std::endl;
         }
     }
-#line 2290 "gpl.tab.c"
+#line 2291 "gpl.tab.c"
     break;
 
   case 40: /* animation_declaration: "animation" "identifier" "(" object_type "identifier" ")"  */
-#line 785 "gpl.y"
+#line 786 "gpl.y"
                                                        {
+        std::cout << "animation_declaration starts"  << std::endl;
         bool error = false;
         Scope_manager& scopemgr = Scope_manager::instance();
         auto symbol=scopemgr.lookup(*(yyvsp[-4].union_string));
         if (!symbol){
-            
             Animation_code* animation_code = new Animation_code(*(yyvsp[-4].union_string), (yyvsp[-2].union_gpl_type));
             scopemgr.add_to_current_scope(std::make_shared<Symbol>(*(yyvsp[-4].union_string), animation_code));
             animation_code->declared_blocklist.insert(*(yyvsp[-4].union_string));
@@ -2310,7 +2311,6 @@ yyreduce:
         Scope_manager::instance().push_table();
         
         // // 新しいゲームオブジェクトシンボルを作成し、シンボルテーブルに挿入する
-        //------- here you have to change later --------
         try{
             const Animation_code* const_value = symbol->as_constant()->evaluate()->as_animation_block();
             if (const_value->get_parameter_type() != (yyvsp[-2].union_gpl_type)){
@@ -2356,7 +2356,7 @@ yyreduce:
         }
 
         // ----------------------------------------------
-
+        std::cout << "animation_declaration ends"  << std::endl;
         // animation_blockプロダクションにブロックの名前を渡す
         if (!error)
             (yyval.union_string) = (yyvsp[-4].union_string);

@@ -8,20 +8,21 @@ int i = 0;
 
 animation move(circle cur_circle)
 {
-    cur_circle.radius -= 1;
+     print("my_circle.x = " + cur_circle.x);
+    //cur_circle.radius = 1;
     // if (i == 0)
     // {
     //     print("First time animation is called");
     //     print("my_circle.x = " + my_circle.x);
-    //     print("cur_circle.x = " + cur_circle.x);
+    //     // print("cur_circle.x = " + cur_circle.x);
     //     print("my_circle.y = " + my_circle.y);
-    //     print("cur_circle.y = " + cur_circle.y);
+    //     // print("cur_circle.y = " + cur_circle.y);
     //     print("my_circle.red = " + my_circle.red);
-    //     print("cur_circle.red = " + cur_circle.red);
+    //     // print("cur_circle.red = " + cur_circle.red);
     //     print("my_circle.green = " + my_circle.green);
-    //     print("cur_circle.green = " + cur_circle.green);
+    //     // print("cur_circle.green = " + cur_circle.green);
     //     print("my_circle.blue = " + my_circle.blue);
-    //     print("cur_circle.blue = " + cur_circle.blue);
+    //     // print("cur_circle.blue = " + cur_circle.blue);
     // }
 
     // if (i < 10)
@@ -42,9 +43,9 @@ animation move(circle cur_circle)
     //     print("cur_circle.blue = " + cur_circle.blue);
     // }
 
-    // i = i + 1;
-    // if (i > 11)
-    //   exit(33);
+    i = i + 1;
+    if (i > 11)
+      exit(33);
 }
 
 termination

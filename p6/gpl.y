@@ -763,7 +763,7 @@ animation_parameter:
 animation_block:
     animation_declaration statement_block{
         Scope_manager& scopemgr = Scope_manager::instance();
-        scopemgr.pop_table();
+        Scope_manager::instance().pop_table();
         // アニメーションブロックの名前がnullptrでないことを確認する
         if ($1 != nullptr) {
             // シンボルを取得し、そのステートメントポインタを設定する
@@ -776,6 +776,7 @@ animation_block:
 
             // アニメーションブロックの名前をAnimation_code::defined_blocklistに挿入する
             Animation_code::defined_blocklist.insert(*$1);
+            std::cout << "finish animation block" << std::endl;
         }
     }
 
@@ -783,11 +784,11 @@ animation_block:
 //---------------------------------------------------------------------
 animation_declaration:
     T_ANIMATION T_ID T_LPAREN object_type T_ID T_RPAREN{
+        std::cout << "animation_declaration starts"  << std::endl;
         bool error = false;
         Scope_manager& scopemgr = Scope_manager::instance();
         auto symbol=scopemgr.lookup(*$2);
         if (!symbol){
-            
             Animation_code* animation_code = new Animation_code(*$2, $4);
             scopemgr.add_to_current_scope(std::make_shared<Symbol>(*$2, animation_code));
             animation_code->declared_blocklist.insert(*$2);
@@ -801,7 +802,6 @@ animation_declaration:
         Scope_manager::instance().push_table();
         
         // // 新しいゲームオブジェクトシンボルを作成し、シンボルテーブルに挿入する
-        //------- here you have to change later --------
         try{
             const Animation_code* const_value = symbol->as_constant()->evaluate()->as_animation_block();
             if (const_value->get_parameter_type() != $4){
@@ -847,7 +847,7 @@ animation_declaration:
         }
 
         // ----------------------------------------------
-
+        std::cout << "animation_declaration ends"  << std::endl;
         // animation_blockプロダクションにブロックの名前を渡す
         if (!error)
             $$ = $2;

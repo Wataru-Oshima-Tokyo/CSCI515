@@ -164,7 +164,6 @@ Symbol::~Symbol() {
             // Don't delete value_.game_object_pointer here because it's a Reference,
             // not an owning Symbol.
             break;    
-
         default:
             assert(false);
             break;
@@ -469,6 +468,7 @@ std::shared_ptr<Locator> Symbol::as_lvalue(const std::string& attribute_name) co
             // Retrieve attribute from Pixmap object
             return std::make_shared<Game_attribute_locator>(value_.pixmap_pointer, attribute_name);
         default:
+            std::cout << "Symbol::as_lvalue here" << GPL::to_string(type_) << std::endl;
             throw type_;
     }
     return nullptr; // Replace with the appropriate Constant object
