@@ -42,6 +42,9 @@ void Assign::execute() const {
         case GPL::STRING:
             lvalue->mutate(rvalue->as_string());
             break;
+        case GPL::ANIMATION_BLOCK:
+            lvalue->mutate(rvalue->as_animation_block());
+            break;
         default:
             throw lvalue->type();
             break;

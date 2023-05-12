@@ -998,27 +998,40 @@ assign_statement_or_empty:
 //---------------------------------------------------------------------
 assign_statement:
     variable T_ASSIGN expression{
-        //ex :) lhs_int = rhs_double;
-        //#TODO: need to handle the error message here 
-        // std::cout << "Expression type:" << GPL::to_string($1->type()) <<std::endl;
-        if ($1){
-            if (($1->type() == (GPL::CIRCLE|GPL::RECTANGLE|GPL::TRIANGLE|GPL::TEXTBOX|GPL::PIXMAP))){
+        
+        if ($1) {
+            if ($1->type() == (GPL::CIRCLE|GPL::RECTANGLE|GPL::TRIANGLE|GPL::TEXTBOX|GPL::PIXMAP)){
                 Error::error(Error::INVALID_LHS_OF_ASSIGNMENT, $1->get_name(),GPL::to_string($1->type()));
-                $$=new Assign($1,nullptr, true);
-            }else if ($1->type() == $3->type()){
-                $$ = new Assign($1,$3, true);
-            }else if ($1->type() == GPL::DOUBLE && $3->type() == GPL::INT){
-                $$ = new Assign($1,$3, true);
-            }else if ($1->type() == GPL::STRING && ($3->type() == GPL::DOUBLE || $3->type() == GPL::INT)){
-                $$ = new Assign($1,$3, true);
-            }else{
-            Error::error(Error::ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
-            $$=new Assign($1,nullptr, true);
+                $$ = new Assign($1, nullptr, true);
+            } else if ($1->type() == $3->type()){
+                $$ = new Assign($1, $3, true);
+            } else if ($1->type() == GPL::DOUBLE && $3->type() == GPL::INT){
+                $$ = new Assign($1, $3, true);
+            } else if ($1->type() == GPL::STRING && ($3->type() == (GPL::DOUBLE|GPL::INT))){
+                $$ = new Assign($1, $3, true);
+            } else if ($1->type() == GPL::ANIMATION_BLOCK && ($3->type() == GPL::ANIMATION_BLOCK || $3->type() == GPL::ANIMATION_CODE)){
+                const Animation_code* animation_code_1 = $1->evaluate()->as_animation_block();
+                const Animation_code* animation_code_3 = $3->evaluate()->as_animation_block();
+                if(animation_code_1->get_parameter_type() == animation_code_3->get_parameter_type() ){
+                    $$ = new Assign($1, $3, true);
+                    if ($3->type() == GPL::ANIMATION_CODE){
+                        Animation_code::used_blocklist.insert(animation_code_3->get_block_name());
+                    }
+                }else{
+                    Error::error(Error::ANIMATION_BLOCK_ASSIGNMENT_PARAMETER_TYPE_ERROR, GPL::to_string(animation_code_1->get_parameter_type()), GPL::to_string(animation_code_3->get_parameter_type()));
+                    $$ = new Assign($1, nullptr, true);
+                }
+            } else if ($1->type() == GPL::ANIMATION_CODE){
+                const Animation_code* animation_code = $1->evaluate()->as_animation_block();
+                Error::error(Error::CANNOT_ASSIGN_TO_ANIMATION_CODE, animation_code->get_block_name());
+                $$ = new Assign($1, nullptr, true);
+            } else {
+                Error::error(Error::ASSIGNMENT_TYPE_ERROR, GPL::to_string($1->type()), GPL::to_string($3->type()));
+                $$ = new Assign($1, nullptr, true);
             }
         }
-
-        
     }
+
     | variable T_PLUS_ASSIGN expression {
         if($1){
             if (($1->type() == GPL::CIRCLE || $1->type() == GPL::RECTANGLE ||$1->type() == GPL::TRIANGLE || $1->type() == GPL::TEXTBOX || $1->type() == GPL::PIXMAP)){
