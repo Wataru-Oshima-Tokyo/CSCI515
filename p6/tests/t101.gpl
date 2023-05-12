@@ -8,8 +8,8 @@ int i = 0;
 
 animation move(circle cur_circle)
 {
-     print("my_circle.x = " + cur_circle.x);
-    //cur_circle.radius = 1;
+    //print("my_circle.x = " + cur_circle.x);
+    cur_circle.radius = 1;
     // if (i == 0)
     // {
     //     print("First time animation is called");

@@ -764,19 +764,17 @@ animation_block:
     animation_declaration statement_block{
         Scope_manager& scopemgr = Scope_manager::instance();
         Scope_manager::instance().pop_table();
-        // アニメーションブロックの名前がnullptrでないことを確認する
+        //to check if the animation block is not nullptr
         if ($1 != nullptr) {
-            // シンボルを取得し、そのステートメントポインタを設定する
+            //get the symbol by name and set the statement pointer here
             auto symbol = scopemgr.lookup(*$1);
             if (symbol && symbol->get_type() == GPL::ANIMATION_CODE) {
                 symbol->as_lvalue()->mutate($2);
             } else {
-                // throw "Symbol not found or type mismatch"; // 適切なエラーメッセージを提供する
+                throw false;
             }
-
-            // アニメーションブロックの名前をAnimation_code::defined_blocklistに挿入する
+            //insert the animation_block name into Animation_code::block_list
             Animation_code::defined_blocklist.insert(*$1);
-            std::cout << "finish animation block" << std::endl;
         }
     }
 
@@ -784,7 +782,6 @@ animation_block:
 //---------------------------------------------------------------------
 animation_declaration:
     T_ANIMATION T_ID T_LPAREN object_type T_ID T_RPAREN{
-        std::cout << "animation_declaration starts"  << std::endl;
         bool error = false;
         Scope_manager& scopemgr = Scope_manager::instance();
         auto symbol=scopemgr.lookup(*$2);
@@ -794,14 +791,14 @@ animation_declaration:
             animation_code->declared_blocklist.insert(*$2);
             symbol=scopemgr.lookup(*$2);
         }
-        // シンボルのタイプがANIMATION_CODEであることを確認する
+        // to check if the type of symbol table is ANIMATION_CODE
         if (symbol->get_type() == GPL::ANIMATION_CODE) {
             symbol->as_lvalue()->mutate(*$5);
         }
-        //         // 新しいスコープのシンボルテーブルを作成する
+        //         // create a new symbol table
         Scope_manager::instance().push_table();
         
-        // // 新しいゲームオブジェクトシンボルを作成し、シンボルテーブルに挿入する
+        //creating a new gameobject symbol, insert the symbol table
         try{
             const Animation_code* const_value = symbol->as_constant()->evaluate()->as_animation_block();
             if (const_value->get_parameter_type() != $4){
@@ -847,8 +844,7 @@ animation_declaration:
         }
 
         // ----------------------------------------------
-        std::cout << "animation_declaration ends"  << std::endl;
-        // animation_blockプロダクションにブロックの名前を渡す
+        //pass the name to animation_block production
         if (!error)
             $$ = $2;
         else

@@ -58,7 +58,7 @@ Symbol::Symbol(const std::string &name, Animation_code *game_object) :
      type_{GPL::Type::ANIMATION_CODE}, name_{name},value_{symboltype(game_object)}, count_{ 0 } {}
 
 Symbol::Symbol(const std::string &name, GPL::Type type, Game_object* argument):
-    type_{GPL::Type::GAME_OBJECT}, name_{name},value_{symboltype(argument)}, count_{ 0 } {}
+    type_{type}, name_{name},value_{symboltype(argument)}, count_{ 0 } {}
 
 
 
